@@ -25,7 +25,8 @@ Use Node 24.21.0 (`.nvmrc`) and npm 11.19.0, or the compatible Node engine range
 `app.json` is the native configuration source. Plugins initialize LiveKit on both
 platforms and configure WebRTC. `index.ts` installs WebRTC globals. Camera and
 microphone usage descriptions are declared for iOS, with Android permission
-scaffolding as well. Runtime permission requests come in a later task. No
+scaffolding as well. Runtime permission requests are modeled and adapter-tested
+on Linux; device behavior remains unverified. No
 background calling or background camera modes are enabled. Generated `ios/` and
 `android/` directories are ignored: regenerate rather than committing them.
 The starter icon is from Expo's blank TypeScript template (0BSD).
@@ -110,8 +111,8 @@ installed iOS. Accept Xcode's license and install its iOS platform components.
    development launcher select Metro or scan its QR code with Camera.
    Once signing is configured, `npm run ios` also builds to a selected device.
 6. Expected smoke-test result: the **ensembleWorks Mobile** landing screen and
-   "Native development build ready." No permission dialog and no active media
-   are expected yet. Confirm absence of native-module/registration errors.
+   unresolved production-mode message. No permission dialog and no active media
+   are expected in this mode. Confirm absence of native-module/registration errors.
 
 After changing native dependencies or app plugins, regenerate and rebuild the
 native client; Metro reload alone is insufficient. Selecting a personal Team may
@@ -137,7 +138,8 @@ Expo dependency compatibility.
 - `src/adapters/testAdapters.ts` exposes controllable sign-in/expiry, permission
   denial, token errors/disabled media, room failures/participant events, operation
   traces, and cleanup state. Memory storage persists only while its adapter is
-  reused, not across process launches. SDK mappings remain to be implemented.
+  reused, not across process launches. The app supplies AsyncStorage for demo
+  identity persistence across launches.
 - `src/application/joinApplication.ts` reuses a valid session or signs in, asks for
   a name once, saves a separate participant ID, requests both permissions, and
   joins immediately with auto-subscription and microphone/camera enabled. It never
@@ -184,15 +186,28 @@ Rebuild the native development client after installing the new AsyncStorage and
 Expo Crypto dependencies (`npm run ios` on the Mac). Fake session/token values
 are not production credentials and must never be sent to the deployed service.
 
-The fixture tests verify actual HTTP parsing and test-adapter observables, not
-real Cloudflare cookie sharing, SDK event mappings, permissions, storage, camera
-capture, audio playback, or deployed compatibility. Continue the unresolved
+`src/adapters/liveKitRoom.ts` maps injected LiveKit SDK operations/events and
+native audio-session start/stop. Its SDK-boundary tests verify auto-subscription,
+publication toggles, participant changes, gain, listener removal, and
+`disconnect(true)` track release plus audio shutdown even when disconnect fails.
+`src/adapters/nativePermissions.ts` maps WebRTC permission requests with a
+native-module double. Neither is installed in demo mode or a production
+composition yet.
+
+The fixture/boundary tests verify HTTP parsing, SDK mappings, permission/storage
+contracts and test-adapter observables, not real Cloudflare cookie sharing,
+device permissions/storage, camera capture, audio playback, or deployed compatibility. Continue the unresolved
 production authentication work using the
 [native Access investigation](docs/native-access-integration.md) in iteration 002.
 
 ## Validation and remaining work
 
-Codespace checks completed for this scaffold: `npm run check`, Expo Doctor
+See [Linux verification](docs/linux-verification.md) for the acceptance-to-test
+map and demo-mode instructions. This task passes 50 application/adapter tests,
+8 component tests, `npm run check`, Expo Doctor (18/18), and `npm ls --all`.
+The separate iteration 002 handoff task remains open.
+
+Earlier Codespace checks completed for this scaffold: `npm run check`, Expo Doctor
 (18/18), native prebuild without installation, and iOS Metro export. Generated
 Info.plist includes camera/microphone descriptions and Android manifest includes
 camera/record-audio permissions. These are **not** an Xcode build or a device test.
