@@ -20,6 +20,8 @@ export function CallScreen({ state, application, VideoRenderer }: {
 }) {
   return <View style={styles.screen}>
     <Text accessibilityRole="header" style={styles.text}>Room team</Text>
+    {!(state.participants ?? []).some(p => !p.local) &&
+      <Text style={styles.text}>You’re the only person here. Waiting for teammates.</Text>}
     <FlatList data={state.participants ?? []} numColumns={2} keyExtractor={p => p.id}
       renderItem={({ item }) => <View style={styles.tile} testID={`participant-${item.id}`}>
         {item.cameraEnabled ? <VideoRenderer participant={item} /> :

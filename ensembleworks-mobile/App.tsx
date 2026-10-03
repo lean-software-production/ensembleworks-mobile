@@ -36,6 +36,7 @@ export default function App() {
         {state?.phase === 'joined' && application && <CallScreen state={state} application={application}
           VideoRenderer={DemoParticipantVideo} />}
         {state?.phase === 'leaving' && <Text style={styles.body}>Leaving…</Text>}
+        {state?.phase === 'failed' && <Button title="Retry / sign in again" onPress={() => void application?.start()} />}
         {state?.message && <Text accessibilityRole="alert" style={styles.body}>{state.message}</Text>}
       </View>
     </SafeAreaView>

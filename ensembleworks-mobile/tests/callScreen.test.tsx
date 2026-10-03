@@ -74,6 +74,15 @@ test('participant events replace tiles; Leave clears call and Rejoin restores sa
   expect(ports.tokens.requests[1].identity).toBe('mobile-self');
 });
 
+test('empty room shows a waiting message without hiding self preview or controls', async () => {
+  const { ports } = await setup();
+  expect(screen.queryByText('You’re the only person here. Waiting for teammates.')).toBeNull();
+  act(() => ports.room.emit({ type: 'participants', participants: [] }));
+  expect(screen.getByText('You’re the only person here. Waiting for teammates.')).toBeTruthy();
+  expect(screen.getByTestId('video-mobile-self')).toBeTruthy();
+  expect(screen.getByText('Leave')).toBeTruthy();
+});
+
 test('native video renderer resolves SDK tracks by ID and mirrors only self', () => {
   const { VideoTrack } = require('@livekit/react-native');
   const track = { publication: { trackSid: 'camera-track' } };
