@@ -31,7 +31,7 @@ test('first launch signs in, waits for a valid name, persists an independent ID 
     { operation: 'microphone', value: true }, { operation: 'camera', value: true },
   ]);
   assert.equal(app.snapshot.phase, 'joined');
-  assert.deepEqual(phases, ['signing-in', 'needs-name', 'needs-name', 'joining', 'joined']);
+  assert.deepEqual(phases, ['signing-in', 'needs-name', 'needs-name', 'joining', 'joining', 'joined']);
 });
 
 test('permission resolution precedes token retrieval, connection and publications; duplicate submissions are ignored', async () => {

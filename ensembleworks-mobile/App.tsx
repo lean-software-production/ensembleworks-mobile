@@ -6,6 +6,7 @@ import { randomUUID } from 'expo-crypto';
 import { createComposition } from './src/application/composition';
 import { JoinApplication } from './src/application/joinApplication';
 import { PersistentIdentity } from './src/adapters/persistentIdentity';
+import { CallScreen, DemoParticipantVideo } from './src/components/CallScreen';
 
 const composition = createComposition(process.env.EXPO_PUBLIC_APP_MODE === 'demo' ? 'demo' : 'production');
 const application = composition.ports ? new JoinApplication(
@@ -24,7 +25,7 @@ export default function App() {
         <Text accessibilityRole="header" style={styles.title}>ensembleWorks Mobile</Text>
         <Text accessibilityRole="text" style={styles.body}>{composition.label}</Text>
         {!application && <Text style={styles.body}>Native Cloudflare sign-in remains unresolved for iteration 002.</Text>}
-        {state?.phase === 'idle' && <Button title="Simulate sign-in and join" onPress={() => void application?.start()} />}
+        {state?.phase === 'idle' && <Button title={state.identity ? 'Rejoin room' : 'Simulate sign-in and join'} onPress={() => void application?.start()} />}
         {state?.phase === 'needs-name' && <>
           <Text style={styles.body}>Choose a display name. It will be remembered on this device.</Text>
           <TextInput accessibilityLabel="Display name" value={name} onChangeText={setName}
@@ -32,7 +33,9 @@ export default function App() {
           <Button title="Join room" onPress={() => void application?.submitDisplayName(name)} />
         </>}
         {(state?.phase === 'signing-in' || state?.phase === 'joining') && <Text style={styles.body}>{state.phase === 'signing-in' ? 'Signing in…' : 'Joining…'}</Text>}
-        {state?.phase === 'joined' && <Text style={styles.body}>Simulated join as {state.identity?.displayName}: microphone and camera enabled. No real media is captured.</Text>}
+        {state?.phase === 'joined' && application && <CallScreen state={state} application={application}
+          VideoRenderer={DemoParticipantVideo} />}
+        {state?.phase === 'leaving' && <Text style={styles.body}>Leaving…</Text>}
         {state?.message && <Text accessibilityRole="alert" style={styles.body}>{state.message}</Text>}
       </View>
     </SafeAreaView>

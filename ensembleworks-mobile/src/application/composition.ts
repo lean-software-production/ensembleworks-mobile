@@ -13,8 +13,13 @@ export type Composition =
   | { mode: 'production'; label: 'Production integration unresolved'; ports: ApplicationPorts | null };
 // No fallback: production requires explicitly supplied real adapters once verified.
 export function createComposition(mode: 'demo' | 'production', productionPorts?: ApplicationPorts): Composition {
-  if (mode === 'demo') return {
-    mode, label: 'TEST ADAPTER MODE — no real media or backend', ports: createTestAdapters(),
-  };
+  if (mode === 'demo') {
+    const ports = createTestAdapters();
+    ports.room.participants = [
+      { id: 'demo-alex', name: 'Alex', local: false, cameraEnabled: true, microphoneEnabled: true },
+      { id: 'demo-sam', name: 'Sam', local: false, cameraEnabled: false, microphoneEnabled: true },
+    ];
+    return { mode, label: 'TEST ADAPTER MODE — no real media or backend', ports };
+  }
   return { mode, label: 'Production integration unresolved', ports: productionPorts ?? null };
 }

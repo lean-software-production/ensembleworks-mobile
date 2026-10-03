@@ -1,8 +1,8 @@
 # ensembleWorks Mobile
 
 Expo/TypeScript native development scaffold for iteration 001. **Not Expo Go.**
-The landing screen loads the native LiveKit SDK but does not authenticate, join,
-request media permissions, or claim a successful call. The revised
+The explicitly selected demo renders a simulated room and call controls; default
+production mode remains unresolved and does not claim a successful call. The revised
 [iteration 001](iterations/001-join-existing-room.md) builds the application and
 call UI through ports and adapters with Linux test doubles. Iteration 002 will
 verify real Cloudflare Access, native HTTP/WebSocket signaling, and media on an
@@ -121,8 +121,10 @@ locally; Android acceptance is out of scope.
 
 ## Application ports and Linux adapter checks
 
-Run `npm test` here (not in `factory/`). The Node/TypeScript suite needs no
-credentials, native modules, or LiveKit server. `npm run check` checks types and
+Run `npm test` here (not in `factory/`). It runs Node/TypeScript application and
+adapter tests plus Jest/Expo React Native component tests. Neither suite needs
+credentials, a device, or a LiveKit server. Native video drawing is substituted
+in component tests, not the application decisions. `npm run check` checks types and
 Expo dependency compatibility.
 
 - `src/application/ports.ts` defines authentication/session events, token retrieval,
@@ -166,7 +168,18 @@ literal `demo` value enables test adapters. Tap **Simulate sign-in and join**, e
 a display name, then tap **Join room**. Permissions, token retrieval, and media
 operations are simulated; the displayed joined state is not a real call. After
 relaunch, tapping the sign-in/join button reuses the saved name and participant
-ID without asking again. The participant grid and call controls are later tasks.
+ID without asking again. The two-column grid includes your test self-preview,
+a simulated Alex video, and a Sam camera-off placeholder. Toggle **Mute microphone**
+and **Turn camera off** (and back on), then **Leave** and **Rejoin room**. Participant
+events replace the remote tiles; all remote audio gain requests use `1`. Leave
+unsubscribes and requests media/audio cleanup; stale call events are ignored.
+These are adapter assertions, not actual audio playback or camera capture.
+
+`src/components/CallScreen.tsx` requires an injected video renderer. Demo uses
+`DemoParticipantVideo`; `createNativeParticipantVideo` resolves a participant ID
+into a LiveKit SDK track reference and uses `VideoTrack`, mirroring self only.
+The unresolved native room composition must supply that resolver in iteration 002;
+no production track or signaling connection is installed by this task.
 Rebuild the native development client after installing the new AsyncStorage and
 Expo Crypto dependencies (`npm run ios` on the Mac). Fake session/token values
 are not production credentials and must never be sent to the deployed service.
@@ -189,8 +202,9 @@ unverified and belong to iteration 002. Scaffold checks alone do not complete
 iteration 001: its revised application/component/adapter tests and handoff must
 also pass. Linux test doubles cannot establish production compatibility.
 
-`npm audit` reports 34 transitive findings (24 high, 10 moderate) in this SDK's
-tooling graph after non-breaking `npm audit fix`. Reported chains include
+`npm audit` reports 57 transitive findings (47 high, 10 moderate) after adding the
+Jest/Expo component-test tooling. The prior scaffold had 34 findings; dependencies
+were not force-upgraded as part of the call-UI task. Reported chains include
 braces/micromatch, image-size, node-forge, postcss, and uuid/xcode. The suggested
 forced changes include incompatible Expo/RN versions; they were not applied.
 Do not expose Metro publicly beyond development needs or process untrusted build
