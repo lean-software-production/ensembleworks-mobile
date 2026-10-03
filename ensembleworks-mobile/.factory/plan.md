@@ -1,7 +1,7 @@
 # Iteration 001 plan
 
 - [x] Scaffold a compatible Expo/TypeScript native LiveKit app with iOS permissions and reproducible Codespace/Mac setup instructions (not Expo Go).
-- [ ] Define small application ports and injected adapters for authentication/session state, token retrieval, identity storage, permissions, and room operations/events; provide deterministic test doubles and verify the HTTP token contract on Linux.
+- [x] Define small application ports and injected adapters for authentication/session state, token retrieval, identity storage, permissions, and room operations/events; provide deterministic test doubles and verify the HTTP token contract on Linux.
   - [x] Document deployed Access redirects, native cookie feasibility, conditional integration requirements, and physical-iPhone verification steps in `docs/native-access-integration.md`; link the report from `README.md`.
   - Scope revised: real Cloudflare login and physical-iPhone signaling verification move to iteration 002. Preserve the investigation; they no longer block iteration 001.
 - [ ] Persist a display name and separate mobile participant identity; orchestrate permissions and immediate camera/microphone joining through injected ports, with Linux behavior tests.
