@@ -44,8 +44,9 @@ function readResult(output: string): unknown {
 }
 
 function callMachine(machine: MachineConfig, target: string, prompt: string): Result {
-  const answer = spawnSync(machine.harness, ["-p", prompt], {
+  const answer = spawnSync(machine.harness, ["-p"], {
     cwd: target,
+    input: prompt,
     encoding: "utf8",
     maxBuffer: 10 * 1024 * 1024
   });

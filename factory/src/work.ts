@@ -6,7 +6,7 @@ const projectPaths = [".", ":(exclude).factory"];
 const planPath = ".factory/plan.md";
 
 function git(target: string, args: string[], allowedStatuses = [0]): string {
-  const result = spawnSync("git", ["-C", target, ...args], { encoding: "utf8" });
+  const result = spawnSync("git", ["-C", target, ...args], { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
   if (result.error || !allowedStatuses.includes(result.status ?? -1)) {
     throw new Error(result.error?.message || result.stderr.trim() || "Git command failed");
   }

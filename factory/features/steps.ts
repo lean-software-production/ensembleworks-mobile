@@ -23,6 +23,7 @@ interface MachineCall {
   harness: string;
   machine: string;
   prompt: string;
+  args: string[];
   cwd: string;
   commits: number;
   plan: string;
@@ -568,6 +569,21 @@ Then("the renamed task file is committed without the original path", function (t
   assert.equal(readFileSync(join(this.codebase, "work-alpha-renamed.txt"), "utf8"), "alpha\n");
 });
 Given("the doer produces no file changes", function (this: FactoryWorld) { this.agentConfig.doerNoChanges = true; });
+Given("the next task generates a large lockfile", function (this: FactoryWorld) {
+  this.agentConfig.largeLockfile = JSON.stringify({
+    name: "large-prompt-fixture",
+    packages: Array.from({ length: 8000 }, (_, index) => ({ name: `package-${index}`, version: "1.0.0", description: "Unicode café and spaces survive transport" }))
+  }, null, 2) + "\n";
+  assert.ok(Buffer.byteLength(this.agentConfig.largeLockfile) > 1024 * 1024);
+});
+Then("the validator receives the entire lockfile diff through stdin", function (this: FactoryWorld) {
+  successful(this);
+  const validators = calls(this, "validator");
+  assert.equal(validators.length, 1);
+  const addedLines = this.agentConfig.largeLockfile!.trimEnd().split("\n").map(line => `+${line}`).join("\n");
+  assert.ok(validators[0].prompt.includes(addedLines), "Validator input must contain the full lockfile diff");
+  for (const call of calls(this)) assert.deepEqual(call.args, ["-p"], "Prompts must not travel in command arguments");
+});
 Then("it reports that there is no committable work", function (this: FactoryWorld) {
   assert.equal(this.exitCode, 1, this.output);
   assert.match(this.output, /no committable work/i);

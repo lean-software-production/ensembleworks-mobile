@@ -38,7 +38,11 @@ bin/factory --check-line
 Each named node has `<name>/machine.json` beside the line. The default machines
 are [planner](planner/machine.json), [doer](doer/machine.json), and
 [validator](validator/machine.json). Set `harness` to a command or executable path;
-omitting it selects `pi`. The command receives `-p <prompt>` and runs in the target.
+omitting it selects `pi`. The command receives `-p` and runs in the target, with
+the full UTF-8 prompt supplied on stdin and stdin closed when input is complete.
+Custom harnesses must support this input contract. Prompts, including the
+validator's complete changed-work diff, do not consume command-line argument space.
+Git and machine output buffers are limited to 10 MiB per invocation.
 `role` selects the machine's responsibility; optional `prompt` adds instructions.
 
 The validator's `lensFile` is relative to its configuration file. It points to

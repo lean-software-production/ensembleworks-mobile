@@ -5,7 +5,8 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const config = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
 const harness = path.basename(process.argv[1]) === "pi" ? "pi" : "chosen";
-const prompt = process.argv.slice(2).join(" ");
+const args = process.argv.slice(2);
+const prompt = args.slice(1).join(" ") || fs.readFileSync(0, "utf8");
 const machine = prompt.match(/You are the (planner|doer|validator)\./)?.[1];
 const cwd = process.cwd();
 const planPath = path.join(cwd, ".factory", "plan.md");
@@ -16,7 +17,7 @@ const planExists = fs.existsSync(planPath);
 const plan = planExists ? fs.readFileSync(planPath, "utf8") : "";
 const count = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd, encoding: "utf8" });
 const commits = count.status === 0 ? Number(count.stdout) : 0;
-fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, cwd, commits, plan }) + "\n");
+fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan }) + "\n");
 fs.mkdirSync(config.promptsDir, { recursive: true });
 fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.length + 1}-${machine}.txt`), prompt);
 
@@ -61,6 +62,7 @@ if (machine === "planner") {
     fs.writeFileSync(planPath, plan.replace(`- [ ] ${nextTask}`, `- [ ] ${nextTask}\n${subtasks}`));
   }
   if (!config.doerNoChanges) fs.writeFileSync(path.join(cwd, file), `${nextTask}\n${findings.length ? "corrected\n" : ""}`);
+  if (config.largeLockfile) fs.writeFileSync(path.join(cwd, "package-lock.json"), config.largeLockfile);
   // Answer regardless of which result fields the prompt asks for. Do not mark the parent done.
   result = { task: nextTask };
 } else if (machine === "validator") {

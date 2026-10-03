@@ -17,6 +17,7 @@ export interface AgentConfig {
   validatorField?: string;
   tasks?: string[];
   doerRename?: boolean;
+  largeLockfile?: string;
 }
 
 export class FactoryWorld extends World {

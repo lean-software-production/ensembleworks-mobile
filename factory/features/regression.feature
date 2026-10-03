@@ -17,6 +17,16 @@ Feature: Public entrypoint and commit-boundary regression checks
     And the validator was given "Ward Cunningham"
     And the validator was given "Smalltalk"
 
+  Scenario: A large generated lockfile can be validated and committed
+    Given a plan with one pending task
+    And the next task generates a large lockfile
+    When the factory runs
+    Then the validator receives the entire lockfile diff through stdin
+    And there is one new work commit
+    And the plan shows every task as done
+    And the committed plan matches the plan on disk
+    And the target has no uncommitted changes
+
   Scenario: A failed commit does not advance the plan
     Given a plan with three tasks, none of them done
     And Git rejects the commit
