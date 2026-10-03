@@ -1,6 +1,6 @@
 # Iteration 001 plan
 
-- [ ] Scaffold a compatible Expo/TypeScript native LiveKit app with iOS permissions and reproducible Codespace/Mac setup instructions (not Expo Go).
+- [x] Scaffold a compatible Expo/TypeScript native LiveKit app with iOS permissions and reproducible Codespace/Mac setup instructions (not Expo Go).
 - [ ] Verify the deployed token contract and logical room `team`; establish Cloudflare sign-in/session support for native HTTP and LiveKit WebSocket signaling on a real iPhone before expanding the call UI. Document any required integration change if blocked.
 - [ ] Persist a display name and separate mobile participant identity; request permissions and join using runtime backend tokens with camera and microphone enabled.
 - [ ] Build the participant grid with names, camera-off placeholders, self preview, equal-volume remote audio, microphone/camera toggles, and Leave/rejoin controls.

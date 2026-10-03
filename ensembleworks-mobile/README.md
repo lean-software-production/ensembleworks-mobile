@@ -6,6 +6,11 @@ request media permissions, or claim a successful call. Cloudflare Access support
 for native HTTP **and** WebSocket signaling must be verified on an iPhone next,
 before implementing the call UI. No credentials or LiveKit tokens belong in source.
 
+See [the native Access integration gate](docs/native-access-integration.md) for
+observed deployment redirects, native cookie-transport feasibility, the blocked
+integration decision, and physical-iPhone verification steps. The authenticated
+deployed token contract and native signaling remain unverified.
+
 ## Dependency baseline
 
 Expo SDK 54, React Native 0.81.5, React 19.1, LiveKit React Native 3.0.0,
