@@ -135,8 +135,16 @@ Expo dependency compatibility.
 - `src/adapters/testAdapters.ts` exposes controllable sign-in/expiry, permission
   denial, token errors/disabled media, room failures/participant events, operation
   traces, and cleanup state. Memory storage persists only while its adapter is
-  reused, not across process launches. Native persistence and SDK mappings are
-  still to be implemented and verified through module/SDK doubles.
+  reused, not across process launches. SDK mappings remain to be implemented.
+- `src/application/joinApplication.ts` reuses a valid session or signs in, asks for
+  a name once, saves a separate participant ID, requests both permissions, and
+  joins immediately with auto-subscription and microphone/camera enabled. It never
+  connects after a permission denial or disabled token response.
+- `src/adapters/persistentIdentity.ts` serializes identity through an injected
+  key-value boundary. The entry point supplies AsyncStorage and generates a
+  `mobile-` UUID with Expo Crypto. Linux tests verify serialization, relaunch,
+  independent same-name identities, ordering, and failed initial publications;
+  actual device storage and permission behavior remain unverified.
 - `src/adapters/httpTokens.ts` parses the modeled token contract through an injected
   authenticated transport. It requests logical room `team`, preserves the returned
   secure signaling URL/token, distinguishes disabled media from success, and
@@ -147,17 +155,21 @@ Expo dependency compatibility.
   no production transport is currently installed.
 
 To select the demo composition and see its persistent **TEST ADAPTER MODE — no
-real media or backend** label on the scaffold screen:
+real media or backend** label on the application screen:
 
 ```sh
 EXPO_PUBLIC_APP_MODE=demo npm run start -- --tunnel
 ```
 
 Unset this variable for the default unresolved production composition. Only the
-literal `demo` value enables test adapters. This task establishes the dependency
-seam and visible mode selection; interactive sign-in/join behavior and the call
-screen are later plan tasks, not yet implemented. Fake session/token values are
-not production credentials and must never be sent to the deployed service.
+literal `demo` value enables test adapters. Tap **Simulate sign-in and join**, enter
+a display name, then tap **Join room**. Permissions, token retrieval, and media
+operations are simulated; the displayed joined state is not a real call. After
+relaunch, tapping the sign-in/join button reuses the saved name and participant
+ID without asking again. The participant grid and call controls are later tasks.
+Rebuild the native development client after installing the new AsyncStorage and
+Expo Crypto dependencies (`npm run ios` on the Mac). Fake session/token values
+are not production credentials and must never be sent to the deployed service.
 
 The fixture tests verify actual HTTP parsing and test-adapter observables, not
 real Cloudflare cookie sharing, SDK event mappings, permissions, storage, camera
