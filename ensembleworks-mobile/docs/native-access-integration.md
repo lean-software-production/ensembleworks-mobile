@@ -124,7 +124,10 @@ These are conditional integration requirements, not implemented changes or
 claims that the existing deployment supports them. Return to the owner before
 implementing a broker or changing Access policy.
 
-## Physical-iPhone exit criteria for this same task
+## Physical-iPhone integration exit criteria for iteration 002
+
+See the [iteration 002 handoff](iteration-002-handoff.md) for Mac build/signing,
+production composition work, and the subsequent real-media acceptance checklist.
 
 Use the README's Mac signing/install steps, then an integration-only harness
 (no grid or media publication required):
@@ -149,7 +152,7 @@ Use the README's Mac signing/install steps, then an integration-only harness
    redirect, JSON/media configuration, signaling failure, network reachability).
 
 Remaining: all six device checks, actual login/cookie bridge implementation,
-authenticated deployed contract, and native signaling. Keep the parent task
-unchecked in iteration 002 until the planner has real-device evidence. `npm run check` passed
+authenticated deployed contract, and native signaling. Iteration 002's production integration remains incomplete until there is
+real-device evidence; this is separate from iteration 001's documentation task. `npm run check` passed
 (typecheck and Expo dependency compatibility) during this investigation; it
 cannot validate Cloudflare sessions or iOS WebSockets.

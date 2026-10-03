@@ -11,7 +11,9 @@ iPhone. No credentials or LiveKit tokens belong in source.
 See [the native Access integration gate](docs/native-access-integration.md) for
 observed deployment redirects, native cookie-transport feasibility, the blocked
 integration decision, and physical-iPhone verification steps. The authenticated
-deployed token contract and native signaling remain unverified.
+deployed token contract and native signaling remain unverified. See the
+[iteration 002 handoff](docs/iteration-002-handoff.md) for production adapter
+work, Mac signing/install commands, and the real phone-to-web acceptance checklist.
 
 ## Dependency baseline
 
@@ -205,7 +207,10 @@ production authentication work using the
 See [Linux verification](docs/linux-verification.md) for the acceptance-to-test
 map and demo-mode instructions. This task passes 50 application/adapter tests,
 8 component tests, `npm run check`, Expo Doctor (18/18), and `npm ls --all`.
-The separate iteration 002 handoff task remains open.
+The [iteration 002 handoff](docs/iteration-002-handoff.md) documents the unresolved
+production adapters and physical-device acceptance gate. Iteration 001 requires
+Linux checks and this handoff, not device verification; real-device acceptance
+remains unverified and belongs to iteration 002.
 
 Earlier Codespace checks completed for this scaffold: `npm run check`, Expo Doctor
 (18/18), native prebuild without installation, and iOS Metro export. Generated
