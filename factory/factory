@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+script=$0
+while [ -L "$script" ]; do
+  script_dir=$(CDPATH= cd -- "$(dirname -- "$script")" && pwd)
+  link=$(readlink "$script")
+  case $link in
+    /*) script=$link ;;
+    *) script=$script_dir/$link ;;
+  esac
+done
+
+factory_dir=$(CDPATH= cd -- "$(dirname -- "$script")" && pwd)
+exec "$factory_dir/node_modules/.bin/ts-node" "$factory_dir/src/cli.ts" "$@"

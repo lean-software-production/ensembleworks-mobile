@@ -1,21 +1,24 @@
 Feature: Planning
 
-  How the plan is made from the seed, and who keeps it true.
+  How the planner makes the plan from the seed, and keeps it true.
 
   Background:
     Given a copy of the factory
     And a new target
     And a seed describing a game of Tetris
-    And the agent plans the tasks alpha and beta, and does one task a pass
+    And the planner plans the tasks alpha and beta
+    And the doer does the next task in the plan
+    And the validator is always satisfied
 
-  Rule: The seed is the only input to the work
+  Rule: The seed is the assembly line's only input
 
-    What to build comes from the seed alone.
+    What to build comes from the seed alone. The assembly line is given
+    the seed and nothing else.
 
     @real-agent
-    Example: The work is given a seed and nothing else
-      Given the agent is pi
-      When the factory runs to completion
+    Example: The assembly line is given a seed and nothing else
+      Given every machine runs pi
+      When the factory runs
       Then Tetris has been built in the target
 
   Rule: The seed is selected on the command line
@@ -28,7 +31,7 @@ Feature: Planning
     Example: No seed argument
       Given no seed is chosen
       And no plan
-      When the factory runs one pass
+      When the factory runs
       Then it reports that there is no seed
       And no agent has been called
       And there is no plan
@@ -36,32 +39,29 @@ Feature: Planning
     Example: There is no seed
       Given the seed has been deleted
       And no plan
-      When the factory runs one pass
+      When the factory runs
       Then it reports that there is no seed
       And no agent has been called
       And there is no plan
 
-  Rule: A pass with no plan records one before any product work
+  Rule: The planner writes the plan before any work is done
 
     Example: A seed with no plan yet
       Given no plan
-      When the factory runs one pass
-      Then there is a plan
-      And the plan shows every task as not done
-      And there are no new work commits
-      And the committed plan matches the plan on disk
-      And the target has no uncommitted changes
+      When the factory runs
+      Then the planner was called before the doer
+      And the plan shows every task as done
 
     Example: A plan already exists
       Given a plan with three tasks, none of them done
-      When the factory runs one pass
+      When the factory runs
       Then the plan still has those three tasks
 
     @real-agent
     Example: The plan comes from the seed
-      Given the agent is pi
+      Given every machine runs pi
       And no plan
-      When the factory runs one pass
+      When the factory runs
       Then every task in the plan comes from the seed
 
   Rule: Each target keeps its own plan
@@ -71,33 +71,38 @@ Feature: Planning
     A fresh target starts without a plan; selecting an existing target
     resumes its plan. The factory never shares a plan between targets.
 
-    Example: The first pass
+    Example: The first run
       Given no plan
-      When the factory runs one pass
+      When the factory runs
       Then the plan is .factory/plan.md in the target
       And there is no plan in the factory's folder
 
 
-  Rule: The agent keeps the plan, and the factory never reads it
+  Rule: The planner keeps the plan, and the factory never reads it
 
-    The agent picks the next task, does it and marks it done, all from
-    its prompt. The factory only knows whether there is a plan, and the
-    agent's result.
+    The planner writes the plan. Once a task's work is committed, the
+    planner marks it done, and its result says whether any task is
+    left. The doer works from the plan too. The factory only knows whether
+    there is a plan, and the machines' results.
 
-    Example: A pass records the work it did
-      Given a plan with three tasks, none of them done
-      When the factory runs one pass
-      Then the plan shows the first task as done
-
-    Example: The next pass carries on from the last
+    Example: A run carries on from the last
       Given a plan whose first task is done
-      When the factory runs one pass
-      Then the plan shows the first two tasks as done
+      When the factory runs
+      Then the plan shows every task as done
+      And there are two new work commits
+
+    Example: Work that gave up is not recorded
+      Given a plan with three tasks, none of them done
+      And the factory allows at most three attempts at a task
+      And the validator is never satisfied
+      When the factory runs
+      Then the plan shows every task as not done
 
     Example: A plan no factory could parse
-      Given the agent keeps its plan in prose
+      Given the planner keeps its plan in prose
+      And the doer keeps its plan in prose
       And no plan
-      When the factory runs to completion
+      When the factory runs
       Then the work for alpha and beta has been committed
 
   Rule: A successful run records the final plan with the work
@@ -109,16 +114,8 @@ Feature: Planning
 
     Example: Finish the tasks and record their final state
       Given a plan with three tasks, none of them done
-      When the factory runs to completion
+      When the factory runs
       Then the plan shows every task as done
       And there are three new work commits
-      And the committed plan matches the plan on disk
-      And the target has no uncommitted changes
-
-    Example: Record the plan after a successful pass
-      Given a plan with three tasks, none of them done
-      When the factory runs one pass
-      Then the plan shows the first task as done
-      And there is one new work commit
       And the committed plan matches the plan on disk
       And the target has no uncommitted changes

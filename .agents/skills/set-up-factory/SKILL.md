@@ -26,7 +26,7 @@ Follow this process exactly:
    - a way to run the `@real-agent` examples on purpose, such as a second profile, since some runners won't let a command-line tag undo one in their configuration
    - an empty folder for step definitions, outside `spec/`
    - an executable entry point inside the repository's `factory/` folder, which will accept required `--seed <file>` and `--target <folder>` arguments; for now it only says it isn't built yet
-   - a relative symlink `bin/factory -> ../factory/<entry point>` at the repository root. If the language needs an interpreter or build command, the entry point is a small executable launcher inside `factory/`. It resolves its own source location without changing the caller's working directory, so relative seed and target arguments remain relative to the root
+   - a relative symlink `bin/factory -> ../factory/<entry point>` at the repository root. If the language needs an interpreter or build command, the entry point is a small executable launcher inside `factory/`. It resolves paths from its own source location, not from the symlink or caller's location, without changing the caller's working directory, so relative seed and target arguments remain relative to the root
    - ignore rules for dependencies and build output
 
    Don't write any step definitions or factory code yet. That is the homework.
