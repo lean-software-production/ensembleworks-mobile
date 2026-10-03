@@ -1,9 +1,11 @@
 # Iteration 001 plan
 
 - [x] Scaffold a compatible Expo/TypeScript native LiveKit app with iOS permissions and reproducible Codespace/Mac setup instructions (not Expo Go).
-- [ ] Verify the deployed token contract and logical room `team`; establish Cloudflare sign-in/session support for native HTTP and LiveKit WebSocket signaling on a real iPhone before expanding the call UI. Document any required integration change if blocked.
-- [ ] Persist a display name and separate mobile participant identity; request permissions and join using runtime backend tokens with camera and microphone enabled.
+- [ ] Define small application ports and injected adapters for authentication/session state, token retrieval, identity storage, permissions, and room operations/events; provide deterministic test doubles and verify the HTTP token contract on Linux.
+  - [x] Document deployed Access redirects, native cookie feasibility, conditional integration requirements, and physical-iPhone verification steps in `docs/native-access-integration.md`; link the report from `README.md`.
+  - Scope revised: real Cloudflare login and physical-iPhone signaling verification move to iteration 002. Preserve the investigation; they no longer block iteration 001.
+- [ ] Persist a display name and separate mobile participant identity; orchestrate permissions and immediate camera/microphone joining through injected ports, with Linux behavior tests.
 - [ ] Build the participant grid with names, camera-off placeholders, self preview, equal-volume remote audio, microphone/camera toggles, and Leave/rejoin controls.
 - [ ] Handle joining, empty rooms, denied permissions, unavailable media, connection failures, retries, and expired sessions; release media and stop the audio session on leave.
-- [ ] Add focused token/auth/join-state tests, run Codespace checks, and document exact Mac build, signing, and physical-iPhone installation steps.
-- [ ] Verify and record all acceptance scenarios on a physical iPhone against web teammates, including a different-network call, multiple participants, toggles, participant updates, leave cleanup, and relaunch/session behavior. Keep iteration incomplete until real iPhone-to-web media is verified.
+- [ ] Verify all revised iteration 001 scenarios with Linux application/component/adapter tests; run typecheck and dependency checks. Document explicitly selected, visibly labeled test-adapter mode with no silent production fallback.
+- [ ] Document the iteration 002 handoff: unresolved Cloudflare adapter, Mac build/signing/install steps, authenticated contract/signaling verification, and real phone-to-web media acceptance. Distinguish modeled behavior from unverified native/deployed compatibility. Iteration 001 completion requires Linux checks and this handoff, not device verification.

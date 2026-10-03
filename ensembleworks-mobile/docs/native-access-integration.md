@@ -2,10 +2,16 @@
 
 ## Status: blocked; device verification NOT complete
 
+The iteration 001 scope has since been revised to use ports and adapters with
+Linux test doubles. The real deployment/device gate described here now belongs
+to iteration 002 and does not block implementing or validating iteration 001's
+application logic and call UI. The investigation below remains evidence of
+unresolved production integration, not a successful native connection.
+
 This records work on the second task of iteration 001, not a successful join.
 The Codespace has no signed-in deployment session, Mac/Xcode, or physical iPhone
 available for this run. No call UI or authentication workaround was added.
-Do not advance to participant UI on the strength of this investigation.
+This investigation alone does not verify production participant media.
 
 ## Deployed evidence
 
@@ -86,7 +92,8 @@ HttpOnly, domain, path, and expiry, restrict transfer to the approved deployment
 host, and verify the actual returned signaling host is covered. The deployment's
 identity provider may prohibit embedded login; this candidate is not yet selected
 as a supported production flow. Do not install dependencies or claim support
-until that policy and the iPhone transport checks are resolved.
+until that policy and the iPhone transport checks are resolved for the production
+sign-in adapter. Test-adapter UI development can proceed independently.
 
 ## Owner action / required integration decision if blocked
 
@@ -143,6 +150,6 @@ Use the README's Mac signing/install steps, then an integration-only harness
 
 Remaining: all six device checks, actual login/cookie bridge implementation,
 authenticated deployed contract, and native signaling. Keep the parent task
-unchecked until the planner has real-device evidence. `npm run check` passed
+unchecked in iteration 002 until the planner has real-device evidence. `npm run check` passed
 (typecheck and Expo dependency compatibility) during this investigation; it
 cannot validate Cloudflare sessions or iOS WebSockets.

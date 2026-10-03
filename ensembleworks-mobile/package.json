@@ -12,6 +12,7 @@
     "ios": "expo run:ios --device",
     "android": "expo run:android",
     "prebuild": "expo prebuild",
+    "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && expo install --check"
   },
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "tsx": "^4.23.15",
     "typescript": "~5.9.2"
   }
 }

@@ -2,9 +2,11 @@
 
 Expo/TypeScript native development scaffold for iteration 001. **Not Expo Go.**
 The landing screen loads the native LiveKit SDK but does not authenticate, join,
-request media permissions, or claim a successful call. Cloudflare Access support
-for native HTTP **and** WebSocket signaling must be verified on an iPhone next,
-before implementing the call UI. No credentials or LiveKit tokens belong in source.
+request media permissions, or claim a successful call. The revised
+[iteration 001](iterations/001-join-existing-room.md) builds the application and
+call UI through ports and adapters with Linux test doubles. Iteration 002 will
+verify real Cloudflare Access, native HTTP/WebSocket signaling, and media on an
+iPhone. No credentials or LiveKit tokens belong in source.
 
 See [the native Access integration gate](docs/native-access-integration.md) for
 observed deployment redirects, native cookie-transport feasibility, the blocked
@@ -117,6 +119,52 @@ require rebuilding when its development provisioning expires. Android is only
 scaffolded: with Android Studio/SDK and JDK 17 installed, `npm run android` builds
 locally; Android acceptance is out of scope.
 
+## Application ports and Linux adapter checks
+
+Run `npm test` here (not in `factory/`). The Node/TypeScript suite needs no
+credentials, native modules, or LiveKit server. `npm run check` checks types and
+Expo dependency compatibility.
+
+- `src/application/ports.ts` defines authentication/session events, token retrieval,
+  identity storage, permission requests, and room operations/events without native
+  imports. Identity has a separate participant ID and display name.
+- `src/application/composition.ts` selects injected production ports or explicitly
+  selected deterministic demo adapters. Production has no usable ports by default;
+  `UnresolvedAccessAuthentication` reports the unresolved session handoff rather
+  than manufacturing a session. There is no fallback after a production failure.
+- `src/adapters/testAdapters.ts` exposes controllable sign-in/expiry, permission
+  denial, token errors/disabled media, room failures/participant events, operation
+  traces, and cleanup state. Memory storage persists only while its adapter is
+  reused, not across process launches. Native persistence and SDK mappings are
+  still to be implemented and verified through module/SDK doubles.
+- `src/adapters/httpTokens.ts` parses the modeled token contract through an injected
+  authenticated transport. It requests logical room `team`, preserves the returned
+  secure signaling URL/token, distinguishes disabled media from success, and
+  rejects Access redirects/login HTML, malformed responses, and network failures.
+  Demo sessions are rejected **before transport invocation**. The opaque session
+  ID is not sent in a query/header or treated as a credential. A real transport
+  must supply the supported Access session mechanism established in iteration 002;
+  no production transport is currently installed.
+
+To select the demo composition and see its persistent **TEST ADAPTER MODE — no
+real media or backend** label on the scaffold screen:
+
+```sh
+EXPO_PUBLIC_APP_MODE=demo npm run start -- --tunnel
+```
+
+Unset this variable for the default unresolved production composition. Only the
+literal `demo` value enables test adapters. This task establishes the dependency
+seam and visible mode selection; interactive sign-in/join behavior and the call
+screen are later plan tasks, not yet implemented. Fake session/token values are
+not production credentials and must never be sent to the deployed service.
+
+The fixture tests verify actual HTTP parsing and test-adapter observables, not
+real Cloudflare cookie sharing, SDK event mappings, permissions, storage, camera
+capture, audio playback, or deployed compatibility. Continue the unresolved
+production authentication work using the
+[native Access investigation](docs/native-access-integration.md) in iteration 002.
+
 ## Validation and remaining work
 
 Codespace checks completed for this scaffold: `npm run check`, Expo Doctor
@@ -125,7 +173,9 @@ Info.plist includes camera/microphone descriptions and Android manifest includes
 camera/record-audio permissions. These are **not** an Xcode build or a device test.
 Mac compilation, native launch, Cloudflare sign-in/session compatibility, token
 contract/room confirmation, and all phone-to-web acceptance scenarios remain
-unverified. Do not mark the iteration complete on the strength of these checks.
+unverified and belong to iteration 002. Scaffold checks alone do not complete
+iteration 001: its revised application/component/adapter tests and handoff must
+also pass. Linux test doubles cannot establish production compatibility.
 
 `npm audit` reports 34 transitive findings (24 high, 10 moderate) in this SDK's
 tooling graph after non-breaking `npm audit fix`. Reported chains include
