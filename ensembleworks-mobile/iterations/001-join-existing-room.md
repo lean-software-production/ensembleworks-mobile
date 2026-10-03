@@ -2,6 +2,8 @@
 
 ## Goal
 
+Advance the [Ensembleworks Mobile vision](../docs/vision.md) by establishing the first working phone-to-web video call in the team's shared room.
+
 A person opens the iOS app, signs in through the existing Cloudflare Access flow, and joins the Ensembleworks room. They can see and hear teammates using the existing web app, and those teammates can see and hear them.
 
 The deployed web app is https://canvas-ew-lsp-001.ensembleworks.dev/.

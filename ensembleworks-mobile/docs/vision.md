@@ -1,7 +1,7 @@
-The goal is to produce a simple video calling app that a team could use whilst pairing together, or having a meeting.
+# Ensembleworks Mobile
 
-Standard video calling features should be available.
+Give teams a simple way to join their Ensembleworks room from a phone for pairing sessions and meetings, alongside teammates using the web app.
 
-We're going to use livekit in a react native app, architecturally similar to https://github.com/get-bb/bb/tree/main/apps/mobile
+Members connect to the team's Ensembleworks URL and join one shared room. They can see and hear each other, control their microphone and camera, and leave the call easily.
 
-The app will connect to the ensembleworks back-end at a URL where there will be a single room that you can join.
+Build the app with React Native and LiveKit, using the existing Ensembleworks backend and the [BB mobile app](https://github.com/get-bb/bb/tree/main/apps/mobile) as an architectural reference. Start with iOS; support Android when it fits naturally into the shared setup.
