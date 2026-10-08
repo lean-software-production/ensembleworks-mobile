@@ -6,9 +6,16 @@ import { randomUUID } from 'expo-crypto';
 import { createComposition } from './src/application/composition';
 import { JoinApplication } from './src/application/joinApplication';
 import { PersistentIdentity } from './src/adapters/persistentIdentity';
+import { CloudflareAccessAuthentication, deploymentConfiguration, NativeCookieTransport, PersistentAccessSessionStore } from './src/adapters/cloudflareAccess';
 import { CallScreen, DemoParticipantVideo } from './src/components/CallScreen';
+import { AccessSignIn } from './src/components/AccessSignIn';
 
-const composition = createComposition(process.env.EXPO_PUBLIC_APP_MODE === 'demo' ? 'demo' : 'production');
+const mode = process.env.EXPO_PUBLIC_APP_MODE === 'demo' ? 'demo' : 'production';
+const deployment = deploymentConfiguration();
+const accessAuthentication = mode === 'production' && deployment ? new CloudflareAccessAuthentication(
+  deployment, new NativeCookieTransport(), new PersistentAccessSessionStore(AsyncStorage),
+) : null;
+const composition = createComposition(mode);
 const application = composition.ports ? new JoinApplication(
   { ...composition.ports, identity: new PersistentIdentity(AsyncStorage) },
   () => `mobile-${randomUUID()}`,
@@ -24,7 +31,8 @@ export default function App() {
       <View style={styles.content}>
         <Text accessibilityRole="header" style={styles.title}>ensembleWorks Mobile</Text>
         <Text accessibilityRole="text" style={styles.body}>{composition.label}</Text>
-        {!application && <Text style={styles.body}>Native Cloudflare sign-in remains unresolved for iteration 002.</Text>}
+        {!application && !accessAuthentication && <Text style={styles.body}>Production is unconfigured. Set EXPO_PUBLIC_DEPLOYMENT_URL to the HTTPS deployment URL.</Text>}
+        {!application && accessAuthentication && <AccessSignIn authentication={accessAuthentication} />}
         {state?.phase === 'idle' && <Button title={state.identity ? 'Rejoin room' : 'Simulate sign-in and join'} onPress={() => void application?.start()} />}
         {state?.phase === 'needs-name' && <>
           <Text style={styles.body}>Choose a display name. It will be remembered on this device.</Text>
