@@ -1,0 +1,24 @@
+schema-version = "1.16.0"
+
+# Tools around the npm lockfiles. Xcode is not provided here: install it from
+# the App Store and select it with xcode-select. Keep compilers out of this
+# environment so nothing shadows Apple's toolchain during xcodebuild.
+[install]
+# Matches ensembleworks-mobile/.nvmrc and the devcontainer's Node 24 image.
+nodejs.pkg-path = "nodejs_24"
+nodejs.version = "24.21.0"
+
+# iOS builds only; see ensembleworks-mobile/docs/iteration-002-handoff.md.
+cocoapods.pkg-path = "cocoapods"
+cocoapods.version = "1.16.2"
+cocoapods.systems = ["aarch64-darwin"]
+
+# Metro's file watcher.
+watchman.pkg-path = "watchman"
+
+# CocoaPods refuses to run reliably without a UTF-8 locale.
+[vars]
+LANG = "en_US.UTF-8"
+
+[options]
+systems = ["aarch64-darwin", "aarch64-linux", "x86_64-linux"]
