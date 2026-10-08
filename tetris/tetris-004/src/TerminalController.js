@@ -1,6 +1,6 @@
 'use strict';
 
-const { TetrisGame } = require('./game');
+const { TetrisGame } = require('./TetrisGame');
 
 const QUIT = Symbol('quit');
 const RESTART = Symbol('restart');
