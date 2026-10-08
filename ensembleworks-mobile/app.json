@@ -7,7 +7,6 @@
     "scheme": "ensembleworks-mobile",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "dev.ensembleworks.mobile",
       "supportsTablet": false,

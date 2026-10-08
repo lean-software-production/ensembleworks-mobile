@@ -31,6 +31,14 @@ These were observed on the Mac with Xcode 27.0 (build 27A266a), the iOS 27.0 SDK
 
 Treat the version numbers as a starting point. Re-check the registry and let `npx expo install` choose compatible versions when implementing.
 
+A first factory run on this seed stopped at dependency installation. `@livekit/react-native-webrtc@144.2.0` declares the peer range `react-native >=0.60.0` and `@react-native-async-storage/async-storage@2.2.0` declares `^0.0.0-0 || >=0.65 <1.0`. Under npm's semver rules neither range matches a pre-release such as `0.88.0-rc.3`, so `npm install` fails with `ERESOLVE`. In a scratch project with the versions above, adding this to `package.json` resolved the whole tree to a single `react-native@0.88.0-rc.3`:
+
+```json
+"overrides": { "react-native": "$react-native" }
+```
+
+That probe resolved dependencies only. It did not install, compile, or run anything.
+
 ## Technical approach
 
 Run every command inside the repository's flox environment (`flox activate` at the repository root) so Node, npm, and CocoaPods match the pinned versions. Do not install compilers or a second Node into that environment.
@@ -38,6 +46,8 @@ Run every command inside the repository's flox environment (`flox activate` at t
 Follow Expo's upgrade guidance, including its advice to move one SDK version at a time where that surfaces problems earlier. Use `npx expo install --fix` and `npx expo-doctor` to align dependencies rather than choosing versions by hand. Regenerate `ios/` with prebuild; it stays git-ignored, so every native change must come from `app.json`, a config plugin, or a dependency.
 
 Rely on Expo 58's own scene support. Do not write a custom scene delegate unless Expo 58's generated project still fails the launch check, and then document why.
+
+Use the single `react-native` override shown in the findings so npm accepts the React Native release candidate. The peer ranges it bypasses exclude pre-releases by semver rule, not because those packages are known to be incompatible; whether they compile is established by the build steps below. Add no other override, and do not use `--force` or `--legacy-peer-deps`. Record the override in the README as temporary, to be removed when React Native 0.88 is released.
 
 Keep `plugins/minimumPodDeploymentTarget.js` only if the build still needs it after the upgrade. Remove it and its `app.json` entry if every pod already declares a supported deployment target.
 
@@ -59,7 +69,7 @@ Provide a repeatable launch check that needs no taps. The development client ask
 
 Run these on the Mac inside the flox environment.
 
-- `npm ci` installs from the lockfile without peer-dependency overrides or `--force`.
+- `npm ci` installs from the lockfile without `--force` or `--legacy-peer-deps`. `package.json` has exactly one override, `react-native` pinned to the app's own version, and `npm ls react-native` shows a single copy.
 - `npm test` passes with every iteration 001 application, adapter, and component test still present. Tests may change only where an upgraded library's API requires it; no behavior assertion is weakened or removed.
 - `npm run check` passes: type checking and `expo install --check` both report no problems. `npx expo-doctor` passes.
 - `npx expo prebuild --clean --platform ios` followed by `pod install` succeeds, and the generated `Info.plist` contains a `UIApplicationSceneManifest`.
