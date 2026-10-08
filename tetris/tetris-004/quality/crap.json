@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 69.9,
+  "coverage": 71.39,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -55,9 +55,9 @@
       "coverage": 100
     },
     "src/game.js:TetrisGame.move": {
-      "crap": 20.74,
+      "crap": 5,
       "complexity": 5,
-      "coverage": 14
+      "coverage": 100
     },
     "src/game.js:TetrisGame.rotate": {
       "crap": 6,
