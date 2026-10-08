@@ -39,9 +39,9 @@ function render() {
   }));
   const out = ['┌' + '──'.repeat(W) + '┐'];
   for (const row of view) out.push('│' + row.map(c => c ? (c === 2 ? '[]' : '██') : '  ').join('') + '│');
-  out.push(`Score: ${score}   Lines: ${lines}`);
+  out.push('└' + '──'.repeat(W) + '┘');
+  out.push(`Score: ${score}   Lines: ${lines}${over ? '   GAME OVER — R restart' : ''}`);
   out.push('← → move   ↑ rotate   ↓ drop   Space hard drop   Q quit');
-  if (over) out.push('GAME OVER — press R to restart or Q to quit');
   process.stdout.write('\x1b[H\x1b[2J' + out.join('\n') + '\n');
 }
 function endGame() { over = true; clearInterval(timer); }
