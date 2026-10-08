@@ -20,10 +20,22 @@ export interface AgentConfig {
   largeLockfile?: string;
 }
 
+export interface RunFixture {
+  target: string;
+  seed: string;
+  line: string;
+  plan: string;
+}
+
 export class FactoryWorld extends World {
   workspace = "";
   repoRoot = "";
   codebase = ""; // The selected target, never the factory source.
+  targets: string[] = [];
+  runs: Record<string, RunFixture> = {};
+  runCalls: Record<string, { machine: string; cwd: string; plan: string }[]> = {};
+  lastCalls = 0;
+  lineName = "careful";
   factoryDir = "";
   callerCwd = "";
   seedPath = "";
@@ -33,16 +45,13 @@ export class FactoryWorld extends World {
   callLog = "";
   configPath = "";
   attempts = 3;
-  omitSeed = false;
   omitTarget = false;
-  absoluteTarget = false;
   output = "";
   exitCode: number | null = null;
   initialCommitCount = 0;
   baselineHead = "";
   agentConfig: AgentConfig = {};
   unrelatedSnapshot: Record<string, string> = {};
-  targetSnapshots: Record<string, Record<string, string>> = {};
 
   makeWorkspace(): void {
     // macOS /var is an alias of /private/var; cwd and Git report the physical path.

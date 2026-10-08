@@ -4,7 +4,7 @@ import {
   chmodSync, copyFileSync, cpSync, existsSync, mkdirSync, readFileSync,
   readdirSync, rmSync, symlinkSync, writeFileSync
 } from "node:fs";
-import { delimiter, dirname, join, relative, resolve } from "node:path";
+import { basename, delimiter, dirname, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { FactoryWorld } from "./world";
 
@@ -35,7 +35,7 @@ function calls(world: FactoryWorld, machine?: string): MachineCall[] {
   return machine ? entries.filter((call) => call.machine === machine) : entries;
 }
 function machineConfig(world: FactoryWorld, name: string, changes: Record<string, unknown>): void {
-  const path = join(world.factoryDir, name, "machine.json");
+  const path = join(world.codebase, ".assembly-lines", ".machines", name, "machine.json");
   const config = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : { role: name };
   for (const [key, value] of Object.entries(changes)) {
     if (value === undefined) delete config[key];
@@ -44,13 +44,19 @@ function machineConfig(world: FactoryWorld, name: string, changes: Record<string
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify(config, null, 2) + "\n");
 }
-function selectTarget(world: FactoryWorld, path: string): void {
+// Lines and machines travel with the target; runs that build it follow.
+function moveTarget(world: FactoryWorld, path: string): void {
+  const from = world.codebase;
+  mkdirSync(path, { recursive: true });
+  cpSync(join(from, ".assembly-lines"), join(path, ".assembly-lines"), { recursive: true });
+  rmSync(from, { recursive: true, force: true });
+  for (const fixture of Object.values(world.runs)) if (fixture.target === from) fixture.target = path;
+  world.targets = world.targets.map(target => target === from ? path : target);
   world.codebase = path;
-  world.planPath = join(path, ".factory", "plan.md");
 }
-function saveAgentConfig(world: FactoryWorld): void {
+function saveAgentConfig(world: FactoryWorld, planPath = ""): void {
   writeFileSync(world.configPath, JSON.stringify({
-    ...world.agentConfig, callLog: world.callLog,
+    ...world.agentConfig, callLog: world.callLog, planPath,
     promptsDir: join(world.workspace, "prompts")
   }));
 }
@@ -75,17 +81,11 @@ Given("a copy of the factory", function (this: FactoryWorld) {
   mkdirSync(this.factoryDir, { recursive: true });
   mkdirSync(join(this.repoRoot, "bin"));
   mkdirSync(this.fakeBin);
-  for (const name of ["factory", "tsconfig.json", "validation-lens.md", "assembly-line.dot"]) {
+  // Only the factory's source is copied: lines and machines belong to targets.
+  for (const name of ["factory", "tsconfig.json"]) {
     copyFileSync(join(source, name), join(this.factoryDir, name));
   }
   cpSync(join(source, "src"), join(this.factoryDir, "src"), { recursive: true });
-  // Configurations belong to the factory; neither specs nor steps are copied.
-  for (const entry of readdirSync(source, { withFileTypes: true })) {
-    if (entry.isDirectory() && existsSync(join(source, entry.name, "machine.json"))) {
-      mkdirSync(join(this.factoryDir, entry.name));
-      copyFileSync(join(source, entry.name, "machine.json"), join(this.factoryDir, entry.name, "machine.json"));
-    }
-  }
   chmodSync(join(this.factoryDir, "factory"), 0o755);
   symlinkSync(join(source, "node_modules"), join(this.factoryDir, "node_modules"));
   symlinkSync("../factory/factory", join(this.repoRoot, "bin", "factory"));
@@ -93,31 +93,70 @@ Given("a copy of the factory", function (this: FactoryWorld) {
     copyFileSync(join(source, "features", "machine-double.cjs"), path);
     chmodSync(path, 0o755);
   }
-  for (const name of ["planner", "doer", "validator"]) {
-    assert.ok(existsSync(join(this.factoryDir, name, "machine.json")), `Missing packaged configuration for ${name}`);
-    machineConfig(this, name, { harness: this.chosenAgent });
-  }
-  machineConfig(this, "validator", { lensFile: "../validation-lens.md" });
-  writeFileSync(join(this.repoRoot, ".gitignore"), "factory/node_modules/\n");
+  writeFileSync(join(this.repoRoot, ".gitignore"), "factory/node_modules/\nfactory/runs/\n");
   run(this.repoRoot, "git", ["init", "-q"]);
   run(this.repoRoot, "git", ["add", "."]);
   run(this.repoRoot, "git", ["commit", "-qm", "Factory fixture baseline"]);
 });
-Given("a new target", function (this: FactoryWorld) {
-  selectTarget(this, join(this.repoRoot, "output"));
+Given("a new target, with a seed describing a game of {word}", function (this: FactoryWorld, game: string) {
+  const name = game.toLowerCase();
+  this.seedPath = join(this.repoRoot, "seeds", `${name}.md`);
+  if (!existsSync(this.seedPath)) {
+    mkdirSync(dirname(this.seedPath), { recursive: true });
+    writeFileSync(this.seedPath, `Build a terminal game of ${game}.\n`);
+    run(this.repoRoot, "git", ["add", "--", `seeds/${name}.md`]);
+    run(this.repoRoot, "git", ["commit", "--only", "-qm", "Seed fixture", "--", `seeds/${name}.md`]);
+  }
+  this.codebase = join(this.repoRoot, "targets", `${name}-${this.targets.length + 1}`);
+  this.targets.push(this.codebase);
   mkdirSync(this.codebase, { recursive: true });
   baseline(this);
 });
-Given("this assembly line:", function (this: FactoryWorld, line: string) {
-  writeFileSync(join(this.factoryDir, "assembly-line.dot"), line + "\n");
+Given("the target has the machines planner, doer and validator", function (this: FactoryWorld) {
+  for (const name of ["planner", "doer", "validator"]) machineConfig(this, name, { harness: this.chosenAgent });
 });
-function runFactory(world: FactoryWorld, checkLine = false): void {
-  if (!Object.keys(world.unrelatedSnapshot).length) world.unrelatedSnapshot = factorySnapshot(world);
-  const earlierCalls = calls(world).length;
-  saveAgentConfig(world);
-  const args: string[] = checkLine ? ["--check-line"] : ["--attempts", String(world.attempts)];
-  if (!checkLine && !world.omitSeed) args.push("--seed", relative(world.callerCwd, world.seedPath));
-  if (!world.omitTarget) args.push("--target", world.absoluteTarget ? world.codebase : relative(world.callerCwd, world.codebase) || ".");
+const validatedLine = `digraph assembly_line {
+  start -> planner
+  planner -> doer        [label="not complete"]
+  planner -> finish      [label="complete"]
+  doer -> validator
+  validator -> doer      [label="not satisfied"]
+  validator -> planner   [label="satisfied"]
+}
+`;
+const uncheckedLine = `digraph assembly_line {
+  start -> planner
+  planner -> doer        [label="not complete"]
+  planner -> finish      [label="complete"]
+  doer -> planner
+}
+`;
+function linePath(target: string, name: string): string { return join(target, ".assembly-lines", `${name}.dot`); }
+function writeLine(world: FactoryWorld, name: string, line: string): void {
+  mkdirSync(join(world.codebase, ".assembly-lines"), { recursive: true });
+  writeFileSync(linePath(world.codebase, name), line);
+}
+Given("the target has an assembly line {string} on which the doer's work is validated", function (this: FactoryWorld, name: string) {
+  writeLine(this, name, validatedLine);
+});
+Given("the target has an assembly line {string} on which the doer goes straight to the planner", function (this: FactoryWorld, name: string) {
+  writeLine(this, name, uncheckedLine);
+});
+Given("the {string} line has been copied into the target", function (this: FactoryWorld, name: string) {
+  const from = this.targets.find(target => existsSync(linePath(target, name)));
+  assert.ok(from, `No target holds a "${name}" line to copy`);
+  mkdirSync(join(this.codebase, ".assembly-lines"), { recursive: true });
+  copyFileSync(linePath(from, name), linePath(this.codebase, name));
+});
+Given("this assembly line:", function (this: FactoryWorld, line: string) {
+  this.lineName = "assembly-line";
+  writeLine(this, this.lineName, line + "\n");
+});
+Given("a run named {string}, on the {string} line, with that seed and target", function (this: FactoryWorld, name: string, line: string) {
+  this.runs[name] = { target: this.codebase, seed: this.seedPath, line, plan: join(this.factoryDir, "runs", name, "plan.md") };
+  this.planPath = this.runs[name].plan;
+});
+function invoke(world: FactoryWorld, args: string[]): void {
   const result = spawnSync(relative(world.callerCwd, join(world.repoRoot, "bin", "factory")), args, {
     cwd: world.callerCwd, encoding: "utf8",
     env: { ...process.env, ...identity, FACTORY_TEST_CONFIG: world.configPath,
@@ -129,11 +168,36 @@ function runFactory(world: FactoryWorld, checkLine = false): void {
   assert.ifError(result.error);
   world.exitCode = result.status;
   world.output = `${result.stdout}${result.stderr}`;
-  for (const call of calls(world).slice(earlierCalls)) {
-    assert.equal(call.cwd, world.codebase, "Machines must run in the selected target");
-  }
 }
-When("the factory reads the assembly line", function (this: FactoryWorld) { runFactory(this, true); });
+// A run is given its settings, its name alone, or its name and whichever target is current.
+function runFactory(world: FactoryWorld, name: string, given: "settings" | "name" | "target" = "settings"): void {
+  const fixture = world.runs[name];
+  const path = (to: string): string => relative(world.callerCwd, to) || ".";
+  const args = ["--run", name, "--attempts", String(world.attempts)];
+  if (given === "target") args.push("--target", path(world.codebase));
+  else {
+    world.codebase = fixture.target;
+    world.planPath = fixture.plan;
+    world.seedPath = fixture.seed;
+  }
+  if (given === "settings") {
+    args.push("--line", fixture.line, "--seed", path(fixture.seed));
+    if (!world.omitTarget) args.push("--target", path(fixture.target));
+  }
+  if (!Object.keys(world.unrelatedSnapshot).length) world.unrelatedSnapshot = factorySnapshot(world);
+  const earlierCalls = calls(world).length;
+  saveAgentConfig(world, fixture.plan);
+  invoke(world, args);
+  const made = calls(world).slice(earlierCalls);
+  world.lastCalls = made.length;
+  world.runCalls[name] = [...(world.runCalls[name] ?? []), ...made];
+  for (const call of made) assert.equal(call.cwd, fixture.target, "Machines must run in the run's target");
+}
+function checkLine(world: FactoryWorld): void {
+  saveAgentConfig(world);
+  invoke(world, ["--check-line", "--line", world.lineName, "--target", relative(world.callerCwd, world.codebase)]);
+}
+When("the factory reads the assembly line", function (this: FactoryWorld) { checkLine(this); });
 Then("it accepts it", function (this: FactoryWorld) {
   assert.equal(this.exitCode, 0, this.output);
   assert.equal(calls(this).length, 0, "Line checking must not call machines");
@@ -143,16 +207,23 @@ Then("it refuses it", function (this: FactoryWorld) {
   assert.equal(calls(this).length, 0);
 });
 
-function editLine(world: FactoryWorld, change: (line: string) => string): void {
-  const path = join(world.factoryDir, "assembly-line.dot");
+function editLine(world: FactoryWorld, change: (line: string) => string, name = world.lineName): void {
+  const path = linePath(world.codebase, name);
   writeFileSync(path, change(readFileSync(path, "utf8")));
 }
+const withoutValidator = (line: string): string => line.replace(/doer\s*->\s*validator/g, "doer -> planner")
+  .replace(/^\s*validator\s*->[^\n]*\n/gm, "");
 Given("the validator has been taken out, so the doer goes straight to the planner", function (this: FactoryWorld) {
-  editLine(this, line => line.replace(/doer\s*->\s*validator/g, "doer -> planner")
-    .replace(/^\s*validator\s*->[^\n]*\n/gm, ""));
+  editLine(this, withoutValidator);
+});
+Given("the validator has been taken out of the {string} line, so the doer goes straight to the planner", function (this: FactoryWorld, name: string) {
+  editLine(this, withoutValidator, name);
 });
 Given("{string} is misspelt {string} throughout the assembly line", function (this: FactoryWorld, before: string, after: string) {
   editLine(this, line => line.replaceAll(before, after));
+});
+Given("{string} is misspelt {string} throughout the {string} line", function (this: FactoryWorld, before: string, after: string, name: string) {
+  editLine(this, line => line.replaceAll(before, after), name);
 });
 Given("the edge from validator to planner has been taken out", function (this: FactoryWorld) {
   editLine(this, line => line.replace(/^\s*validator\s*->\s*planner[^\n]*\n/gm, ""));
@@ -180,17 +251,14 @@ function successful(world: FactoryWorld): void {
 function writePlan(world: FactoryWorld, completed: number, tasks = ["alpha", "beta", "gamma"]): void {
   mkdirSync(dirname(world.planPath), { recursive: true });
   writeFileSync(world.planPath, `# Plan\n\n${tasks.map((task, index) => `- [${index < completed ? "x" : " "}] ${task}`).join("\n")}\n`);
-  // Existing plans are history, not incidental uncommitted fixture work.
-  run(world.codebase, "git", ["add", "--", ".factory/plan.md"]);
-  run(world.codebase, "git", ["commit", "--only", "-qm", "Existing target plan", "--", ".factory/plan.md"]);
   baseline(world);
 }
-function tree(directory: string): Record<string, string> {
+function tree(directory: string, skip: string[] = []): Record<string, string> {
   const files: Record<string, string> = {};
   if (!existsSync(directory)) return files;
   const visit = (path: string): void => {
     for (const entry of readdirSync(path, { withFileTypes: true })) {
-      if ([".git", "node_modules"].includes(entry.name)) continue;
+      if ([".git", "node_modules", ...skip].includes(entry.name)) continue;
       const child = join(path, entry.name);
       if (entry.isDirectory()) visit(child);
       else if (entry.isFile()) files[relative(directory, child)] = readFileSync(child).toString("base64");
@@ -201,7 +269,8 @@ function tree(directory: string): Record<string, string> {
 }
 function factorySnapshot(world: FactoryWorld): Record<string, string> {
   return {
-    files: JSON.stringify(tree(world.factoryDir)),
+    // Run state is the runs', not the factory's own files.
+    files: JSON.stringify(tree(world.factoryDir, ["runs"])),
     unrelated: existsSync(join(world.repoRoot, "unrelated.txt")) ? readFileSync(join(world.repoRoot, "unrelated.txt"), "utf8") : "",
     staged: run(world.repoRoot, "git", ["diff", "--cached", "--binary", "--", "factory", "unrelated.txt"]),
     unstaged: run(world.repoRoot, "git", ["diff", "--binary", "--", "factory", "unrelated.txt"]),
@@ -221,7 +290,8 @@ function newCommits(world: FactoryWorld): { hash: string; files: string[]; work:
       const paths = run(world.codebase, "git", ["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", hash]).split("\n").filter(Boolean);
       assert.ok(paths.every(path => path.startsWith(prefix)), `Commit ${hash} included work outside the target: ${paths}`);
       const files = paths.map(path => path.slice(prefix.length));
-      return { hash, files, work: files.filter(path => path !== ".factory/plan.md") };
+      assert.ok(files.every(path => !path.startsWith(".assembly-lines/")), `Commit ${hash} included the target's lines: ${files}`);
+      return { hash, files, work: files };
     });
 }
 function workCommits(world: FactoryWorld) { return newCommits(world).filter(commit => commit.work.length); }
@@ -242,13 +312,6 @@ function assertWorkCount(world: FactoryWorld, count: number): void {
   assert.equal(records.filter(call => call.machine === "planner" && call.prompt.includes("The task's work has been committed")).length, count);
 }
 
-Given("a seed describing a game of Tetris", function (this: FactoryWorld) {
-  mkdirSync(dirname(this.seedPath), { recursive: true });
-  writeFileSync(this.seedPath, "Build a terminal game of Tetris.\n");
-  run(this.repoRoot, "git", ["add", "--", "seeds/tetris.md"]);
-  run(this.repoRoot, "git", ["commit", "--only", "-qm", "Seed fixture", "--", "seeds/tetris.md"]);
-  baseline(this);
-});
 Given("the planner plans the tasks alpha and beta", function (this: FactoryWorld) { this.agentConfig.tasks = ["alpha", "beta"]; });
 Given("the doer does the next task in the plan", function (this: FactoryWorld) { this.agentConfig.doerNoChanges = false; });
 Given("the validator is always satisfied", function (this: FactoryWorld) { this.agentConfig.validation = "always"; });
@@ -272,14 +335,15 @@ Given("the doer keeps its plan in prose", function (this: FactoryWorld) { this.a
 Given("the factory allows at most three attempts at a task", function (this: FactoryWorld) { this.attempts = 3; });
 Given("the validator is never satisfied", function (this: FactoryWorld) { this.agentConfig.validation = "never"; });
 Given("the validator is not satisfied the first time", function (this: FactoryWorld) { this.agentConfig.validation = "reject-first"; });
+Given("the validator's lens is kept in a file beside its configuration, saying {string}", function (this: FactoryWorld, lens: string) {
+  machineConfig(this, "validator", { lensFile: "lens.md" });
+  writeFileSync(join(this.codebase, ".assembly-lines", ".machines", "validator", "lens.md"), lens + "\n");
+});
 Given("the validator's lens is testability", function (this: FactoryWorld) { machineConfig(this, "validator", { lens: "testability", lensFile: undefined }); });
-Given("no seed is chosen", function (this: FactoryWorld) { this.omitSeed = true; });
 Given("the seed has been deleted", function (this: FactoryWorld) { rmSync(this.seedPath); });
 Given("no target is chosen", function (this: FactoryWorld) { this.omitTarget = true; });
-Given("the target folder does not exist", function (this: FactoryWorld) { rmSync(this.codebase, { recursive: true, force: true }); });
 Given("the target is outside any Git repository", function (this: FactoryWorld) {
-  selectTarget(this, join(this.workspace, "standalone"));
-  mkdirSync(this.codebase);
+  moveTarget(this, join(this.workspace, "standalone"));
   assert.notEqual(spawnSync("git", ["rev-parse", "--show-toplevel"], { cwd: this.codebase }).status, 0);
   this.baselineHead = "";
   this.initialCommitCount = 0;
@@ -293,7 +357,66 @@ Given("the factory has staged and unstaged changes", function (this: FactoryWorl
   writeFileSync(join(this.repoRoot, "unrelated.txt"), "unstaged unrelated change\n");
 });
 
-When("the factory runs", function (this: FactoryWorld) { runFactory(this); });
+Given("a plan for each run with three tasks of its own, none of them done", function (this: FactoryWorld) {
+  const tasks = [["alpha", "beta", "gamma"], ["delta", "epsilon", "zeta"]];
+  Object.values(this.runs).forEach((fixture, index) => {
+    this.planPath = fixture.plan;
+    writePlan(this, 0, tasks[index]);
+  });
+});
+Given("the {string} run has been started", function (this: FactoryWorld, name: string) {
+  // A run starts the first time it is invoked. With nothing left to do, that is all it does.
+  this.planPath = this.runs[name].plan;
+  writePlan(this, 3);
+  runFactory(this, name);
+  successful(this);
+});
+
+When("the factory runs the {string} run", function (this: FactoryWorld, name: string) { runFactory(this, name); });
+When("the factory runs the {string} run, given only its name", function (this: FactoryWorld, name: string) { runFactory(this, name, "name"); });
+When("the factory runs the {string} run with that target", function (this: FactoryWorld, name: string) { runFactory(this, name, "target"); });
+Then("the factory refuses", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.equal(this.lastCalls, 0, "A refused run must not call machines");
+});
+Then("it says the {string} run already has a target", function (this: FactoryWorld, name: string) {
+  assert.ok(this.output.includes(`The "${name}" run already has a target`), this.output);
+});
+Then("the validator was called for the {string} run", function (this: FactoryWorld, name: string) {
+  assert.ok(this.runCalls[name]?.some(call => call.machine === "validator"), this.output);
+});
+Then("the validator was not called for the {string} run", function (this: FactoryWorld, name: string) {
+  assert.ok(this.runCalls[name]?.some(call => call.machine === "doer"), this.output);
+  assert.ok(this.runCalls[name].every(call => call.machine !== "validator"));
+});
+Then("the validator has been called twice", function (this: FactoryWorld) {
+  successful(this);
+  assert.equal(calls(this, "validator").length, 2, this.output);
+});
+function completedTasks(plan: string): string[] {
+  const text = readFileSync(plan, "utf8");
+  assert.doesNotMatch(text, /^- \[ \]/m, `Unfinished plan at ${plan}`);
+  return [...text.matchAll(/^- \[x\] (.+)$/gm)].map(match => match[1]);
+}
+Then("each run has its own plan", function (this: FactoryWorld) {
+  const plans = Object.entries(this.runs).map(([name, fixture]) => {
+    assert.equal(fixture.plan, join(this.factoryDir, "runs", name, "plan.md"));
+    assert.ok(completedTasks(fixture.plan).length);
+    assert.equal(this.runCalls[name]?.[0]?.plan, "", "A new run must not inherit another run's plan");
+    return fixture.plan;
+  });
+  assert.equal(new Set(plans).size, plans.length);
+});
+Then("each target holds only its own run's work", function (this: FactoryWorld) {
+  for (const [name, fixture] of Object.entries(this.runs)) {
+    const work = completedTasks(fixture.plan).map(task => `work-${task}.txt`).sort();
+    assert.ok(work.length);
+    assert.deepEqual(Object.keys(tree(fixture.target, [".assembly-lines"])).sort(), work);
+    assert.ok(this.runCalls[name]?.length);
+    assert.ok(this.runCalls[name].every(call => call.cwd === fixture.target));
+    assert.equal(run(fixture.target, "git", ["status", "--porcelain", "--", ".", ":(exclude).assembly-lines"]), "");
+  }
+});
 Then("pi has been called", function (this: FactoryWorld) {
   successful(this);
   assert.ok(calls(this, "validator").some(call => call.harness === "pi"), this.output);
@@ -412,33 +535,26 @@ Then("the plan still has those three tasks", function (this: FactoryWorld) {
   successful(this);
   assert.deepEqual([...readFileSync(this.planPath, "utf8").matchAll(/^- \[[ x]\] (.+)$/gm)].map(match => match[1]), ["alpha", "beta", "gamma"]);
 });
-Then(/^the plan is \.factory\/plan\.md in the target$/,  function (this: FactoryWorld) {
+Then("the plan is plan.md in the factory's runs folder, under tetris", function (this: FactoryWorld) {
   successful(this);
-  assert.equal(this.planPath, join(this.codebase, ".factory", "plan.md"));
+  assert.equal(this.planPath, join(this.factoryDir, "runs", "tetris", "plan.md"));
   assert.equal(existsSync(this.planPath), true);
-  assert.equal(existsSync(join(this.codebase, "factory")), false, "Target must not contain factory source");
   assert.ok(calls(this).length);
-  assert.ok(calls(this).every(call => call.cwd === this.codebase));
 });
-Then("there is no plan in the factory's folder", function (this: FactoryWorld) {
-  assert.equal(existsSync(join(this.factoryDir, "plan.md")), false);
-  assert.equal(existsSync(join(this.factoryDir, ".factory", "plan.md")), false);
+Then("there is no plan in the target", function (this: FactoryWorld) {
+  assert.equal(existsSync(join(this.codebase, ".factory")), false);
+  assert.ok(Object.keys(tree(this.codebase)).every(file => basename(file) !== "plan.md"));
 });
 Then("the work for alpha and beta has been committed", function (this: FactoryWorld) {
   assertWorkCount(this, 2);
   assert.equal(run(this.codebase, "git", ["show", `HEAD:${targetPrefix(this)}work-alpha.txt`]), "alpha");
   assert.equal(run(this.codebase, "git", ["show", `HEAD:${targetPrefix(this)}work-beta.txt`]), "beta");
-  assert.match(readFileSync(this.planPath, "utf8"), /Alpha is done\.[\s\S]*Beta is done\./);
-});
-Then("the committed plan matches the plan on disk", function (this: FactoryWorld) {
-  successful(this);
-  const committed = spawnSync("git", ["show", `HEAD:${targetPrefix(this)}.factory/plan.md`], { cwd: this.codebase, encoding: "utf8" });
-  assert.equal(committed.status, 0, committed.stderr);
-  assert.equal(committed.stdout, readFileSync(this.planPath, "utf8"));
+  // Either way the planner keeps it: as prose or as a checklist.
+  assert.match(readFileSync(this.planPath, "utf8"), /Alpha is done\.[\s\S]*Beta is done\.|- \[x\] alpha\n- \[x\] beta/);
 });
 Then("the target has no uncommitted changes", function (this: FactoryWorld) {
   successful(this);
-  assert.equal(run(this.codebase, "git", ["status", "--porcelain", "--", "."]), "");
+  assert.equal(run(this.codebase, "git", ["status", "--porcelain", "--", ".", ":(exclude).assembly-lines"]), "");
 });
 Then("the validator was given the work for the second task", function (this: FactoryWorld) {
   successful(this);
@@ -484,44 +600,6 @@ Then("the factory's own files and unrelated uncommitted changes are as they were
   assert.deepEqual(factorySnapshot(this), this.unrelatedSnapshot);
 });
 
-function buildNamedTarget(world: FactoryWorld, name: string, absolute = false): void {
-  selectTarget(world, join(world.repoRoot, name));
-  mkdirSync(world.codebase, { recursive: true });
-  baseline(world);
-  world.absoluteTarget = absolute;
-  runFactory(world);
-  successful(world);
-  if (!(name in world.targetSnapshots)) world.targetSnapshots[name] = tree(world.codebase);
-}
-When("the factory builds the target {string} to completion", function (this: FactoryWorld, name: string) { buildNamedTarget(this, name); });
-When("the factory builds the same target using its absolute path", function (this: FactoryWorld) {
-  buildNamedTarget(this, relative(this.repoRoot, this.codebase), true);
-});
-Then("the target {string} is unchanged", function (this: FactoryWorld, name: string) {
-  assert.ok(name in this.targetSnapshots);
-  const target = join(this.repoRoot, name);
-  assert.deepEqual(tree(target), this.targetSnapshots[name]);
-  assert.equal(run(target, "git", ["status", "--porcelain", "--", "."]), "");
-});
-Then("the targets {string} and {string} each have their own completed plan and committed work", function (this: FactoryWorld, first: string, second: string) {
-  for (const name of [first, second]) {
-    const target = join(this.repoRoot, name);
-    const plan = readFileSync(join(target, ".factory", "plan.md"), "utf8");
-    assert.match(plan, /- \[x\] alpha\n- \[x\] beta/);
-    assert.doesNotMatch(plan, /- \[ \]/);
-    for (const file of [".factory/plan.md", "work-alpha.txt", "work-beta.txt"]) {
-      const committed = spawnSync("git", ["show", `HEAD:${name}/${file}`], { cwd: this.repoRoot, encoding: "utf8" });
-      assert.equal(committed.status, 0, committed.stderr);
-      assert.equal(committed.stdout, readFileSync(join(target, file), "utf8"));
-    }
-    const records = calls(this).filter(call => call.cwd === target);
-    assert.equal(records[0]?.plan, "", "Fresh targets must not inherit another plan");
-    assert.equal(records.filter(call => call.machine === "doer").length, 2);
-    assert.equal(run(target, "git", ["status", "--porcelain", "--", "."]), "");
-  }
-  assert.notEqual(join(this.repoRoot, first), join(this.repoRoot, second));
-});
-
 Given("Git rejects the commit", function (this: FactoryWorld) {
   const hook = join(this.repoRoot, ".git", "hooks", "pre-commit");
   writeFileSync(hook, '#!/bin/sh\necho "simulated commit failure" >&2\nexit 1\n');
@@ -535,8 +613,7 @@ Then("the planner has not been asked to record committed work", function (this: 
   assert.ok(calls(this, "planner").every(call => !call.prompt.includes("The task's work has been committed")));
 });
 Given("a separate target with an unrelated staged change beside it", function (this: FactoryWorld) {
-  selectTarget(this, join(this.repoRoot, "nested", "target"));
-  mkdirSync(this.codebase, { recursive: true });
+  moveTarget(this, join(this.repoRoot, "nested", "target"));
   writeFileSync(join(this.repoRoot, "unrelated.txt"), "student's unrelated change\n");
   run(this.repoRoot, "git", ["add", "--", "unrelated.txt"]);
 });

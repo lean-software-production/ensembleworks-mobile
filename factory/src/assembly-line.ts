@@ -20,16 +20,19 @@ export class AssemblyLine {
   private readonly machines = new Map<string, MachineConfig>();
   private readonly outgoing = new Map<string, Edge[]>();
 
-  constructor(folder: string) {
-    const graph = read(readFileSync(join(folder, "assembly-line.dot"), "utf8"));
+  constructor(target: string, name: string) {
+    const folder = join(target, ".assembly-lines");
+    const path = join(folder, `${name}.dot`);
+    if (!existsSync(path)) throw new Error(`The target has no assembly line called "${name}".`);
+    const graph = read(readFileSync(path, "utf8"));
     if (!graph.isDirected() || !graph.hasNode("start") || !graph.hasNode("finish")) {
       throw new Error("The assembly line must be directed and have start and finish nodes.");
     }
     for (const name of graph.nodes()) {
       this.outgoing.set(name, []);
       if (name === "start" || name === "finish") continue;
-      const file = join(folder, name, "machine.json");
-      if (!existsSync(file)) throw new Error(`The factory has no machine called "${name}".`);
+      const file = join(folder, ".machines", name, "machine.json");
+      if (!existsSync(file)) throw new Error(`The target has no machine called "${name}".`);
       const config = JSON.parse(readFileSync(file, "utf8"));
       this.machines.set(name, {
         name,

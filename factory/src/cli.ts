@@ -1,13 +1,16 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { resolve } from "node:path";
 import { AssemblyLine, MachineConfig } from "./assembly-line";
 import { plannerPrompt, doerPrompt, validatorPrompt, resultPrompt } from "./prompts";
-import { initializeTarget, changedWork, commitWork, recordFinalPlan } from "./work";
+import { Run } from "./runs";
+import { initializeTarget, changedWork, commitWork } from "./work";
 
 type Result = Record<string, unknown>;
 
 interface Options {
+  run: string;
+  line: string;
   seed: string;
   target: string;
   attempts: number;
@@ -15,20 +18,24 @@ interface Options {
 }
 
 function optionsFrom(argv: string[]): Options {
+  let run = "";
+  let line = "";
   let seed = "";
   let target = "";
   let attempts = 3;
   let checkLine = false;
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
-    if (argument === "--seed") seed = argv[++index] ?? "";
+    if (argument === "--run") run = argv[++index] ?? "";
+    else if (argument === "--line") line = argv[++index] ?? "";
+    else if (argument === "--seed") seed = argv[++index] ?? "";
     else if (argument === "--target") target = argv[++index] ?? "";
     else if (argument === "--attempts") attempts = Number(argv[++index]);
     else if (argument === "--check-line") checkLine = true;
     else throw new Error(`Unknown argument: ${argument}`);
   }
   if (!Number.isInteger(attempts) || attempts < 1) throw new Error("--attempts must be a positive integer");
-  return { seed: seed ? resolve(seed) : "", target: target ? resolve(target) : "", attempts, checkLine };
+  return { run, line, seed: seed ? resolve(seed) : "", target: target ? resolve(target) : "", attempts, checkLine };
 }
 
 function readResult(output: string): unknown {
@@ -61,18 +68,20 @@ function callMachine(machine: MachineConfig, target: string, prompt: string): Re
 }
 
 function runFactory(options: Options): void {
-  if (!options.checkLine) {
-    if (!options.seed || !existsSync(options.seed)) throw new Error(`There is no seed${options.seed ? ` at ${options.seed}` : " chosen"}.`);
-    if (!options.target) throw new Error("A target is required (--target <folder>).");
-  }
-  const line = new AssemblyLine(join(__dirname, ".."));
   if (options.checkLine) {
+    if (!options.target || !options.line) throw new Error("Checking a line needs --target <folder> and --line <name>.");
+    new AssemblyLine(options.target, options.line);
     console.log("Assembly line accepted.");
     return;
   }
+  const run = new Run(options.run, { target: options.target, line: options.line, seed: options.seed });
+  const { target, seed } = run.settings;
+  const plan = run.plan;
+  if (!existsSync(seed)) throw new Error(`There is no seed at ${seed}.`);
+  const line = new AssemblyLine(target, run.settings.line);
+  run.remember();
 
-  initializeTarget(options.target);
-  const plan = join(options.target, ".factory", "plan.md");
+  initializeTarget(target);
   let node = line.next("start", {});
   let pendingWork: Result | undefined;
   let committedTask: string | undefined;
@@ -83,19 +92,19 @@ function runFactory(options: Options): void {
     const machine = line.machine(node);
     let prompt: string;
     if (machine.role === "planner") {
-      prompt = plannerPrompt(options.seed, plan, options.target, committedTask);
+      prompt = plannerPrompt(seed, plan, target, committedTask);
       committedTask = undefined;
     } else if (machine.role === "doer") {
       if (attempts >= options.attempts) throw new Error(`A task hit its limit of ${options.attempts} attempts.`);
       attempts += 1;
-      prompt = doerPrompt(options.seed, plan, options.target, findings);
+      prompt = doerPrompt(seed, plan, target, findings);
     } else if (machine.role === "validator") {
-      prompt = validatorPrompt(options.seed, options.target, machine.lens, changedWork(options.target));
+      prompt = validatorPrompt(seed, target, machine.lens, changedWork(target));
     } else {
-      prompt = `You are the ${machine.name}.\nTarget: ${options.target}\nSeed: ${options.seed}\nPlan: ${plan}`;
+      prompt = `You are the ${machine.name}.\nTarget: ${target}\nSeed: ${seed}\nPlan: ${plan}`;
     }
     if (machine.prompt) prompt += `\n${machine.prompt}`;
-    const result = callMachine(machine, options.target, `${prompt}\n${resultPrompt(line.fields(node))}`);
+    const result = callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`);
     const next = line.next(node, result);
     if (machine.role === "doer") pendingWork = result;
     if (machine.role === "validator") {
@@ -107,7 +116,7 @@ function runFactory(options: Options): void {
     // Returning to a planner accepts the task. The edge only routes; the factory
     // records work before the planner updates the plan, including unchecked lines.
     if (next !== "finish" && line.machine(next).role === "planner" && pendingWork) {
-      commitWork(options.target, typeof pendingWork.task === "string" ? pendingWork.task : "Factory task");
+      commitWork(target, typeof pendingWork.task === "string" ? pendingWork.task : "Factory task");
       committedTask = JSON.stringify(pendingWork);
       pendingWork = undefined;
       findings = [];
@@ -115,7 +124,6 @@ function runFactory(options: Options): void {
     }
     node = next;
   }
-  recordFinalPlan(options.target);
   console.log("factory stopped");
 }
 

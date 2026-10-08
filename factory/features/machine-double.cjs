@@ -9,7 +9,8 @@ const args = process.argv.slice(2);
 const prompt = args.slice(1).join(" ") || fs.readFileSync(0, "utf8");
 const machine = prompt.match(/You are the (planner|doer|validator)\./)?.[1];
 const cwd = process.cwd();
-const planPath = path.join(cwd, ".factory", "plan.md");
+// The run being invoked keeps its plan with the factory; the test names it.
+const planPath = config.planPath;
 const priorCalls = fs.existsSync(config.callLog)
   ? fs.readFileSync(config.callLog, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse)
   : [];
