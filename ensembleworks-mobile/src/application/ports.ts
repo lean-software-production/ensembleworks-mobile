@@ -11,7 +11,7 @@ export interface IdentityStoragePort {
   load(): Promise<Identity | null>;
   save(identity: Identity): Promise<void>;
 }
-export type Permission = 'granted' | 'denied';
+export type Permission = 'granted' | 'denied' | 'unavailable';
 export interface PermissionsPort {
   request(): Promise<{ microphone: Permission; camera: Permission }>;
 }

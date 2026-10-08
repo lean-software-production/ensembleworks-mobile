@@ -67,6 +67,20 @@ for (const permission of ['microphone', 'camera'] as const) {
   });
 }
 
+test('a missing simulator camera joins with microphone, reports camera off, and never publishes video', async () => {
+  const { ports, app } = setup();
+  ports.permissions.result = { microphone: 'granted', camera: 'unavailable' };
+  await app.start(); await app.submitDisplayName('Alex');
+  assert.equal(app.snapshot.phase, 'joined');
+  assert.equal(app.snapshot.microphoneEnabled, true);
+  assert.equal(app.snapshot.cameraEnabled, false);
+  assert.equal(app.snapshot.cameraUnavailable, true);
+  assert.match(app.snapshot.message!, /Camera unavailable/);
+  assert.deepEqual(ports.room.operations.map(operation => operation.operation), ['join', 'microphone']);
+  await app.toggleCamera();
+  assert.deepEqual(ports.room.operations.map(operation => operation.operation), ['join', 'microphone']);
+});
+
 test('two people with identical names receive different mobile identities', async () => {
   const a = setup('mobile-a'); const b = setup('mobile-b');
   for (const { app } of [a, b]) { await app.start(); await app.submitDisplayName('Alex'); }
@@ -99,6 +113,26 @@ test('serialized identity survives a new adapter/application; valid sessions are
   assert.equal(signIns, 1);
   assert.equal(third.snapshot.phase, 'joined');
   assert.deepEqual(ports.tokens.requests.map(r => [r.identity, r.name]), Array(3).fill(['mobile-persisted', '林']));
+});
+
+test('a session published by the sign-in UI after expiry satisfies retry without a second sign-in', async () => {
+  const { ports, app } = setup();
+  await app.start();
+  ports.authentication.expire();
+  assert.equal(app.snapshot.phase, 'failed');
+  assert.match(app.snapshot.message!, /session expired/);
+
+  // This is the independent AccessSignIn UI completing GitHub authentication.
+  await ports.authentication.signIn();
+  assert.equal(ports.authentication.session?.kind, 'demo');
+
+  let signIns = 0;
+  const signIn = ports.authentication.signIn.bind(ports.authentication);
+  ports.authentication.signIn = async () => { signIns++; return signIn(); };
+  await app.start();
+
+  assert.equal(signIns, 0);
+  assert.equal(app.snapshot.phase, 'needs-name');
 });
 
 test('disabled media and token errors never report joined or start media', async () => {

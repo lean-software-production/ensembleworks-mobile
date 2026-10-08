@@ -2,14 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { randomUUID } from 'expo-crypto';
+import { AudioSession } from '@livekit/react-native';
+import { mediaDevices, permissions } from '@livekit/react-native-webrtc';
+import { Room, Track } from 'livekit-client';
 
 import { createComposition } from './src/application/composition';
 import { JoinApplication } from './src/application/joinApplication';
-import { type Session } from './src/application/ports';
+import { type ApplicationPorts, type Session } from './src/application/ports';
 import { PersistentIdentity } from './src/adapters/persistentIdentity';
+import { NativePermissionsAdapter } from './src/adapters/nativePermissions';
+import { LiveKitRoomAdapter } from './src/adapters/liveKitRoom';
 import { CloudflareAccessAuthentication, deploymentConfiguration, NativeCookieTransport, PersistentAccessSessionStore } from './src/adapters/cloudflareAccess';
 import { HttpTokenAdapter } from './src/adapters/httpTokens';
 import { CallScreen, DemoParticipantVideo } from './src/components/CallScreen';
+import { createNativeParticipantVideo } from './src/components/NativeParticipantVideo';
 import { AccessSignIn } from './src/components/AccessSignIn';
 import { TokenIntegrationStatus } from './src/components/TokenIntegrationStatus';
 
@@ -21,11 +27,26 @@ const accessAuthentication = mode === 'production' && deployment ? new Cloudflar
 const productionTokens = accessAuthentication ? new HttpTokenAdapter(
   deployment!.baseUrl, new NativeCookieTransport(), () => accessAuthentication.expireSession(),
 ) : null;
-const composition = createComposition(mode);
-const application = composition.ports ? new JoinApplication(
-  { ...composition.ports, identity: new PersistentIdentity(AsyncStorage) },
-  () => `mobile-${randomUUID()}`,
-) : null;
+// The returned token supplies the signaling URL; Room.connect never derives it
+// from the deployment URL. These objects exist only in explicit production mode.
+const nativeRoom = mode === 'production' && accessAuthentication && productionTokens ? new Room() : null;
+const productionPorts: ApplicationPorts | undefined = nativeRoom && accessAuthentication && productionTokens ? {
+  authentication: accessAuthentication,
+  tokens: productionTokens,
+  identity: new PersistentIdentity(AsyncStorage),
+  permissions: new NativePermissionsAdapter({
+    request: permissions.request.bind(permissions),
+    enumerateDevices: () => mediaDevices.enumerateDevices() as Promise<Array<{ kind?: string }>>,
+  }),
+  room: new LiveKitRoomAdapter(nativeRoom, AudioSession),
+} : undefined;
+const composition = createComposition(mode, productionPorts);
+const application = composition.ports ? new JoinApplication(composition.ports, () => `mobile-${randomUUID()}`) : null;
+const ProductionParticipantVideo = nativeRoom ? createNativeParticipantVideo(participantId => {
+  const participant = participantId === nativeRoom.localParticipant.identity ? nativeRoom.localParticipant : nativeRoom.remoteParticipants.get(participantId);
+  const publication = participant?.getTrackPublication(Track.Source.Camera);
+  return participant && publication?.track ? { participant, publication, source: Track.Source.Camera } : undefined;
+}) : DemoParticipantVideo;
 
 export default function App() {
   const [state, setState] = useState(application?.snapshot);
@@ -43,6 +64,15 @@ export default function App() {
     setSignInRequired(false);
   }, []);
   useEffect(() => application?.subscribe(setState), []);
+  // Authentication owns the native Access session. Keep the presentation state
+  // in lockstep when token handling or a native check expires that session.
+  useEffect(() => {
+    if (!accessAuthentication) return;
+    return accessAuthentication.subscribe(session => {
+      if (session) authenticated(session);
+      else sessionExpired();
+    });
+  }, [authenticated, sessionExpired]);
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar barStyle="light-content" />
@@ -50,12 +80,12 @@ export default function App() {
         <Text accessibilityRole="header" style={styles.title}>ensembleWorks Mobile</Text>
         <Text accessibilityRole="text" style={styles.body}>{composition.label}</Text>
         {!application && !accessAuthentication && <Text style={styles.body}>Production is unconfigured. Set EXPO_PUBLIC_DEPLOYMENT_URL to the HTTPS deployment URL.</Text>}
-        {!application && accessAuthentication && <>
-          <AccessSignIn authentication={accessAuthentication} onAuthenticated={authenticated} signInRequired={signInRequired} />
-          {authenticatedSession && productionTokens && <TokenIntegrationStatus session={authenticatedSession}
-            tokens={productionTokens} onSessionExpired={sessionExpired} />}
-        </>}
-        {state?.phase === 'idle' && <Button title={state.identity ? 'Rejoin room' : 'Simulate sign-in and join'} onPress={() => void application?.start()} />}
+        {mode === 'production' && accessAuthentication && !authenticatedSession &&
+          <AccessSignIn authentication={accessAuthentication} onAuthenticated={authenticated} signInRequired={signInRequired} />}
+        {mode === 'production' && authenticatedSession && productionTokens && <TokenIntegrationStatus session={authenticatedSession}
+          tokens={productionTokens} onSessionExpired={sessionExpired} />}
+        {state?.phase === 'idle' && (!accessAuthentication || authenticatedSession) &&
+          <Button title={state.identity ? 'Rejoin room' : accessAuthentication ? 'Join room' : 'Simulate sign-in and join'} onPress={() => void application?.start()} />}
         {state?.phase === 'needs-name' && <>
           <Text style={styles.body}>Choose a display name. It will be remembered on this device.</Text>
           <TextInput accessibilityLabel="Display name" value={name} onChangeText={setName}
@@ -64,9 +94,10 @@ export default function App() {
         </>}
         {(state?.phase === 'signing-in' || state?.phase === 'joining') && <Text style={styles.body}>{state.phase === 'signing-in' ? 'Signing in…' : 'Joining…'}</Text>}
         {state?.phase === 'joined' && application && <CallScreen state={state} application={application}
-          VideoRenderer={DemoParticipantVideo} />}
+          VideoRenderer={mode === 'production' ? ProductionParticipantVideo : DemoParticipantVideo} />}
         {state?.phase === 'leaving' && <Text style={styles.body}>Leaving…</Text>}
-        {state?.phase === 'failed' && <Button title="Retry / sign in again" onPress={() => void application?.start()} />}
+        {state?.phase === 'failed' && (!accessAuthentication || authenticatedSession) &&
+          <Button title="Retry / sign in again" onPress={() => void application?.start()} />}
         {state?.message && <Text accessibilityRole="alert" style={styles.body}>{state.message}</Text>}
       </View>
     </SafeAreaView>

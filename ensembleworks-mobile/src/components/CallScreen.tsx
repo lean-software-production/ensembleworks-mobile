@@ -31,8 +31,10 @@ export function CallScreen({ state, application, VideoRenderer }: {
     <Button title={state.microphoneEnabled ? 'Mute microphone' : 'Unmute microphone'}
       accessibilityLabel={state.microphoneEnabled ? 'Mute microphone' : 'Unmute microphone'}
       disabled={state.controlsPending} onPress={() => void application.toggleMicrophone()} />
-    <Button title={state.cameraEnabled ? 'Turn camera off' : 'Turn camera on'}
-      disabled={state.controlsPending} onPress={() => void application.toggleCamera()} />
+    {state.cameraUnavailable ?
+      <Text accessibilityRole="alert" style={styles.text}>Camera unavailable in this simulator. You joined with microphone only.</Text> :
+      <Button title={state.cameraEnabled ? 'Turn camera off' : 'Turn camera on'}
+        disabled={state.controlsPending} onPress={() => void application.toggleCamera()} />}
     <Button title="Leave" onPress={() => void application.leave()} />
   </View>;
 }

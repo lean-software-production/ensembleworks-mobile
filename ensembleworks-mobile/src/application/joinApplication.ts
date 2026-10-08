@@ -6,6 +6,8 @@ export type JoinState = {
   participants?: Participant[];
   microphoneEnabled?: boolean;
   cameraEnabled?: boolean;
+  // A simulator can join audio without a video input; this is not a failure.
+  cameraUnavailable?: boolean;
   controlsPending?: boolean;
   message?: string;
 };
@@ -41,10 +43,14 @@ export class JoinApplication {
     this.interruption = null;
     this.authenticationSubscription ??= this.ports.authentication.subscribe(session => {
       this.session = session;
-      if (!session) {
-        this.requiresSignIn = true;
-        this.interrupt('Your session expired. Sign in again to join.');
+      if (session) {
+        // AccessSignIn may complete independently of a JoinApplication retry.
+        // Its published native session satisfies a prior expiry requirement.
+        this.requiresSignIn = false;
+        return;
       }
+      this.requiresSignIn = true;
+      this.interrupt('Your session expired. Sign in again to join.');
     });
     try {
       if (this.cleanupRequired && !await this.cleanupRoom()) return;
@@ -88,10 +94,11 @@ export class JoinApplication {
     try {
       const permissions = await this.ports.permissions.request();
       checkActive();
-      if (permissions.microphone !== 'granted' || permissions.camera !== 'granted') {
+      if (permissions.microphone !== 'granted' || permissions.camera === 'denied') {
         this.update({ phase: 'failed', identity, message: 'Camera and microphone permission are required. Enable them in Settings, then retry.' });
         return;
       }
+      const cameraUnavailable = permissions.camera === 'unavailable';
       if (!this.session) throw new Error('No session');
       const result = await this.ports.tokens.retrieve({
         room: 'team', identity: identity.participantId, name: identity.displayName, session: this.session,
@@ -117,11 +124,15 @@ export class JoinApplication {
       checkActive();
       await this.ports.room.setMicrophone(true);
       checkActive();
-      await this.ports.room.setCamera(true);
-      checkActive();
-      this.update({ phase: 'joined', identity, microphoneEnabled: true, cameraEnabled: true,
+      if (!cameraUnavailable) {
+        await this.ports.room.setCamera(true);
+        checkActive();
+      }
+      this.update({ phase: 'joined', identity, microphoneEnabled: true, cameraEnabled: !cameraUnavailable,
+        cameraUnavailable,
+        message: cameraUnavailable ? 'Camera unavailable in this simulator. You joined with microphone only.' : undefined,
         participants: [{ id: identity.participantId, name: identity.displayName, local: true,
-          microphoneEnabled: true, cameraEnabled: true }, ...(this.state.participants ?? []).filter(p => !p.local)] });
+          microphoneEnabled: true, cameraEnabled: !cameraUnavailable }, ...(this.state.participants ?? []).filter(p => !p.local)] });
     } catch (error) {
       if (error instanceof AdapterError && error.code === 'authentication-required') {
         this.session = null;
@@ -172,7 +183,7 @@ export class JoinApplication {
   async toggleMicrophone() { await this.toggle('microphone'); }
   async toggleCamera() { await this.toggle('camera'); }
   private async toggle(kind: 'microphone' | 'camera') {
-    if (this.state.phase !== 'joined' || this.state.controlsPending) return;
+    if (this.state.phase !== 'joined' || this.state.controlsPending || (kind === 'camera' && this.state.cameraUnavailable)) return;
     const generation = this.callGeneration;
     const key = kind === 'microphone' ? 'microphoneEnabled' : 'cameraEnabled';
     const enabled = !this.state[key];

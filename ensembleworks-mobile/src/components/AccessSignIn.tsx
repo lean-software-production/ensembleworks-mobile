@@ -33,7 +33,7 @@ export function AccessSignIn({ authentication, onAuthenticated, signInRequired =
         if (viewAttempt.current === attempt && session) {
           setRestored(true);
           onAuthenticated?.(session);
-          setMessage('Authenticated native session restored. Room setup is not installed yet.');
+          setMessage('Authenticated native session restored. You can join the room.');
         }
       },
       () => {
@@ -52,7 +52,7 @@ export function AccessSignIn({ authentication, onAuthenticated, signInRequired =
         if (viewAttempt.current === attempt) {
           setShowWebView(false);
           onAuthenticated?.(session);
-          setMessage('Signed in with the native session. Room setup is not installed yet.');
+          setMessage('Signed in with the native session. You can join the room.');
         }
       },
       () => {
