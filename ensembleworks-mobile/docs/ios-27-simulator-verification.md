@@ -52,6 +52,28 @@ That plugin and its `app.json` entry were removed rather than retaining an
 unneeded generated-Podfile patch.
 
 The build reports ordinary always-run script-phase warnings (including Expo Dev
-Launcher stripping local-network keys) but no build failures. This evidence is
-not a simulator launch check and establishes neither camera/audio behavior nor
-production authentication.
+Launcher stripping local-network keys) but no build failures.
+
+## Simulator launch check
+
+Run the unattended simulator check from the repository root in the flox
+environment:
+
+```sh
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
+
+It finds the booted simulator (or accepts its UDID in `IOS_SIMULATOR_DEVICE`),
+builds an iOS Simulator Release app with its JavaScript bundle embedded,
+installs it, and launches it with `xcrun simctl launch`. It passes
+`EXPO_PUBLIC_APP_MODE=demo` only to `xcodebuild`, so Expo embeds explicitly
+selected demo mode without changing application source or affecting concurrent
+builds. It then waits 20 seconds, rejects a slain app process, and rejects any
+new `ensembleWorksMobile` crash report.
+
+On 8 October 2026 this command succeeded on the booted iPhone 18 Pro, iOS 27.0
+runtime (`24A434`), with Xcode 27.0 (`27A266a`): the Release simulator build
+installed, `simctl launch` returned PID `43691`, and the process was still
+running after 20 seconds with no new crash report. This establishes native
+scene-lifecycle launch only; demo-flow interaction, permissions, audio, camera,
+and production authentication remain separate checks.
