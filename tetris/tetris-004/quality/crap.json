@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 28.57,
+  "coverage": 57.14,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -120,29 +120,29 @@
       "coverage": 0
     },
     "src/index.js:TerminalController.constructor": {
-      "crap": 72,
+      "crap": 8,
       "complexity": 8,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:arrow function#4": {
-      "crap": 2,
+      "crap": 1,
       "complexity": 1,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:arrow function#5": {
-      "crap": 2,
+      "crap": 1,
       "complexity": 1,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:TerminalController.start": {
-      "crap": 20,
+      "crap": 17.34,
       "complexity": 4,
-      "coverage": 0
+      "coverage": 6
     },
     "src/index.js:TerminalController.startGravity": {
-      "crap": 12,
+      "crap": 9.76,
       "complexity": 3,
-      "coverage": 0
+      "coverage": 9
     },
     "src/index.js:arrow function#6": {
       "crap": 6,
@@ -150,19 +150,19 @@
       "coverage": 0
     },
     "src/index.js:TerminalController.stop": {
-      "crap": 20,
+      "crap": 16.32,
       "complexity": 4,
-      "coverage": 0
+      "coverage": 8
     },
     "src/index.js:TerminalController.quit": {
-      "crap": 2,
+      "crap": 1.42,
       "complexity": 1,
-      "coverage": 0
+      "coverage": 25
     },
     "src/index.js:TerminalController.handleInput": {
-      "crap": 930,
+      "crap": 30,
       "complexity": 30,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:startGame": {
       "crap": 2,
