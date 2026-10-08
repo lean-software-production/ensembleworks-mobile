@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 58.78,
+  "coverage": 61.95,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9,
@@ -30,9 +30,9 @@
       "coverage": 100
     },
     "src/game.js:TetrisGame.visibleCells": {
-      "crap": 73.85,
+      "crap": 9,
       "complexity": 9,
-      "coverage": 7
+      "coverage": 100
     },
     "src/game.js:TetrisGame.collides": {
       "crap": 1,
