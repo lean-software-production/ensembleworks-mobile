@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 77.61,
+  "coverage": 81.59,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -140,9 +140,9 @@
       "coverage": 100
     },
     "src/index.js:TerminalController.start": {
-      "crap": 17.34,
+      "crap": 4,
       "complexity": 4,
-      "coverage": 6
+      "coverage": 100
     },
     "src/index.js:TerminalController.startGravity": {
       "crap": 9.76,
