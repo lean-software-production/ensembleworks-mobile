@@ -11,8 +11,8 @@ const EMPTY_CELL = ' ';
  * a scrolling transcript.
  */
 function renderGame(game) {
-  const activeCells = new Map(
-    game.cells().map(({ x, y }) => [`${x},${y}`, game.active.type]),
+  const visibleCells = new Map(
+    game.visibleCells().map(({ x, y, type }) => [`${x},${y}`, type]),
   );
   const center = (text) => text.slice(0, game.width).padStart(
     Math.floor((game.width + text.length) / 2),
@@ -25,7 +25,7 @@ function renderGame(game) {
   for (let y = 0; y < game.height; y += 1) {
     const message = messageRows.get(y);
     const cells = message || Array.from({ length: game.width }, (_, x) => (
-      activeCells.get(`${x},${y}`) || game.board[y][x] || EMPTY_CELL
+      visibleCells.get(`${x},${y}`) || EMPTY_CELL
     )).join('');
     rows.push(`│${cells}│`);
   }

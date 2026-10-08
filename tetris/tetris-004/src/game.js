@@ -80,6 +80,21 @@ class TetrisGame {
     return PIECES[piece.type][piece.rotation].map(([x, y]) => ({ x: piece.x + x, y: piece.y + y }));
   }
 
+  visibleCells() {
+    const cells = [];
+    for (let y = 0; y < this.height; y += 1) {
+      for (let x = 0; x < this.width; x += 1) {
+        if (this.board[y][x] !== null) cells.push({ x, y, type: this.board[y][x] });
+      }
+    }
+    for (const { x, y } of this.cells()) {
+      if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+        cells.push({ x, y, type: this.active.type });
+      }
+    }
+    return cells;
+  }
+
   collides(piece) {
     return this.cells(piece).some(({ x, y }) => (
       x < 0 || x >= this.width || y >= this.height || (y >= 0 && this.board[y][x] !== null)
