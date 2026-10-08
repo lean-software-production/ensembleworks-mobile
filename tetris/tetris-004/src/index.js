@@ -1,6 +1,6 @@
 'use strict';
 
-const { TetrisGame } = require('./game');
+const { TetrisGame } = require('./TetrisGame');
 const { TerminalController } = require('./TerminalController');
 
 const EMPTY_CELL = ' ';
