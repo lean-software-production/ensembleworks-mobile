@@ -1,0 +1,183 @@
+{
+  "limit": 30,
+  "minCoverage": 80,
+  "tests": true,
+  "coverage": 28.57,
+  "functions": {
+    "src/game.js:TetrisGame.constructor": {
+      "crap": 9.65,
+      "complexity": 9,
+      "coverage": 80
+    },
+    "src/game.js:TetrisGame.reset": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/game.js:arrow function": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/game.js:TetrisGame.cells": {
+      "crap": 3,
+      "complexity": 3,
+      "coverage": 100
+    },
+    "src/game.js:arrow function#2": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/game.js:TetrisGame.visibleCells": {
+      "crap": 73.85,
+      "complexity": 9,
+      "coverage": 7
+    },
+    "src/game.js:TetrisGame.collides": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/game.js:arrow function#3": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/game.js:TetrisGame.spawn": {
+      "crap": 4.77,
+      "complexity": 4,
+      "coverage": 64
+    },
+    "src/game.js:TetrisGame.nextType": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/game.js:TetrisGame.move": {
+      "crap": 20.74,
+      "complexity": 5,
+      "coverage": 14
+    },
+    "src/game.js:TetrisGame.rotate": {
+      "crap": 34.31,
+      "complexity": 6,
+      "coverage": 8
+    },
+    "src/game.js:TetrisGame.tick": {
+      "crap": 8.21,
+      "complexity": 3,
+      "coverage": 17
+    },
+    "src/game.js:TetrisGame.hardDrop": {
+      "crap": 14.72,
+      "complexity": 4,
+      "coverage": 13
+    },
+    "src/game.js:TetrisGame.lock": {
+      "crap": 36.87,
+      "complexity": 6,
+      "coverage": 5
+    },
+    "src/game.js:TetrisGame.clearLines": {
+      "crap": 4.52,
+      "complexity": 2,
+      "coverage": 14
+    },
+    "src/game.js:arrow function#4": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/game.js:arrow function#5": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:renderGame": {
+      "crap": 20,
+      "complexity": 4,
+      "coverage": 0
+    },
+    "src/index.js:arrow function": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#2": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#3": {
+      "crap": 6,
+      "complexity": 2,
+      "coverage": 0
+    },
+    "src/index.js:repaint": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.constructor": {
+      "crap": 72,
+      "complexity": 8,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#4": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#5": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.start": {
+      "crap": 20,
+      "complexity": 4,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.startGravity": {
+      "crap": 12,
+      "complexity": 3,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#6": {
+      "crap": 6,
+      "complexity": 2,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.stop": {
+      "crap": 20,
+      "complexity": 4,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.quit": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:TerminalController.handleInput": {
+      "crap": 930,
+      "complexity": 30,
+      "coverage": 0
+    },
+    "src/index.js:startGame": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:arrow function#7": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    },
+    "src/index.js:onUpdate": {
+      "crap": 2,
+      "complexity": 1,
+      "coverage": 0
+    }
+  }
+}
