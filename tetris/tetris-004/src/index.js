@@ -3,6 +3,40 @@
 const { TetrisGame } = require('./game');
 
 const EMPTY_CELL = ' ';
+const QUIT = Symbol('quit');
+const RESTART = Symbol('restart');
+const INPUT_ACTIONS = {
+  '\u0003': QUIT,
+  q: QUIT,
+  Q: QUIT,
+  a: ['move', [-1], false],
+  A: ['move', [-1], false],
+  '\uE000': ['move', [-1], false],
+  d: ['move', [1], false],
+  D: ['move', [1], false],
+  '\uE001': ['move', [1], false],
+  s: ['tick', [], true],
+  S: ['tick', [], true],
+  '\uE002': ['tick', [], true],
+  w: ['rotate', [], false],
+  W: ['rotate', [], false],
+  x: ['rotate', [], false],
+  X: ['rotate', [], false],
+  '\uE003': ['rotate', [], false],
+  z: ['rotate', [-1], false],
+  Z: ['rotate', [-1], false],
+  ' ': ['hardDrop', [], true],
+  r: RESTART,
+  R: RESTART,
+};
+
+function normalizeInput(keys) {
+  return keys
+    .replace(/\u001b\[D/g, '\uE000')
+    .replace(/\u001b\[C/g, '\uE001')
+    .replace(/\u001b\[B/g, '\uE002')
+    .replace(/\u001b\[A/g, '\uE003');
+}
 
 /**
  * Build the entire visible game in exactly 24 rows: a 20-row board inside
@@ -116,64 +150,33 @@ class TerminalController {
 
   handleInput(keys) {
     let changed = false;
-    // Convert multi-byte arrow escape sequences before handling individual
-    // characters so the final A/B/C/D is not mistaken for a letter control.
-    const controls = keys
-      .replace(/\u001b\[D/g, '\uE000')
-      .replace(/\u001b\[C/g, '\uE001')
-      .replace(/\u001b\[B/g, '\uE002')
-      .replace(/\u001b\[A/g, '\uE003');
-    for (const key of controls) {
-      switch (key) {
-        case '\u0003': // Ctrl-C
-        case 'q':
-        case 'Q':
-          this.quit();
-          return;
-        case 'a':
-        case 'A':
-        case '\uE000':
-          changed = this.game.move(-1) || changed;
-          break;
-        case 'd':
-        case 'D':
-        case '\uE001':
-          changed = this.game.move(1) || changed;
-          break;
-        case 's':
-        case 'S':
-        case '\uE002':
-          this.game.tick();
-          changed = true;
-          break;
-        case 'w':
-        case 'W':
-        case 'x':
-        case 'X':
-        case '\uE003':
-          changed = this.game.rotate() || changed;
-          break;
-        case 'z':
-        case 'Z':
-          changed = this.game.rotate(-1) || changed;
-          break;
-        case ' ':
-          this.game.hardDrop();
-          changed = true;
-          break;
-        case 'r':
-        case 'R':
-          if (this.game.gameOver) {
-            this.game.reset();
-            this.startGravity();
-            changed = true;
-          }
-          break;
-        default:
-          break;
-      }
+    for (const key of normalizeInput(keys)) {
+      const result = this.dispatchInput(key);
+      if (result === QUIT) return;
+      changed = result || changed;
     }
     if (changed) this.onUpdate(this.game);
+  }
+
+  dispatchInput(key) {
+    const action = INPUT_ACTIONS[key];
+    if (!action) return false;
+    if (action === QUIT) {
+      this.quit();
+      return QUIT;
+    }
+    if (action === RESTART) return this.restart();
+
+    const [method, args, alwaysChanges] = action;
+    const changed = this.game[method](...args);
+    return alwaysChanges || changed;
+  }
+
+  restart() {
+    if (!this.game.gameOver) return false;
+    this.game.reset();
+    this.startGravity();
+    return true;
   }
 }
 
