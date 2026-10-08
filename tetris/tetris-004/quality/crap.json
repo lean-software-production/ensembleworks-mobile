@@ -2,12 +2,12 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 58.29,
+  "coverage": 58.78,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
-      "crap": 9.65,
+      "crap": 9,
       "complexity": 9,
-      "coverage": 80
+      "coverage": 100
     },
     "src/game.js:TetrisGame.reset": {
       "crap": 1,
