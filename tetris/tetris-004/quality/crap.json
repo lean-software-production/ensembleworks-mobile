@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 71.39,
+  "coverage": 77.61,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -100,24 +100,24 @@
       "coverage": 100
     },
     "src/index.js:renderGame": {
-      "crap": 20,
+      "crap": 4,
       "complexity": 4,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:arrow function": {
-      "crap": 2,
+      "crap": 1,
       "complexity": 1,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:arrow function#2": {
-      "crap": 2,
+      "crap": 1,
       "complexity": 1,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:arrow function#3": {
-      "crap": 6,
+      "crap": 2,
       "complexity": 2,
-      "coverage": 0
+      "coverage": 100
     },
     "src/index.js:repaint": {
       "crap": 2,
