@@ -61,7 +61,7 @@ Every task must leave committable work. A task that only verifies records what i
 2. Install the token adapter with the authenticated transport and add an integration view showing the non-secret result of a token request.
 3. Bind the room adapter, audio session, and participant video to the real LiveKit SDK, including the camera-unavailable behavior, and install the real adapters in the production composition.
 4. Extend the simulator launch check to production mode and verify the unattended part: the build installs, launches, survives, and shows the sign-in entry point.
-5. Write the owner's acceptance checklist and update the README, verification reports, and device handoff. Rename `docs/iteration-002-handoff.md` to a name that does not carry an iteration number and fix its links.
+5. Write the owner's acceptance checklist and update the README, verification reports, and device handoff. Rename the device handoff to an iteration-neutral name and fix its links.
 
 ## Acceptance scenarios
 
@@ -108,7 +108,7 @@ Signed installation on a physical iPhone, camera capture and outgoing video, cal
 - [Vision](../docs/vision.md)
 - [Iteration 001](001-join-existing-room.md) and [iteration 002](002-upgrade-to-expo-58.md)
 - [Native Access investigation](../docs/native-access-integration.md)
-- [Device handoff](../docs/iteration-002-handoff.md)
+- [Device handoff](../docs/device-handoff.md)
 - [iOS 27 native verification](../docs/ios-27-simulator-verification.md)
 - [Existing token endpoint](https://github.com/lean-software-production/ensembleworks/blob/94b8d84df6691d3999d8e0cfa7aa37629e923c52/server/src/features/av.ts)
 - [LiveKit React Native quickstart](https://docs.livekit.io/transport/sdk-platforms/react-native/)

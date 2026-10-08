@@ -1,8 +1,9 @@
 # iOS 27 native verification
 
-This record covers the native dependency alignment, unsigned generic-device
-build, simulator launch, and the mode-selection observations made during
-iteration 002.
+This record preserves the iteration 002 native baseline and records the
+iteration 003 credential-free simulator launch check. Where the older iteration
+002 observations describe an unresolved production screen, they are historical
+and superseded by the iteration 003 production sign-in entry point below.
 
 ## Environment
 
@@ -29,8 +30,9 @@ All commands were run from `ensembleworks-mobile/` in the parent flox
 environment:
 
 ```sh
-flox activate -d .. -- bash -lc 'npx expo prebuild --clean --platform ios && cd ios && pod install'
-flox activate -d .. -- bash -lc 'xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build'
+flox activate -d .. -- npx expo prebuild --clean --platform ios
+flox activate -d .. -- pod install --project-directory=ios
+flox activate -d .. -- xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
 ```
 
 Both commands succeeded. CocoaPods installed 111 dependencies. The unsigned
@@ -101,10 +103,9 @@ backend** and the **Simulate sign-in and join** action. This confirms that the
 embedded-bundle environment selected demo mode on the native simulator.
 
 The complete simulated sign-in, display-name, `team` join, Alex/Sam teammate
-tiles, microphone toggle, camera toggle, leave, and rejoin sequence was also
-run by `npm test` in the entry-point component test `tests/demoMode.test.tsx`.
-That test keeps the demo label visible throughout the sequence and passed on 8
-October 2026 (50 application tests and 8 component tests passed). It uses test
+tiles, microphone toggle, camera toggle, leave, and rejoin sequence is covered
+by `npm test` in the entry-point component tests. The final factory run passed
+66 application tests and 18 component tests across 7 suites. It uses test
 adapters; it does not establish native camera or microphone capture.
 
 For the production composition, a separate Release simulator bundle was built
@@ -122,12 +123,11 @@ xcrun simctl install A4008516-DAA2-4267-A096-5A750182B3A8 \
 xcrun simctl launch A4008516-DAA2-4267-A096-5A750182B3A8 dev.ensembleworks.mobile
 ```
 
-The build succeeded and the launched screen showed **Production integration
-unresolved** and **Native Cloudflare sign-in remains unresolved for iteration
-002.** It showed neither the demo label nor a sign-in/join control, so no
-permission request was made and there was no UI path to a backend request.
-`tests/productionMode.test.tsx` independently asserts the same entry-point
-selection and absence of simulated join/room UI.
+This is a historical iteration 002 observation. It was superseded in iteration
+003: the current production screenshot shows **Production integration** and
+**Sign in with GitHub**, without the demo label. The factory did not enter owner
+credentials or proceed beyond this entry point. Current component tests assert
+production has no demo fallback.
 
 The factory run had no simulator touch-injection tool, so it could not tap
 through the demo sequence itself. Xcode 27 has no `Simulator.app`; the simulator
@@ -168,8 +168,10 @@ flox activate -d .. -- npm run verify:ios-27-simulator-launch
 
 Every command succeeded. `npm ci` required neither force nor legacy peer
 resolution; `npm ls` showed one deduplicated `react-native@0.88.0-rc.3` copy.
-The automated suite passed all 50 application tests and 8 component tests;
-`npm run check` passed and Expo Doctor reported 20/20 checks. The clean
+This historical re-run passed 50 application tests and 8 component tests. The
+iteration 003 final factory validation later passed 66 application tests and 18
+component tests across 7 suites; `npm run check` passed and Expo Doctor reported
+20/20 checks. The clean
 prebuild and CocoaPods install completed with 111 pods, regenerated the scene
 manifest and Expo scene delegate described above, and the unsigned generic
 `iphoneos` Release build succeeded. The launch check built, installed, and

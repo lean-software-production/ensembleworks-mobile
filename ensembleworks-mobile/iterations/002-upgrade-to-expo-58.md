@@ -96,7 +96,7 @@ Real Cloudflare sign-in, signing and physical-iPhone installation, and the phone
 ## References
 
 - [Iteration 001](001-join-existing-room.md)
-- [Device handoff written in iteration 001](../docs/iteration-002-handoff.md)
+- [Device handoff](../docs/device-handoff.md)
 - [Linux verification report](../docs/linux-verification.md)
 - [Expo SDK upgrade walkthrough](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/)
 - [Apple: transitioning to the UIKit scene-based life cycle](https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle)
