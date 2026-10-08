@@ -64,17 +64,34 @@ flox activate -d .. -- npm run verify:ios-27-simulator-launch
 ```
 
 It finds the booted simulator (or accepts its UDID in `IOS_SIMULATOR_DEVICE`),
-builds an iOS Simulator Release app with its JavaScript bundle embedded,
-installs it, and launches it with `xcrun simctl launch`. It passes
-`EXPO_PUBLIC_APP_MODE=demo` only to `xcodebuild`, so Expo embeds explicitly
-selected demo mode without changing application source or affecting concurrent
-builds. It then waits 20 seconds, rejects a slain app process, and rejects any
-new `ensembleWorksMobile` crash report.
+builds separate demo and production iOS Simulator Release apps with JavaScript
+embedded, installs them, and launches them with `xcrun simctl launch`. It
+passes the mode only to `xcodebuild`; the production build receives a public
+build-time deployment URL, never credentials. For each mode it waits 20
+seconds, rejects a slain app process or a new `ensembleWorksMobile` crash
+report, then captures the entry point under `docs/evidence/`. Set
+`SIMULATOR_LAUNCH_MODE=demo` or `production` to run one mode, or set
+`EXPO_PUBLIC_DEPLOYMENT_URL` to override the public deployment URL.
 
-On 8 October 2026 this command succeeded on the booted iPhone 18 Pro, iOS 27.0
-runtime (`24A434`), with Xcode 27.0 (`27A266a`): the Release simulator build
-installed, `simctl launch` returned PID `47125`, and the process was still
-running after 20 seconds with no new crash report.
+## Iteration 003 launch evidence — 8 October 2026
+
+`flox activate -d .. -- npm run verify:ios-27-simulator-launch` succeeded on
+the booted iPhone 18 Pro iOS 27.0 simulator (`24A434`) using Xcode 27.0
+(`27A266a`). Both embedded Release builds installed and launched; each process
+was still running after 20 seconds and no new app crash report was found.
+
+- Demo evidence: [entry-point screenshot](evidence/ios-27-simulator-demo-launch.png)
+  shows **TEST ADAPTER MODE — no real media or backend** and the simulated
+  sign-in action.
+- Production evidence:
+  [entry-point screenshot](evidence/ios-27-simulator-production-launch.png)
+  shows **Production integration** and **Sign in with GitHub**, without the demo
+  label. It is the pre-authentication entry point only; no owner credential was
+  entered and the image contains no cookie, token, or authenticated header.
+
+This validates unattended build, install, launch, 20-second survival, crash
+checking, and the two expected entry points. It does not validate Access login,
+token retrieval, LiveKit signaling, media, or any owner acceptance scenario.
 
 ## Mode observations
 

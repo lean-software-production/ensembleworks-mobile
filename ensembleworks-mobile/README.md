@@ -87,12 +87,16 @@ Boot an iOS 27 simulator, then run this unattended check from this directory:
 flox activate -d .. -- npm run verify:ios-27-simulator-launch
 ```
 
-It creates a Release simulator build with its JavaScript bundle embedded and
-`EXPO_PUBLIC_APP_MODE=demo` supplied only to that build, installs it, launches it
-with `xcrun simctl launch`, waits 20 seconds, and fails if the process dies or a
-new `ensembleWorksMobile` crash report appears. Set `IOS_SIMULATOR_DEVICE` to a
-booted simulator UDID if more than one is available. It is a launch check, not
-native camera, audio, authentication, signaling, or physical-device coverage.
+It creates separate demo and production Release simulator builds with their
+JavaScript bundles embedded, installs and launches each with `xcrun simctl
+launch`, waits 20 seconds, rejects a dead process or new `ensembleWorksMobile`
+crash report, and saves entry-point screenshots under `docs/evidence/`. The
+production build receives the public deployment URL as build configuration; it
+does not contain credentials. Set `IOS_SIMULATOR_DEVICE` to a booted simulator
+UDID if more than one is available, `SIMULATOR_LAUNCH_MODE=demo` or `production`
+to check one mode, and `EXPO_PUBLIC_DEPLOYMENT_URL` to override the deployment.
+It is a launch check, not native camera, audio, completed authentication,
+signaling, or physical-device coverage.
 See [the native verification record](docs/ios-27-simulator-verification.md) for
 the exact observed result and generated scene-lifecycle evidence.
 
