@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { TerminalController } = require('../src/index');
+const { TerminalController, normalizeInput, inputAction } = require('../src/index');
 
 function inputGame({ gameOver = false, move = () => true, rotate = () => true } = {}) {
   return {
@@ -18,6 +18,26 @@ function inputGame({ gameOver = false, move = () => true, rotate = () => true } 
 function controllerFor(game, onUpdate = () => {}) {
   return new TerminalController({ game, onUpdate });
 }
+
+test('input helpers normalize arrows and map every supported control', () => {
+  assert.equal(normalizeInput('a\u001b[Db\u001b[C\u001b[B\u001b[A'), 'a\uE000b\uE001\uE002\uE003');
+
+  const actions = [
+    [['\u0003', 'q', 'Q'], 'quit'],
+    [['a', 'A', '\uE000'], 'left'],
+    [['d', 'D', '\uE001'], 'right'],
+    [['s', 'S', '\uE002'], 'softDrop'],
+    [['w', 'W', 'x', 'X', '\uE003'], 'rotateRight'],
+    [['z', 'Z'], 'rotateLeft'],
+    [[' '], 'hardDrop'],
+    [['r', 'R'], 'restart'],
+  ];
+
+  for (const [keys, action] of actions) {
+    for (const key of keys) assert.equal(inputAction(key), action, key);
+  }
+  assert.equal(inputAction('?'), undefined);
+});
 
 test('handleInput recognizes every movement, rotation, drop, and arrow alias', () => {
   const cases = [

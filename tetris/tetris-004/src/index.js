@@ -4,6 +4,30 @@ const { TetrisGame } = require('./game');
 
 const EMPTY_CELL = ' ';
 
+const INPUT_ACTIONS = Object.freeze({
+  '\u0003': 'quit',
+  q: 'quit', Q: 'quit',
+  a: 'left', A: 'left', '\uE000': 'left',
+  d: 'right', D: 'right', '\uE001': 'right',
+  s: 'softDrop', S: 'softDrop', '\uE002': 'softDrop',
+  w: 'rotateRight', W: 'rotateRight', x: 'rotateRight', X: 'rotateRight', '\uE003': 'rotateRight',
+  z: 'rotateLeft', Z: 'rotateLeft',
+  ' ': 'hardDrop',
+  r: 'restart', R: 'restart',
+});
+
+function normalizeInput(keys) {
+  return keys
+    .replace(/\u001b\[D/g, '\uE000')
+    .replace(/\u001b\[C/g, '\uE001')
+    .replace(/\u001b\[B/g, '\uE002')
+    .replace(/\u001b\[A/g, '\uE003');
+}
+
+function inputAction(key) {
+  return INPUT_ACTIONS[key];
+}
+
 /**
  * Build the entire visible game in exactly 24 rows: a 20-row board inside
  * borders, followed by a status row and a controls row.  Keeping this a pure
@@ -114,64 +138,43 @@ class TerminalController {
     this.onQuit();
   }
 
+  performInputAction(action) {
+    switch (action) {
+      case 'left':
+        return this.game.move(-1);
+      case 'right':
+        return this.game.move(1);
+      case 'softDrop':
+        this.game.tick();
+        return true;
+      case 'rotateRight':
+        return this.game.rotate();
+      case 'rotateLeft':
+        return this.game.rotate(-1);
+      case 'hardDrop':
+        this.game.hardDrop();
+        return true;
+      case 'restart':
+        if (!this.game.gameOver) return false;
+        this.game.reset();
+        this.startGravity();
+        return true;
+      default:
+        return false;
+    }
+  }
+
   handleInput(keys) {
     let changed = false;
     // Convert multi-byte arrow escape sequences before handling individual
     // characters so the final A/B/C/D is not mistaken for a letter control.
-    const controls = keys
-      .replace(/\u001b\[D/g, '\uE000')
-      .replace(/\u001b\[C/g, '\uE001')
-      .replace(/\u001b\[B/g, '\uE002')
-      .replace(/\u001b\[A/g, '\uE003');
-    for (const key of controls) {
-      switch (key) {
-        case '\u0003': // Ctrl-C
-        case 'q':
-        case 'Q':
-          this.quit();
-          return;
-        case 'a':
-        case 'A':
-        case '\uE000':
-          changed = this.game.move(-1) || changed;
-          break;
-        case 'd':
-        case 'D':
-        case '\uE001':
-          changed = this.game.move(1) || changed;
-          break;
-        case 's':
-        case 'S':
-        case '\uE002':
-          this.game.tick();
-          changed = true;
-          break;
-        case 'w':
-        case 'W':
-        case 'x':
-        case 'X':
-        case '\uE003':
-          changed = this.game.rotate() || changed;
-          break;
-        case 'z':
-        case 'Z':
-          changed = this.game.rotate(-1) || changed;
-          break;
-        case ' ':
-          this.game.hardDrop();
-          changed = true;
-          break;
-        case 'r':
-        case 'R':
-          if (this.game.gameOver) {
-            this.game.reset();
-            this.startGravity();
-            changed = true;
-          }
-          break;
-        default:
-          break;
+    for (const key of normalizeInput(keys)) {
+      const action = inputAction(key);
+      if (action === 'quit') {
+        this.quit();
+        return;
       }
+      changed = this.performInputAction(action) || changed;
     }
     if (changed) this.onUpdate(this.game);
   }
@@ -208,4 +211,12 @@ if (require.main === module) {
   }
 }
 
-module.exports = { TetrisGame, TerminalController, renderGame, repaint, startGame };
+module.exports = {
+  TetrisGame,
+  TerminalController,
+  renderGame,
+  repaint,
+  startGame,
+  normalizeInput,
+  inputAction,
+};
