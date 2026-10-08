@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { TetrisGame } = require('../src/game');
-const { TerminalController } = require('../src/index');
+const { TerminalController } = require('../src/TerminalController');
 
 test('TerminalController initializes default dependencies and inactive state', () => {
   const controller = new TerminalController();

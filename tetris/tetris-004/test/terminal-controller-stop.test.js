@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { TerminalController } = require('../src/index');
+const { TerminalController } = require('../src/TerminalController');
 
 function createInput() {
   const calls = [];
