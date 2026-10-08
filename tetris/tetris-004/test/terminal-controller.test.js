@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { TerminalController, normalizeInput, inputAction } = require('../src/index');
+const { TetrisGame, TerminalController, normalizeInput, inputAction } = require('../src/index');
 
 function inputGame({ gameOver = false, move = () => true, rotate = () => true } = {}) {
   return {
@@ -18,6 +18,41 @@ function inputGame({ gameOver = false, move = () => true, rotate = () => true } 
 function controllerFor(game, onUpdate = () => {}) {
   return new TerminalController({ game, onUpdate });
 }
+
+test('TerminalController constructor supplies terminal and lifecycle defaults', () => {
+  const controller = new TerminalController();
+
+  assert.ok(controller.game instanceof TetrisGame);
+  assert.equal(controller.input, process.stdin);
+  assert.equal(controller.output, process.stdout);
+  assert.equal(controller.tickMs, 700);
+  assert.equal(controller.running, false);
+  assert.equal(controller.timer, null);
+  assert.equal(controller.changedRawMode, false);
+  assert.equal(typeof controller.onUpdate, 'function');
+  assert.equal(typeof controller.onQuit, 'function');
+});
+
+test('TerminalController constructor retains injected options and binds input handling', () => {
+  const game = inputGame();
+  const input = {};
+  const output = {};
+  const updates = [];
+  const onQuit = () => {};
+  const controller = new TerminalController({
+    game, input, output, tickMs: 250, onUpdate: (updated) => updates.push(updated), onQuit,
+  });
+  const handleInput = controller.handleInput;
+
+  handleInput('a');
+
+  assert.equal(controller.game, game);
+  assert.equal(controller.input, input);
+  assert.equal(controller.output, output);
+  assert.equal(controller.tickMs, 250);
+  assert.equal(controller.onQuit, onQuit);
+  assert.deepEqual(updates, [game]);
+});
 
 test('input helpers normalize arrows and map every supported control', () => {
   assert.equal(normalizeInput('a\u001b[Db\u001b[C\u001b[B\u001b[A'), 'a\uE000b\uE001\uE002\uE003');
