@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { TerminalController } = require('../src/index');
+const { TerminalController } = require('../src/TerminalController');
 
 test('quit stops terminal resources before notifying its owner', () => {
   const calls = [];
