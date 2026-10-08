@@ -50,6 +50,7 @@ function step() {
 }
 
 function handleKey(key) {
+  key = key.toString();
   if (key === '\u0003' || key.toLowerCase() === 'q') return quit();
   if (gameOver) return;
   if (key === '\u001b[D') movePiece(board, piece, -1, 0);
