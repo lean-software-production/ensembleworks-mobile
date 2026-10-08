@@ -39,7 +39,7 @@ The decision fields requested below are true when the work satisfies the lens, f
 }
 
 export function resultPrompt(fields: string[]): string {
-  return `Finish with a result on its own line as JSON describing what you did.${fields.length
+  return `Finish with a result: a single line of JSON describing what you did. That last line must be the JSON object alone, with no label such as "result:" before it and no code fence around it.${fields.length
     ? ` Include the boolean ${fields.length === 1 ? "field" : "fields"} ${fields.map((field) => JSON.stringify(field)).join(", ")}; these decide which assembly-line edge runs next.`
     : ""}`;
 }
