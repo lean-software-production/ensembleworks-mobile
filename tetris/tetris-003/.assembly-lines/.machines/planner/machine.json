@@ -1,3 +1,4 @@
 {
-  "role": "planner"
+  "role": "planner",
+  "harness": ".assembly-lines/.machines/planner/harness"
 }

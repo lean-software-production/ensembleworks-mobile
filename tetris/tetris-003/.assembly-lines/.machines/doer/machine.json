@@ -1,3 +1,4 @@
 {
-  "role": "doer"
+  "role": "doer",
+  "harness": ".assembly-lines/.machines/doer/harness"
 }
