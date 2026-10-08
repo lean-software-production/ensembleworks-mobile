@@ -1,0 +1,6 @@
+#!/bin/sh
+# Not an agent: runs the tests with coverage, scores each function with the
+# CRAP metric and answers with a result, as any machine does.
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+[ -d "$here/node_modules" ] || (cd "$here" && npm ci --silent >&2)
+exec node "$here/crap.mjs" "$@"

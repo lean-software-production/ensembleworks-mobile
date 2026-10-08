@@ -1,0 +1,5 @@
+{
+  "role": "validator",
+  "harness": ".assembly-lines/.machines/validator/harness",
+  "lensFile": "lens.md"
+}

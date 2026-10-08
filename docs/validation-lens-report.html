@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validation lens impact — Tetris 001 → 002</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5e6873;
+      --paper: #f5f1e8;
+      --card: #fffdf8;
+      --line: #d9d1c2;
+      --navy: #203a5f;
+      --blue: #4776a8;
+      --coral: #d7634f;
+      --green: #24755d;
+      --gold: #d49a35;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #dad4c9;
+      font: 13px/1.35 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .page {
+      width: min(1180px, calc(100vw - 32px));
+      min-height: 780px;
+      margin: 16px auto;
+      padding: 28px 32px 24px;
+      background:
+        radial-gradient(circle at 100% 0, rgba(71,118,168,.10), transparent 30%),
+        var(--paper);
+      box-shadow: 0 16px 50px rgba(23,32,42,.18);
+      overflow: hidden;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      padding-bottom: 13px;
+      border-bottom: 3px solid var(--navy);
+    }
+
+    .eyebrow {
+      color: var(--coral);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 3px 0 0;
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(27px, 3.2vw, 42px);
+      line-height: 1.02;
+      letter-spacing: -.025em;
+    }
+
+    .verdict {
+      max-width: 280px;
+      padding: 10px 14px;
+      color: #fff;
+      background: var(--green);
+      border-radius: 4px;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .hypothesis {
+      display: grid;
+      grid-template-columns: 145px 1fr;
+      gap: 18px;
+      align-items: center;
+      margin: 15px 0 13px;
+      padding: 12px 16px;
+      background: var(--navy);
+      color: white;
+      border-radius: 5px;
+    }
+
+    .hypothesis h2,
+    .section-title {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .hypothesis p { margin: 0; font-size: 14px; }
+    .hypothesis strong { color: #f7c96f; }
+
+    .architecture {
+      padding: 12px 15px 10px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .architecture-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .architecture-head span { color: var(--muted); font-size: 11px; }
+    svg { display: block; width: 100%; height: 196px; }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 1.42fr .9fr;
+      gap: 13px;
+      margin-top: 13px;
+    }
+
+    .evidence,
+    .side-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    .evidence { padding: 13px 15px 11px; }
+    .evidence .section-title,
+    .side-card .section-title { color: var(--navy); }
+
+    .finding {
+      display: grid;
+      grid-template-columns: 26px 132px 1fr;
+      gap: 9px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e8e2d7;
+      align-items: start;
+    }
+
+    .finding:last-child { border-bottom: 0; padding-bottom: 0; }
+    .number {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      color: white;
+      background: var(--blue);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .finding h3 { margin: 1px 0 0; font-size: 12px; color: var(--navy); }
+    .finding p { margin: 0; color: #39434d; }
+    code { color: #8a3c31; font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    a { color: #315f91; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+    .right-column { display: grid; gap: 10px; }
+    .side-card { padding: 12px 14px; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .metric {
+      padding: 7px 8px;
+      background: #f0ede5;
+      border-left: 3px solid var(--blue);
+    }
+    .metric b { display: block; color: var(--navy); font-size: 17px; line-height: 1; }
+    .metric span { color: var(--muted); font-size: 10px; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 16px 1fr 16px 1fr;
+      align-items: center;
+      gap: 3px;
+      margin-top: 9px;
+    }
+
+    .flow-box {
+      min-height: 39px;
+      padding: 6px 4px;
+      border: 1px solid #cbd5df;
+      background: #edf3f8;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .flow-box small { display: block; color: var(--muted); font-weight: 500; }
+    .arrow { color: var(--coral); text-align: center; font-weight: 900; }
+
+    .caveat {
+      border-left: 4px solid var(--gold);
+      background: #fff8e9;
+    }
+    .caveat p { margin: 7px 0 0; }
+
+    .conclusion {
+      color: white;
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+    .conclusion .section-title { color: #f7c96f; }
+    .conclusion p { margin: 7px 0 0; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 11px;
+      padding-top: 8px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .page { width: 100%; margin: 0; padding: 22px 18px; }
+      header, .hypothesis, .bottom { grid-template-columns: 1fr; }
+      .verdict { max-width: none; }
+      svg { height: auto; }
+    }
+
+    @media print {
+      @page { size: A4 landscape; margin: 7mm; }
+      body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .page { width: 100%; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+      h1 { font-size: 31px; }
+      svg { height: 175px; }
+      .bottom { gap: 10px; margin-top: 10px; }
+      .finding { padding: 6px 0; }
+      footer { margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <div class="eyebrow">Code-reading report · 03 October 2026</div>
+        <h1>Did the validation lens reshape Tetris?</h1>
+      </div>
+      <div class="verdict">Verdict: strongly supported,<br>with one coordination hotspot</div>
+    </header>
+
+    <section class="hypothesis" aria-labelledby="hypothesis-title">
+      <h2 id="hypothesis-title">Hypothesis<br>before reading</h2>
+      <p>If the responsibility-driven lens influenced 002, it should replace 001’s central, state-exposing game object with <strong>cohesive collaborators</strong>, exchange <strong>intent-revealing messages</strong>, and create <strong>test seams</strong> around terminal I/O and time—not merely add classes.</p>
+    </section>
+
+    <section class="architecture" aria-labelledby="architecture-title">
+      <div class="architecture-head">
+        <h2 class="section-title" id="architecture-title">Diagram 1 · Responsibility map</h2>
+        <span>Arrows show who calls or reads whom</span>
+      </div>
+      <svg viewBox="0 0 1080 205" role="img" aria-label="Comparison of the central Tetris 001 design with the collaborating objects in Tetris 002">
+        <defs>
+          <marker id="arrow001" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#d7634f"/></marker>
+          <marker id="arrow002" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#24755d"/></marker>
+          <style>
+            .label{font:700 12px Inter,system-ui,sans-serif;fill:#203a5f}.small{font:10px Inter,system-ui,sans-serif;fill:#5e6873}.white{fill:white}.box1{fill:#fff2ee;stroke:#d7634f;stroke-width:1.5}.box2{fill:#edf6f2;stroke:#24755d;stroke-width:1.5}.neutral{fill:#edf3f8;stroke:#4776a8;stroke-width:1.2}.dash{fill:none;stroke:#aaa194;stroke-dasharray:4 4}.a1{fill:none;stroke:#d7634f;stroke-width:1.5;marker-end:url(#arrow001)}.a2{fill:none;stroke:#24755d;stroke-width:1.5;marker-end:url(#arrow002)}
+          </style>
+        </defs>
+
+        <text x="12" y="18" class="label">001 · central gravity well</text>
+        <rect x="12" y="29" rx="5" ry="5" width="500" height="162" class="dash"/>
+        <rect x="184" y="47" rx="6" ry="6" width="158" height="124" class="box1"/>
+        <text x="263" y="67" text-anchor="middle" class="label">TetrisGame</text>
+        <text x="201" y="90" class="small">board rows + active piece</text>
+        <text x="201" y="107" class="small">shape rotation + 7-bag</text>
+        <text x="201" y="124" class="small">collision + line clearing</text>
+        <text x="201" y="141" class="small">score + level + game over</text>
+        <text x="201" y="158" class="small">movement + locking</text>
+        <rect x="30" y="57" rx="5" width="103" height="44" class="neutral"/>
+        <text x="81" y="75" text-anchor="middle" class="label">index.js</text>
+        <text x="81" y="90" text-anchor="middle" class="small">keys + timer</text>
+        <path d="M133 79 C152 79,160 79,181 79" class="a1"/>
+        <rect x="29" y="126" rx="5" width="105" height="43" class="neutral"/>
+        <text x="81" y="144" text-anchor="middle" class="label">renderer</text>
+        <text x="81" y="159" text-anchor="middle" class="small">reads internals</text>
+        <path d="M181 145 C160 145,154 147,137 147" class="a1"/>
+        <text x="365" y="81" class="small">one object owns most</text>
+        <text x="365" y="96" class="small">domain knowledge;</text>
+        <text x="365" y="111" class="small">clients inspect state</text>
+
+        <line x1="540" y1="29" x2="540" y2="191" stroke="#d9d1c2"/>
+
+        <text x="566" y="18" class="label">002 · composed collaborators</text>
+        <rect x="566" y="29" rx="5" ry="5" width="502" height="162" class="dash"/>
+        <rect x="755" y="88" rx="6" width="118" height="51" class="box2"/>
+        <text x="814" y="110" text-anchor="middle" class="label">Game</text>
+        <text x="814" y="126" text-anchor="middle" class="small">coordinates</text>
+        <rect x="580" y="48" rx="5" width="116" height="43" class="neutral"/>
+        <text x="638" y="66" text-anchor="middle" class="label">TerminalInput</text>
+        <text x="638" y="81" text-anchor="middle" class="small">emits actions</text>
+        <path d="M696 70 C721 72,730 91,752 103" class="a2"/>
+        <rect x="580" y="136" rx="5" width="116" height="42" class="neutral"/>
+        <text x="638" y="154" text-anchor="middle" class="label">Renderer</text>
+        <text x="638" y="169" text-anchor="middle" class="small">accepts snapshot</text>
+        <path d="M752 128 C727 139,719 154,699 157" class="a2"/>
+        <rect x="934" y="42" rx="5" width="116" height="43" class="box2"/>
+        <text x="992" y="61" text-anchor="middle" class="label">PieceSource</text>
+        <text x="992" y="76" text-anchor="middle" class="small">owns 7-bag</text>
+        <path d="M876 102 C901 87,910 74,931 66" class="a2"/>
+        <rect x="934" y="94" rx="5" width="116" height="42" class="box2"/>
+        <text x="992" y="112" text-anchor="middle" class="label">Piece</text>
+        <text x="992" y="127" text-anchor="middle" class="small">moves + rotates</text>
+        <path d="M876 114 L931 114" class="a2"/>
+        <rect x="934" y="145" rx="5" width="116" height="34" class="box2"/>
+        <text x="992" y="166" text-anchor="middle" class="label">Board</text>
+        <path d="M874 129 C902 142,910 154,931 159" class="a2"/>
+        <rect x="754" y="42" rx="4" width="120" height="27" fill="#203a5f"/>
+        <text x="814" y="60" text-anchor="middle" class="small white">index composes</text>
+        <path d="M814 70 L814 85" class="a2"/>
+      </svg>
+    </section>
+
+    <section class="bottom">
+      <div class="evidence" aria-labelledby="evidence-title">
+        <h2 class="section-title" id="evidence-title">Evidence from the code</h2>
+
+        <article class="finding">
+          <span class="number">1</span>
+          <h3>Knowledge moved to its owner</h3>
+          <p>001’s <a href="./tetris-001/src/game.js#L42"><code>TetrisGame</code></a> owns board storage, tetromino definitions, bag selection, collision, clearing and scoring. In 002, <a href="./tetris-002/src/board.js#L14"><code>Board</code></a> answers placement and clears lines; immutable <a href="./tetris-002/src/pieces.js#L27"><code>Piece</code></a> objects move/rotate; <a href="./tetris-002/src/pieces.js#L68"><code>PieceSource</code></a> owns the bag.</p>
+        </article>
+
+        <article class="finding">
+          <span class="number">2</span>
+          <h3>State inspection became messages</h3>
+          <p>The 001 <a href="./tetris-001/src/renderer.js#L7">renderer</a> reads the game’s board, dimensions, score, lines, level and game-over flag. In 002, <a href="./tetris-002/src/game.js#L121"><code>displaySnapshot()</code></a> creates a deliberate read model and <a href="./tetris-002/src/renderer.js#L42"><code>render(snapshot)</code></a> knows nothing about <code>Game</code>.</p>
+        </article>
+
+        <article class="finding">
+          <span class="number">3</span>
+          <h3>Collaborators became replaceable</h3>
+          <p>002 injects board, piece source, input, renderer, scheduler and cancel function into <a href="./tetris-002/src/game.js#L6"><code>Game</code></a>. Its <a href="./tetris-002/test/game.test.js#L23">test harness</a> substitutes all external effects. By contrast, 001’s tests directly overwrite <a href="./tetris-001/test/game.test.js#L57">board and game state</a>, while startup closes over real timers and process signals.</p>
+        </article>
+
+        <article class="finding">
+          <span class="number">4</span>
+          <h3>Messages express intent</h3>
+          <p>002 translates byte sequences once, in <a href="./tetris-002/src/input.js#L56"><code>TerminalInput</code></a>, then tells the game <code>left</code>, <code>rotate</code> or <code>drop</code>. The 001 entry point combines raw-key parsing, command dispatch, gravity, drawing and shutdown in one 113-line function.</p>
+        </article>
+      </div>
+
+      <div class="right-column">
+        <aside class="side-card" aria-labelledby="metrics-title">
+          <h2 class="section-title" id="metrics-title">Corroborating signals</h2>
+          <div class="metrics">
+            <div class="metric"><b>132 → 27</b><span>entry-point lines</span></div>
+            <div class="metric"><b>3 → 6</b><span>source modules</span></div>
+            <div class="metric"><b>1 → 4</b><span>test modules</span></div>
+            <div class="metric"><b>9 → 13</b><span>passing tests</span></div>
+          </div>
+        </aside>
+
+        <aside class="side-card" aria-labelledby="flow-title">
+          <h2 class="section-title" id="flow-title">Diagram 2 · Narrow protocol</h2>
+          <div class="flow" role="img" aria-label="Terminal bytes become semantic actions, which the game turns into display snapshots for the renderer">
+            <div class="flow-box">TerminalInput<small>raw bytes</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-box">Game<small>semantic action</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-box">Renderer<small>snapshot only</small></div>
+          </div>
+        </aside>
+
+        <aside class="side-card caveat" aria-labelledby="caveat-title">
+          <h2 class="section-title" id="caveat-title">Counter-evidence / remaining cost</h2>
+          <p><a href="./tetris-002/src/game.js#L136"><code>Game.handleAction()</code></a> still switches on action strings, and <code>Game</code> owns timing, scoring, lifecycle and dispatch. Also, 002 grows from 418 to 499 source lines (+19%). The lens produced clearer boundaries, not less code or full polymorphism.</p>
+        </aside>
+
+        <aside class="side-card conclusion" aria-labelledby="conclusion-title">
+          <h2 class="section-title" id="conclusion-title">Conclusion</h2>
+          <p>The important difference is not “more objects.” 002 gives each volatile concern a home and makes collaboration observable and substitutable. That matches the lens closely; the remaining action dispatcher is small enough that extracting a command hierarchy now would be speculative.</p>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <span><strong>Method:</strong> hypothesis from <a href="../factory/validation-lens.md">validation-lens.md</a>, then static comparison under the same Tetris seed.</span>
+      <span><strong>Verification:</strong> both suites pass — 001: 9/9 · 002: 13/13.</span>
+    </footer>
+  </main>
+</body>
+</html>

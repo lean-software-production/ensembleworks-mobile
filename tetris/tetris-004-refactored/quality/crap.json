@@ -1,0 +1,198 @@
+{
+  "limit": 30,
+  "minCoverage": 80,
+  "tests": true,
+  "coverage": 98.31,
+  "functions": {
+    "src/TerminalController.js:normalizeInput": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.constructor": {
+      "crap": 8,
+      "complexity": 8,
+      "coverage": 100
+    },
+    "src/TerminalController.js:arrow function": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TerminalController.js:arrow function#2": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.start": {
+      "crap": 4,
+      "complexity": 4,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.startGravity": {
+      "crap": 3,
+      "complexity": 3,
+      "coverage": 100
+    },
+    "src/TerminalController.js:arrow function#3": {
+      "crap": 2,
+      "complexity": 2,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.stop": {
+      "crap": 4,
+      "complexity": 4,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.quit": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.handleInput": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.dispatchInput": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/TerminalController.js:TerminalController.restart": {
+      "crap": 2,
+      "complexity": 2,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.constructor": {
+      "crap": 9,
+      "complexity": 9,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.reset": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:arrow function": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.cells": {
+      "crap": 3,
+      "complexity": 3,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:arrow function#2": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.visibleCells": {
+      "crap": 9,
+      "complexity": 9,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.collides": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:arrow function#3": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.spawn": {
+      "crap": 4,
+      "complexity": 4,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.nextType": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.move": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.rotate": {
+      "crap": 6,
+      "complexity": 6,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.tick": {
+      "crap": 3,
+      "complexity": 3,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.hardDrop": {
+      "crap": 4,
+      "complexity": 4,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.lock": {
+      "crap": 6,
+      "complexity": 6,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:TetrisGame.clearLines": {
+      "crap": 2,
+      "complexity": 2,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:arrow function#4": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/TetrisGame.js:arrow function#5": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:renderGame": {
+      "crap": 4,
+      "complexity": 4,
+      "coverage": 100
+    },
+    "src/index.js:arrow function": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:arrow function#2": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:arrow function#3": {
+      "crap": 2,
+      "complexity": 2,
+      "coverage": 100
+    },
+    "src/index.js:repaint": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:startGame": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:arrow function#4": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
+    "src/index.js:onUpdate": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    }
+  }
+}
