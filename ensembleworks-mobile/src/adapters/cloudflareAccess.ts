@@ -129,6 +129,12 @@ export class CloudflareAccessAuthentication implements AuthenticationPort {
     });
   }
 
+  // Token requests call this after Access redirects or returns its login HTML.
+  // It clears only the local confirmation marker; native cookies remain opaque.
+  expireSession(): Promise<void> {
+    return this.transition(async () => { await this.expire(); });
+  }
+
   subscribe(listener: (session: Session | null) => void): Unsubscribe {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);

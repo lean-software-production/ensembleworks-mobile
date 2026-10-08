@@ -36,6 +36,24 @@ for (const key of ['redirect', 'followedRedirect', 'loginHtml'] as const) {
     await assert.rejects(adapter.retrieve(request), hasCode('authentication-required'));
   });
 }
+test('redirects and login HTML clear the native session marker through the authenticated transport', async () => {
+  for (const fixture of [tokenResponses.redirect, tokenResponses.followedRedirect, tokenResponses.loginHtml]) {
+    let expired = 0;
+    const adapter = new HttpTokenAdapter('https://canvas.example', { get: async () => response(fixture) }, async () => { expired++; });
+    await assert.rejects(adapter.retrieve(request), hasCode('authentication-required'));
+    assert.equal(expired, 1);
+  }
+});
+test('expiry cleanup failure remains an explicit sign-in-required outcome', async () => {
+  let clears = 0;
+  const adapter = new HttpTokenAdapter('https://canvas.example', { get: async () => response(tokenResponses.redirect) }, async () => {
+    clears++;
+    throw new AdapterError('authentication-required', 'Unable to clear the expired session. Please sign in again.');
+  });
+  await assert.rejects(adapter.retrieve(request), error =>
+    hasCode('authentication-required')(error) && String(error).includes('Unable to clear the expired session'));
+  assert.equal(clears, 1);
+});
 for (const status of [401, 403]) {
   test(`HTTP ${status} requires sign-in`, async () => {
     const adapter = new HttpTokenAdapter('https://canvas.example', { get: async () => response({ status, body: '{}' }) });

@@ -32,6 +32,24 @@ test('an expired persisted session returns the sign-in view to interactive sign-
   expect(screen.queryByText('Authenticated native session restored. Room setup is not installed yet.')).toBeNull();
 });
 
+test('token expiry invalidates restoration and presents sign-in without another native check', async () => {
+  let resolveCurrent!: (session: { kind: 'authenticated'; id: string }) => void;
+  const onAuthenticated = jest.fn();
+  const authentication = {
+    deployment,
+    current: jest.fn(() => new Promise(resolve => { resolveCurrent = resolve; })),
+  } as unknown as CloudflareAccessAuthentication;
+
+  const view = render(<AccessSignIn authentication={authentication} onAuthenticated={onAuthenticated} />);
+  view.rerender(<AccessSignIn authentication={authentication} onAuthenticated={onAuthenticated} signInRequired />);
+  await act(async () => resolveCurrent({ kind: 'authenticated', id: 'access-session:canvas.example.test' }));
+
+  expect(authentication.current).toHaveBeenCalledTimes(1);
+  expect(onAuthenticated).not.toHaveBeenCalled();
+  expect(screen.getByText('Session expired. Sign in again to check the room.')).toBeTruthy();
+  expect(screen.getByText('Sign in with GitHub')).toBeTruthy();
+});
+
 test('an Access redirect leaves the WebView open until a later native confirmation completes sign-in', async () => {
   let resolveSignIn!: (session: { kind: 'authenticated'; id: string }) => void;
   let confirmations = 0;

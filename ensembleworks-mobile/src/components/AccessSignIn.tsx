@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { CloudflareAccessAuthentication } from '../adapters/cloudflareAccess';
+import type { Session } from '../application/ports';
 
-export function AccessSignIn({ authentication }: { authentication: CloudflareAccessAuthentication }) {
+export function AccessSignIn({ authentication, onAuthenticated, signInRequired = false }: {
+  authentication: CloudflareAccessAuthentication;
+  onAuthenticated?: (session: Session) => void;
+  // Token expiry is terminal for the displayed session. This is deliberately
+  // separate from initialization, which is the only time current() is called.
+  signInRequired?: boolean;
+}) {
   const [showWebView, setShowWebView] = useState(false);
   const [restored, setRestored] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -11,11 +18,21 @@ export function AccessSignIn({ authentication }: { authentication: CloudflareAcc
   // presentation; verification ownership and serialization live in the adapter.
   const viewAttempt = useRef(0);
   useEffect(() => {
+    if (!signInRequired) return;
+    // Invalidate an initial restoration check as well as WebView callbacks.
+    ++viewAttempt.current;
+    setRestored(false);
+    setShowWebView(false);
+    setMessage('Session expired. Sign in again to check the room.');
+  }, [signInRequired]);
+  useEffect(() => {
+    if (signInRequired) return;
     const attempt = ++viewAttempt.current;
     void authentication.current().then(
       session => {
         if (viewAttempt.current === attempt && session) {
           setRestored(true);
+          onAuthenticated?.(session);
           setMessage('Authenticated native session restored. Room setup is not installed yet.');
         }
       },
@@ -31,9 +48,10 @@ export function AccessSignIn({ authentication }: { authentication: CloudflareAcc
     setMessage(null);
     setShowWebView(true);
     void authentication.signIn().then(
-      () => {
+      session => {
         if (viewAttempt.current === attempt) {
           setShowWebView(false);
+          onAuthenticated?.(session);
           setMessage('Signed in with the native session. Room setup is not installed yet.');
         }
       },
