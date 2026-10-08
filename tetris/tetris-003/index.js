@@ -27,8 +27,8 @@ function draw() {
     for (const cell of row) output += cell ? `\x1b[${COLORS[cell]}m██\x1b[0m` : '  ';
     output += '│\n';
   }
-  output += `└${'──'.repeat(WIDTH)}┘\nScore: ${score}  Lines: ${lines}\n← → move  ↓ drop  ↑ rotate  Z reverse  Q quit`;
-  if (gameOver) output += '\nGAME OVER — press Q to quit';
+  output += `└${'──'.repeat(WIDTH)}┘\nScore: ${score}  Lines: ${lines}\n`;
+  output += gameOver ? 'GAME OVER — press Q to quit' : '← → move  ↓ drop  ↑ rotate  Z reverse  Q quit';
   process.stdout.write(output + '\x1b[J');
 }
 
