@@ -11,5 +11,8 @@ automated tests run with:
 
 Use Node's built-in test runner; add no dependencies for testing.
 
+Move each class into its own source file, named after the class. Update imports
+and exports, preserve existing behavior, and keep tests passing.
+
 The game still starts with `npm start` and keeps its complete display within 24
 terminal rows.
