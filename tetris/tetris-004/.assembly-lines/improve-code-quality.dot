@@ -1,0 +1,10 @@
+digraph improve_code_quality {
+  start -> quality_planner
+  quality_planner -> refactorer   [label="not complete"]
+  quality_planner -> finish       [label="complete"]
+  refactorer -> metrics
+  metrics -> refactorer           [label="not satisfied"]
+  metrics -> validator            [label="satisfied"]
+  validator -> refactorer         [label="not satisfied"]
+  validator -> quality_planner    [label="satisfied"]
+}
