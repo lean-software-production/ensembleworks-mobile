@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 84.33,
+  "coverage": 86.07,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -70,9 +70,9 @@
       "coverage": 17
     },
     "src/game.js:TetrisGame.hardDrop": {
-      "crap": 14.72,
+      "crap": 4,
       "complexity": 4,
-      "coverage": 13
+      "coverage": 100
     },
     "src/game.js:TetrisGame.lock": {
       "crap": 6,
