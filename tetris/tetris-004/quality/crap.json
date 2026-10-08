@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 88.56,
+  "coverage": 90.8,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -45,9 +45,9 @@
       "coverage": 100
     },
     "src/game.js:TetrisGame.spawn": {
-      "crap": 4.77,
+      "crap": 4,
       "complexity": 4,
-      "coverage": 64
+      "coverage": 100
     },
     "src/game.js:TetrisGame.nextType": {
       "crap": 1,
@@ -65,9 +65,9 @@
       "coverage": 100
     },
     "src/game.js:TetrisGame.tick": {
-      "crap": 8.21,
+      "crap": 3,
       "complexity": 3,
-      "coverage": 17
+      "coverage": 100
     },
     "src/game.js:TetrisGame.hardDrop": {
       "crap": 4,
