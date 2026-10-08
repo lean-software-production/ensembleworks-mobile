@@ -1,28 +1,31 @@
 # ensembleWorks Mobile
 
-Expo/TypeScript native development scaffold for iteration 001. **Not Expo Go.**
-The explicitly selected demo renders a simulated room and call controls; default
-production mode remains unresolved and does not claim a successful call. The revised
-[iteration 001](iterations/001-join-existing-room.md) builds the application and
-call UI through ports and adapters with Linux test doubles. Iteration 002 will
-verify real Cloudflare Access, native HTTP/WebSocket signaling, and media on an
-iPhone. No credentials or LiveKit tokens belong in source.
+Expo/TypeScript native app. **Not Expo Go.** The explicitly selected demo renders
+a simulated room and call controls; the default production mode remains unresolved
+and does not claim a successful call. Iteration 002 upgrades the native shell to
+Expo SDK 58 so it launches on iOS 27; it does not add real authentication, signaling,
+or media. No credentials or LiveKit tokens belong in source.
 
 See [the native Access integration gate](docs/native-access-integration.md) for
-observed deployment redirects, native cookie-transport feasibility, the blocked
-integration decision, and physical-iPhone verification steps. The authenticated
-deployed token contract and native signaling remain unverified. See the
-[iteration 002 handoff](docs/iteration-002-handoff.md) for production adapter
-work, Mac signing/install commands, and the real phone-to-web acceptance checklist.
+observed deployment redirects and native cookie-transport feasibility. The
+[iteration 003 handoff](docs/iteration-002-handoff.md) carries forward production
+adapter work, signing/install, and the real phone-to-web acceptance checklist.
 
 ## Dependency baseline
 
-Expo SDK 54, React Native 0.81.5, React 19.1, LiveKit React Native 3.0.0,
-LiveKit WebRTC 144.2.0, LiveKit client 2.22.3, LiveKit Expo plugin 1.0.3,
-and WebRTC config plugin 13.0.0 (the SDK 54-compatible line).
-`react-dom` matches React to satisfy LiveKit's transitive components peer;
-this is not a web app. `package-lock.json` pins the resolved installation.
-Use Node 24.21.0 (`.nvmrc`) and npm 11.19.0, or the compatible Node engine range.
+Expo SDK 58 pre-release (`expo` 58.0.6), React Native 0.88.0-rc.3, React
+19.3.0, React DOM 19.3.0, Expo Crypto 58.0.5, Expo Dev Client 58.0.11,
+Expo System UI 58.0.5, Jest Expo 58.0.8, and AsyncStorage 2.2.0 are pinned
+exactly. LiveKit React Native 3.0.0, LiveKit WebRTC 144.2.0, LiveKit client
+2.22.3, LiveKit Expo plugin 1.0.3, and WebRTC config plugin 15.0.2 remain in
+use. `react-dom` matches React for LiveKit's transitive component peer; this
+is not a web app. `package-lock.json` pins the resolved installation.
+
+`package.json` has one temporary npm override: `react-native: "$react-native"`.
+It lets npm accept the React Native release candidate where dependency peer ranges
+exclude prereleases by semver rule. Remove that override and move Expo/React Native
+to stable releases when React Native 0.88 and a compatible stable Expo SDK are
+available; do not add overrides or use `--force`/`--legacy-peer-deps`.
 
 `app.json` is the native configuration source. Plugins initialize LiveKit on both
 platforms and configure WebRTC. `index.ts` installs WebRTC globals. Camera and
@@ -35,17 +38,17 @@ The starter icon is from Expo's blank TypeScript template (0BSD).
 
 ## Codespace (Linux)
 
-Run from this directory, not the factory project:
+Run from this directory, not the factory project. On the Mac, use the
+repository-root flox environment; it pins Node 24.21.0 and CocoaPods 1.16.2 and
+leaves Apple's Xcode toolchain unshadowed:
 
 ```sh
-nvm install
-nvm use
-npm install --global npm@11.19.0
-npm ci
-npm run check
-npx expo-doctor@1.20.4
-npx expo prebuild --clean --no-install
-npx expo export --platform ios
+flox activate -d .. -- npm ci
+flox activate -d .. -- npm test
+flox activate -d .. -- npm run check
+flox activate -d .. -- npx expo-doctor
+flox activate -d .. -- npx expo prebuild --clean --no-install
+flox activate -d .. -- npx expo export --platform ios
 ```
 
 The last two commands check config-plugin generation from a clean native project
@@ -66,12 +69,34 @@ Tunnel only development code, never secrets. A Metro tunnel does not proxy the
 backend or bypass Cloudflare Access. Building and running Metro locally on the Mac
 is the more reliable first native smoke test.
 
-## Mac: generate, sign, build and install on an iPhone
+## Mac: iOS 27 build, simulator launch, and future device work
 
-Prerequisites: macOS with **Xcode 16.1 or newer**, selected Command Line Tools,
-Node/npm as above, CocoaPods 1.16.2 (e.g. `brew install cocoapods`), and a physical
-iPhone running iOS 15.1 or later. Use an Xcode version supporting your phone's
-installed iOS. Accept Xcode's license and install its iOS platform components.
+Prerequisites for the verified native build are macOS with **Xcode 27.0 (27A266a)**
+and the iOS 27.0 simulator runtime (24A434), selected Command Line Tools, and the
+repository-root flox environment (Node 24.21.0, npm 11.19.0, CocoaPods 1.16.2).
+Xcode is installed separately; flox deliberately does not provide compilers. The
+recorded native verification also notes the then-active flox shell reported Node
+26.9.0/npm 11.19.1; see [the verification record](docs/ios-27-simulator-verification.md).
+Use the currently pinned flox environment for repeatable commands.
+
+### Repeatable iOS 27 simulator launch check
+
+Boot an iOS 27 simulator, then run this unattended check from this directory:
+
+```sh
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
+
+It creates a Release simulator build with its JavaScript bundle embedded and
+`EXPO_PUBLIC_APP_MODE=demo` supplied only to that build, installs it, launches it
+with `xcrun simctl launch`, waits 20 seconds, and fails if the process dies or a
+new `ensembleWorksMobile` crash report appears. Set `IOS_SIMULATOR_DEVICE` to a
+booted simulator UDID if more than one is available. It is a launch check, not
+native camera, audio, authentication, signaling, or physical-device coverage.
+See [the native verification record](docs/ios-27-simulator-verification.md) for
+the exact observed result and generated scene-lifecycle evidence.
+
+### Future physical-device work (iteration 003)
 
 1. Fetch the factory's committed changes and enter `ensembleworks-mobile/`.
 2. Select Xcode and install the locked dependencies:
@@ -79,18 +104,15 @@ installed iOS. Accept Xcode's license and install its iOS platform components.
    ```sh
    sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
    sudo xcodebuild -license accept
-   nvm install
-   nvm use
-   npm install --global npm@11.19.0
-   npm ci
-   npm run check
-   npx expo prebuild --clean --platform ios
-   npx pod-install ios
+   flox activate -d .. -- npm ci
+   flox activate -d .. -- npm run check
+   flox activate -d .. -- npx expo prebuild --clean --platform ios
+   flox activate -d .. -- bash -lc 'cd ios && pod install'
    open ios/ensembleWorksMobile.xcworkspace
    ```
 
    `--clean` deletes generated native changes. Prebuild normally installs pods;
-   `pod-install` explicitly ensures they are installed. Always open the workspace,
+   the explicit `pod install` ensures they are installed. Always open the workspace,
    not the `.xcodeproj`.
 3. Connect/unlock the iPhone via USB, trust the Mac, and enable **Settings →
    Privacy & Security → Developer Mode** on the phone when prompted (restart if
@@ -157,7 +179,7 @@ Expo dependency compatibility.
   rejects Access redirects/login HTML, malformed responses, and network failures.
   Demo sessions are rejected **before transport invocation**. The opaque session
   ID is not sent in a query/header or treated as a credential. A real transport
-  must supply the supported Access session mechanism established in iteration 002;
+  must supply the supported Access session mechanism established in iteration 003;
   no production transport is currently installed.
 
 To select the demo composition and see its persistent **TEST ADAPTER MODE — no
@@ -182,7 +204,7 @@ These are adapter assertions, not actual audio playback or camera capture.
 `src/components/CallScreen.tsx` requires an injected video renderer. Demo uses
 `DemoParticipantVideo`; `createNativeParticipantVideo` resolves a participant ID
 into a LiveKit SDK track reference and uses `VideoTrack`, mirroring self only.
-The unresolved native room composition must supply that resolver in iteration 002;
+The unresolved native room composition must supply that resolver in iteration 003;
 no production track or signaling connection is installed by this task.
 Rebuild the native development client after installing the new AsyncStorage and
 Expo Crypto dependencies (`npm run ios` on the Mac). Fake session/token values
@@ -200,27 +222,28 @@ The fixture/boundary tests verify HTTP parsing, SDK mappings, permission/storage
 contracts and test-adapter observables, not real Cloudflare cookie sharing,
 device permissions/storage, camera capture, audio playback, or deployed compatibility. Continue the unresolved
 production authentication work using the
-[native Access investigation](docs/native-access-integration.md) in iteration 002.
+[native Access investigation](docs/native-access-integration.md) in iteration 003.
 
 ## Validation and remaining work
 
 See [Linux verification](docs/linux-verification.md) for the acceptance-to-test
 map and demo-mode instructions. This task passes 50 application/adapter tests,
 8 component tests, `npm run check`, Expo Doctor (18/18), and `npm ls --all`.
-The [iteration 002 handoff](docs/iteration-002-handoff.md) documents the unresolved
-production adapters and physical-device acceptance gate. Iteration 001 requires
-Linux checks and this handoff, not device verification; real-device acceptance
-remains unverified and belongs to iteration 002.
+The [iteration 003 handoff](docs/iteration-002-handoff.md) documents the unresolved
+production adapters and physical-device acceptance gate. The iOS 27 simulator
+launch is verified, but real-device acceptance remains unverified and belongs to
+iteration 003.
 
 Earlier Codespace checks completed for this scaffold: `npm run check`, Expo Doctor
 (18/18), native prebuild without installation, and iOS Metro export. Generated
 Info.plist includes camera/microphone descriptions and Android manifest includes
 camera/record-audio permissions. These are **not** an Xcode build or a device test.
-Mac compilation, native launch, Cloudflare sign-in/session compatibility, token
-contract/room confirmation, and all phone-to-web acceptance scenarios remain
-unverified and belong to iteration 002. Scaffold checks alone do not complete
-iteration 001: its revised application/component/adapter tests and handoff must
-also pass. Linux test doubles cannot establish production compatibility.
+Xcode 27 compilation and a 20-second iOS 27 simulator launch are recorded in
+[the native verification record](docs/ios-27-simulator-verification.md). Cloudflare
+sign-in/session compatibility, token contract/room confirmation, physical-device
+installation, signaling, and real phone-to-web media remain unverified and belong
+to iteration 003. Linux test doubles and simulator demo tiles cannot establish
+production compatibility.
 
 `npm audit` reports 57 transitive findings (47 high, 10 moderate) after adding the
 Jest/Expo component-test tooling. The prior scaffold had 34 findings; dependencies

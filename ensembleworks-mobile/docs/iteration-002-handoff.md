@@ -1,173 +1,121 @@
-# Iteration 002: physical iPhone-to-web handoff
+# Iteration 003 handoff: physical iPhone-to-web call
 
-## Completion boundary
+## What iteration 002 established
 
-Iteration 001 establishes modeled application behavior through Linux application,
-component, and adapter tests, plus type/dependency checks and this handoff. It
-requires no Mac, credentials, running LiveKit server, or physical device. The
-[Linux verification map](linux-verification.md) describes those checks.
+Iteration 002 moved the native shell to Expo SDK 58 pre-release and React Native
+0.88.0-rc.3 so it adopts UIKit's scene lifecycle required by iOS 27. On 8 October
+2026, Xcode 27.0 (27A266a) built the unsigned generic-device target and an iPhone
+18 Pro iOS 27.0 simulator build. The simulator process survived the unattended
+20-second launch check and no new app crash report appeared. The generated project
+contains `UIApplicationSceneManifest` and Expo's `SceneDelegate`.
 
-Those tests do **not** establish real Cloudflare sign-in, cookie sharing, native
-HTTP/WebSocket authentication, device permissions/storage, camera capture, audio
-playback, or deployed compatibility. Native prebuild and JavaScript export are
-not an Xcode build. No real phone-to-web call has been verified.
+This is launch evidence only. The simulator demo uses test adapters and does not
+establish camera capture, audio playback, device permission behavior, Cloudflare
+Access, authenticated HTTP/WebSocket signaling, token grants, signing, installation
+on a physical iPhone, or a phone-to-web call. The simulator has no camera.
+See [iOS 27 native verification](ios-27-simulator-verification.md) for commands
+and exact observations, and [Linux verification](linux-verification.md) for the
+credential-free automated suite.
 
-Iteration 002 is complete only after a physical iPhone joins the deployed web
-teammates with real two-way audio/video and the acceptance checks below pass.
-Android acceptance, background calling, CallKit, and distribution remain out of
-scope. Expo Go is not a supported runtime.
+## Toolchain and native baseline
 
-## First resolve production authentication
-
-Read the [native Access investigation](native-access-integration.md) before
-implementing a session mechanism. The observed unauthenticated redirects are
-historical evidence, not confirmation of the authenticated deployed contract.
-
-Current production composition has no installed usable ports. The
-`UnresolvedAccessAuthentication` adapter deliberately cannot sign in. Demo mode
-is explicitly selected and labeled; its sessions/tokens must never be sent to
-production. Do not add a silent fallback when production sign-in or media fails.
-
-With the deployment owner, confirm:
-
-- Normal Cloudflare Access login and the identity provider's embedded-login policy.
-- A supported handoff into native HTTP and WebSocket transports, including cookie
-  scope/expiry and coverage of the **runtime returned signaling host**.
-- Session reuse, expiry/revocation detection, and clearing invalid native session
-  data before returning to sign-in.
-
-Browser or WebView login alone is insufficient. The investigation's native
-cookie-transfer candidate is unimplemented and requires owner approval and
-physical-device evidence. Never embed Access service credentials, scrape
-HttpOnly cookies with JavaScript, or put cookies/JWTs in callback URLs. If the
-current configuration cannot support native transport, document the specific
-owner-approved handoff/edge change before expanding scope. No backend change is
-assumed.
-
-## Mac build, signing, and installation
-
-Use the full [README Mac procedure](../README.md#mac-generate-sign-build-and-install-on-an-iphone)
-for prerequisites and troubleshooting. On the Mac, fetch the factory's committed
-changes and run these from the target `ensembleworks-mobile/` directory:
+Run commands in the repository-root flox environment from `ensembleworks-mobile/`:
 
 ```sh
-sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
-sudo xcodebuild -license accept
-nvm install
-nvm use
-npm install --global npm@11.19.0
-npm ci
-npm test
-npm run check
-npx expo prebuild --clean --platform ios
-npx pod-install ios
-open ios/ensembleWorksMobile.xcworkspace
+flox activate -d .. -- npm ci
+flox activate -d .. -- npm test
+flox activate -d .. -- npm run check
+flox activate -d .. -- npx expo-doctor
+flox activate -d .. -- npx expo prebuild --clean --platform ios
+flox activate -d .. -- bash -lc 'cd ios && pod install'
 ```
 
-Use Xcode 16.1 or newer (a version supporting the phone's installed iOS),
-CocoaPods 1.16.2, and a physical iPhone with iOS 15.1 or newer. Prebuild `--clean`
-replaces generated native changes; retain native configuration in `app.json`.
+The flox manifest pins Node 24.21.0 and CocoaPods 1.16.2; Xcode is supplied by
+macOS and must not be shadowed by another compiler environment. The recorded iOS
+27 verification used Xcode 27.0 (27A266a) and iOS 27.0 simulator runtime 24A434.
+The package baseline is Expo 58.0.6, React 19.3.0, React Native 0.88.0-rc.3,
+Expo Crypto 58.0.5, Expo Dev Client 58.0.11, Expo System UI 58.0.5, Jest Expo
+58.0.8, AsyncStorage 2.2.0, LiveKit React Native 3.0.0, LiveKit WebRTC 144.2.0,
+LiveKit Expo plugin 1.0.3, and WebRTC config plugin 15.0.2.
 
-1. Connect/unlock the phone, trust the Mac, and enable iOS Developer Mode.
-2. Add the developer Apple ID in Xcode Settings → Accounts. Select the
-   `ensembleWorksMobile` target → Signing & Capabilities, automatically manage
-   signing, and select the development Team.
-3. If necessary, set a unique `ios.bundleIdentifier` in `app.json`, regenerate,
-   and reselect the Team. Keep signing secrets out of source and logs.
-4. Select the physical phone as the destination. In a second terminal, start
-   `npm run start -- --lan` with Mac and phone on the same network, then Run (⌘R)
-   in Xcode. Trust the development certificate if prompted and select Metro in
-   the development launcher. After signing is configured, `npm run ios` can also
-   build/install to the selected device.
-5. Initially leave `EXPO_PUBLIC_APP_MODE` unset. The expected current result is
-   the unresolved production message, not a call or permission prompt. Check for
-   native registration errors. Rebuild the native client after native dependency
-   or plugin changes; a Metro reload is insufficient.
+`package.json` deliberately has exactly one temporary override:
 
-A Codespace Metro tunnel can serve development JavaScript to an installed client
-(see README), but does not authenticate or proxy the backend. Start on local Mac
-Metro to isolate transport issues. Personal-Team provisioning may need renewal.
+```json
+"overrides": { "react-native": "$react-native" }
+```
 
-## Wire real adapters, without changing application decisions
+It bypasses peer ranges that exclude the React Native release candidate by semver
+rule. Do not add overrides or use `--force`/`--legacy-peer-deps`. Remove it and
+move to stable Expo/React Native releases when React Native 0.88 and compatible
+Expo packages are stable.
 
-- Implement the approved authentication/session adapter and native authenticated
-  transport behind the existing ports. Install `HttpTokenAdapter` with that
-  transport; an opaque application session ID is not an Access credential.
-- Supply persistent identity storage and actual native permission requests.
-  Keep the remembered display name separate from the stable `mobile-` participant
-  ID; two people with the same name must not replace each other.
-- Bind `LiveKitRoomAdapter` to actual SDK room/events and native audio-session
-  operations. Supply `createNativeParticipantVideo` with a resolver from
-  participant IDs to actual SDK track references, including local camera tracks.
-- Inject these ports into production composition explicitly. Preserve application
-  permission ordering, immediate camera/microphone publication, auto-subscription,
-  equal remote gain, cleanup ownership, and expiry handling.
-- Keep Linux adapter/behavior/component tests passing and add regression tests
-  for the chosen auth transport. Doubles cannot replace the following device gate.
+## Simulator launch check
 
-## Verify authenticated contract and signaling before media acceptance
+With an iOS 27 simulator booted, run:
 
-An authorized human must complete normal Access login on the phone. Follow the
-investigation's six integration checks, using native transport, not WebView
-JavaScript. Require:
+```sh
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
 
-1. Native `GET https://canvas-ew-lsp-001.ensembleworks.dev/api/av/token` with
-   logical `room=team`, saved display name, and a distinct mobile identity returns
-   successful JSON `{ enabled: true, token, url }`. Redirects/login HTML are auth
-   failures; `{ enabled: false }` is unavailable media, not a successful join.
-2. Inspect grants locally for identity, name, expiry, join/publish/subscribe and
-   expected LiveKit room `canvas-team`. JWT decoding is not signature validation.
-   If deployment differs from the pinned source contract, resolve the discrepancy
-   with the owner rather than silently changing rooms.
-3. Connect an initially non-publishing native LiveKit probe to the returned URL
-   and token. Confirm native connected state, actual room `canvas-team`, and a
-   web teammate in that room. Successful token HTTP alone does not verify the
-   protected signaling handshake. Disconnect and stop the probe audio session.
-4. Verify fresh HTTP and signaling on relaunch with a valid session, then after
-   expiry/revocation. The expired case must return to sign-in, not spin forever
-   or fall back to demo. A surviving socket does not prove a fresh handshake.
-5. Repeat native token retrieval and signaling on cellular/a different network.
+Set `IOS_SIMULATOR_DEVICE` to its UDID when necessary. The script embeds a Release
+JavaScript bundle with demo mode selected only for that build, installs it with
+`simctl`, launches it, waits 20 seconds, and rejects a dead process or new app
+crash report. It does not replace the physical-device acceptance work below.
 
-## Real media acceptance checklist
+## Iteration 003: resolve production authentication first
 
-Use the deployed web app at https://canvas-ew-lsp-001.ensembleworks.dev/ with no
-room query (logical `team`). Use at least two web teammates for the multiple-
-participant check. These checks must use real adapters, not demo tiles.
+Read [the native Access investigation](native-access-integration.md) before
+implementing a session mechanism. Production composition intentionally has no
+usable ports. Demo mode is explicitly selected and labeled; its sessions/tokens
+must never be sent to production, and production failures must not fall back to
+it.
 
-- [ ] First launch: normal Access sign-in, enter name once, grant microphone and
-  camera permissions, and join immediately without a pre-join preview.
-- [ ] Phone and web teammates both see and hear each other; the phone shows real
-  self-preview and named remote video tiles. Confirm audio in both directions,
-  not just a connected indicator or publication flag.
-- [ ] Multiple web teammates appear in the grid, each audible at equal gain
-  (no canvas-position/spatial mixing). Test two distinct identities sharing a
-  display name without participant replacement.
-- [ ] Microphone off/on actually stops/restores outgoing audio at a web peer.
-  Camera off/on stops/restores outgoing video and updates self-preview.
-- [ ] Remote camera-off shows a named placeholder. Remote join/leave and track
-  changes update the grid without stale tiles; an empty room is understandable.
-- [ ] Leave disconnects, releases local capture, stops the native audio session,
-  and removes listeners. Confirm iOS capture indicators cease and web peers see
-  departure. Rejoin works; late events from the old call do not restore its UI.
-- [ ] Terminate/relaunch: name and separate participant ID persist. A valid
-  session is reused where supported; an expired/revoked session requests sign-in
-  and supports recovery without retaining the previous call.
-- [ ] Denied camera/microphone permissions show an actionable state with no
-  false joined state. Restore permissions in Settings and retry successfully.
-- [ ] Unreachable backend, unavailable media, and signaling failure stop joining
-  with understandable retry/sign-in guidance and release any acquired media.
-  Production failures never activate test-adapter mode.
-- [ ] Repeat a fresh phone-to-web call on cellular/a different network, verifying
-  actual bidirectional audio/video rather than signaling alone.
+With the deployment owner, establish an approved native handoff for Cloudflare
+Access that covers native HTTP and the runtime returned WebSocket signaling host,
+session reuse and expiry/revocation, and clearing invalid native session data.
+Do not embed service credentials, scrape HttpOnly cookies with JavaScript, or put
+cookies/JWTs in callback URLs. Browser or WebView login alone is not sufficient.
+If supported native transport requires an owner-approved edge/deployment change,
+record that exact decision before proceeding.
 
-## Evidence and blockers
+Then explicitly install the approved authentication/session adapter, authenticated
+transport for `HttpTokenAdapter`, persistent identity storage, native permission
+adapter, `LiveKitRoomAdapter`, native audio session operations, and participant
+video resolver in the production composition. Preserve the existing application
+ordering and behavior: distinct saved participant ID/name, permissions before
+join, immediate enabled publications, auto-subscription, equal remote gain,
+cleanup, expiry recovery, and no test-adapter fallback.
 
-Record build revision, Mac/Xcode/device/iOS versions, approved login/session
-mechanism, non-secret contract conclusions, network used, and pass/fail evidence
-for each checklist item. Keep credential values, cookies, raw authenticated
-headers, JWTs, and token-bearing URLs out of screenshots, logs, and commits.
-Classify failures separately as Access/session, token contract/configuration,
-signaling, permissions/native modules, or media/network failures. Record the
-owner decision and exact integration change when blocked; do not claim success
-from simulated checks. The planner, not this documentation task, determines
-iteration completion from that evidence.
+## Physical-device build and acceptance
+
+Use a physical iPhone supported by the selected Xcode 27 (or later compatible)
+installation. Select Xcode, accept its license, run the native commands above,
+and open `ios/ensembleWorksMobile.xcworkspace` rather than the project file.
+Configure a development team and a unique bundle identifier if required; keep
+signing data and credentials out of source and logs. Start local Mac Metro only
+when the installed development client needs it. A Codespace tunnel neither
+proxies the backend nor authenticates Access.
+
+Before media acceptance, an authorized user must prove native token retrieval for
+logical room `team`, validate the non-secret returned contract, and make a fresh
+native signaling connection to the returned host. Check relaunch and expired or
+revoked sessions, then repeat on another network/cellular. Treat redirects/login
+HTML as authentication failures and `{ enabled: false }` as unavailable media,
+not a joined call.
+
+Do not claim iteration 003 complete until a physical phone and web teammates prove:
+
+- normal Access sign-in, saved name/independent identity, camera and microphone
+  permission, and immediate join;
+- real bidirectional audio/video, local preview, named remote tiles, multiple
+  teammates at equal gain, and correct remote camera-off/participant updates;
+- actual microphone and camera off/on behavior at a web peer;
+- leave cleanup (including capture indicators and audio session), rejoin, relaunch,
+  expiry/revocation, denied-permission, backend/media/signaling failure recovery;
+- a fresh call on another network/cellular with no production-to-demo fallback.
+
+Record revision, Mac/Xcode/device/iOS versions, owner-approved login/session
+mechanism, non-secret contract conclusions, network, and pass/fail evidence for
+each item. Keep cookies, raw authenticated headers, JWTs, and token-bearing URLs
+out of logs, screenshots, and commits. Classify blockers as Access/session, token
+contract/configuration, signaling, permissions/native modules, or media/network.

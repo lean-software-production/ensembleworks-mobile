@@ -1,19 +1,27 @@
-# Iteration 001 Linux verification
+# Linux verification and iteration 002 boundary
 
 Run from `ensembleworks-mobile/` with the locked dependencies (`npm ci`). No
-credentials, running LiveKit server, device, or macOS are required:
+credentials, running LiveKit server, device, simulator, or macOS are required.
+On a Mac, invoke these through the repository-root flox environment (`flox
+activate -d .. -- …`); Linux can run them directly:
 
 ```sh
 npm test
 npm run check
-npx expo-doctor@1.20.4
-npm ls --all
+npx expo-doctor
+npm ls react-native
 npm audit
 ```
 
-Verified in the Codespace for this task: **50 application/adapter tests**, **8
-component tests across 4 suites**, TypeScript, Expo dependency compatibility,
-Expo Doctor **18/18**, and `npm ls --all` pass. Jest emits React Native's existing
+The SDK 58 pre-release baseline is Expo 58.0.6, React 19.3.0, and React Native
+0.88.0-rc.3. `npm ls react-native` must show one copy. The sole temporary npm
+override is `react-native: "$react-native"`; it exists only until React Native
+0.88 and a compatible Expo SDK are stable. Do not use `--force` or
+`--legacy-peer-deps` or add further overrides.
+
+Verified for this task: **50 application/adapter tests**, **8 component tests
+across 4 suites**, TypeScript, Expo dependency compatibility, Expo Doctor
+**18/18**, and the resolved dependency tree pass. Jest emits React Native's existing
 SafeAreaView deprecation warning. `npm audit` is **not clean**: 57 transitive
 findings (47 high, 10 moderate). No incompatible force-upgrades were applied;
 see README's security caveat. Passing compatibility checks is not a security
@@ -69,5 +77,12 @@ backend.
 All video/audio here is a **modeled representation**. Linux results do not verify
 native capture/playback, device permissions/storage, Cloudflare cookie sharing,
 WebSocket authentication, actual backend room grants, or deployed compatibility.
-Those remain iteration 002 work. The separate handoff task is not completed by
-this verification report.
+
+Iteration 002 separately verified an Expo 58 scene-lifecycle project, unsigned
+Xcode 27 build, and 20-second iOS 27 simulator launch. Run
+`flox activate -d .. -- npm run verify:ios-27-simulator-launch` on a booted iOS
+27 simulator for that tap-free launch check; its embedded demo bundle is not a
+real media or backend test. Exact Xcode/runtime evidence and simulator limitations
+are in [iOS 27 native verification](ios-27-simulator-verification.md). Physical
+device installation, approved Cloudflare authentication, signaling, and real
+media remain iteration 003 work; see the [iteration 003 handoff](iteration-002-handoff.md).

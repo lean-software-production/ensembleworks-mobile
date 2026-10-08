@@ -112,9 +112,21 @@ permission request was made and there was no UI path to a backend request.
 `tests/productionMode.test.tsx` independently asserts the same entry-point
 selection and absence of simulated join/room UI.
 
-This host provides a headless CoreSimulator runtime but no Simulator.app or
-simulator touch-injection tool. Consequently, the full demo sequence could not
-be tapped through the native simulator in this run; the native evidence above
-is limited to both rendered initial states and the existing automated sequence.
-Do not treat this as evidence of native media, production authentication, or a
+The factory run had no simulator touch-injection tool, so it could not tap
+through the demo sequence itself. Xcode 27 has no `Simulator.app`; the simulator
+window is opened from Xcode's bundled `DeviceHub.app`.
+
+## Manual demo walkthrough
+
+On 8 October 2026 the project owner walked the demo flow by hand in the
+simulator window, on the demo Release build produced by the launch check
+(iPhone 18 Pro, iOS 27.0, Xcode 27.0). The steps requested were: tap **Simulate
+sign-in and join**, enter a name and join; see the simulated teammates and the
+self tile; toggle microphone and camera off and on; leave and rejoin; and check
+that the test-adapter label stays visible. The owner reported that everything
+seemed to work and noted no problems. No screenshots or per-step notes were
+captured.
+
+This is a manual observation of simulated participants through test adapters.
+Do not treat it as evidence of native media, production authentication, or a
 real backend request.
