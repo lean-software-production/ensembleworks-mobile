@@ -227,8 +227,9 @@ production authentication work using the
 ## Validation and remaining work
 
 See [Linux verification](docs/linux-verification.md) for the acceptance-to-test
-map and demo-mode instructions. This task passes 50 application/adapter tests,
-8 component tests, `npm run check`, Expo Doctor (18/18), and `npm ls --all`.
+map and demo-mode instructions. On 8 October 2026 this task passed 50
+application/adapter tests, 8 component tests, `npm run check`, Expo Doctor
+(20/20), and a single-copy `npm ls react-native` check.
 The [iteration 003 handoff](docs/iteration-002-handoff.md) documents the unresolved
 production adapters and physical-device acceptance gate. The iOS 27 simulator
 launch is verified, but real-device acceptance remains unverified and belongs to
@@ -245,7 +246,7 @@ installation, signaling, and real phone-to-web media remain unverified and belon
 to iteration 003. Linux test doubles and simulator demo tiles cannot establish
 production compatibility.
 
-`npm audit` reports 57 transitive findings (47 high, 10 moderate) after adding the
+`npm audit` reports 70 transitive findings (45 high, 25 moderate) after adding the
 Jest/Expo component-test tooling. The prior scaffold had 34 findings; dependencies
 were not force-upgraded as part of the call-UI task. Reported chains include
 braces/micromatch, image-size, node-forge, postcss, and uuid/xcode. The suggested

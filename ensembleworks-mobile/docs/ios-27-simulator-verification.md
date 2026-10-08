@@ -130,3 +130,39 @@ captured.
 This is a manual observation of simulated participants through test adapters.
 Do not treat it as evidence of native media, production authentication, or a
 real backend request.
+
+## Final acceptance re-run — 8 October 2026
+
+The complete acceptance command set was re-run in the parent flox environment
+on this Mac (Node `v26.9.0`, npm `11.19.1`, CocoaPods `1.16.2`, Xcode `27.0`
+`27A266a`, and the booted iPhone 18 Pro iOS `27.0` simulator, runtime
+`24A434`):
+
+```sh
+flox activate -d .. -- npm ci
+flox activate -d .. -- npm test
+flox activate -d .. -- npm run check
+flox activate -d .. -- npx expo-doctor
+flox activate -d .. -- npm ls react-native
+flox activate -d .. -- bash -lc 'npx expo prebuild --clean --platform ios && cd ios && pod install'
+flox activate -d .. -- xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
+
+Every command succeeded. `npm ci` required neither force nor legacy peer
+resolution; `npm ls` showed one deduplicated `react-native@0.88.0-rc.3` copy.
+The automated suite passed all 50 application tests and 8 component tests;
+`npm run check` passed and Expo Doctor reported 20/20 checks. The clean
+prebuild and CocoaPods install completed with 111 pods, regenerated the scene
+manifest and Expo scene delegate described above, and the unsigned generic
+`iphoneos` Release build succeeded. The launch check built, installed, and
+launched the embedded-demo Release bundle; `simctl` returned PID `59657`, which
+remained running after 20 seconds with no new crash report.
+
+The mode and manual-flow observations above remain the evidence for the two
+UI acceptance scenarios: demo was explicitly labeled and manually exercised,
+while the separately built unset-mode bundle displayed only the unresolved
+production screen. The credential-free component and application tests cover
+the modeled demo sequence and the absence of demo join UI in production. None
+of this expands the stated simulator limitations or substitutes for iteration
+003 physical-device, authenticated-backend, or real-media evidence.

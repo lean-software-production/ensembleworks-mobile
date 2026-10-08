@@ -19,13 +19,13 @@ override is `react-native: "$react-native"`; it exists only until React Native
 0.88 and a compatible Expo SDK are stable. Do not use `--force` or
 `--legacy-peer-deps` or add further overrides.
 
-Verified for this task: **50 application/adapter tests**, **8 component tests
-across 4 suites**, TypeScript, Expo dependency compatibility, Expo Doctor
-**18/18**, and the resolved dependency tree pass. Jest emits React Native's existing
-SafeAreaView deprecation warning. `npm audit` is **not clean**: 57 transitive
-findings (47 high, 10 moderate). No incompatible force-upgrades were applied;
-see README's security caveat. Passing compatibility checks is not a security
-or production readiness claim.
+Verified on 8 October 2026: **50 application/adapter tests**, **8 component
+tests across 4 suites**, TypeScript, Expo dependency compatibility, Expo Doctor
+**20/20**, and the resolved single-React-Native dependency tree pass. Jest emits
+React Native's existing SafeAreaView deprecation warning. `npm audit` is **not
+clean**: 70 transitive findings (45 high, 25 moderate). No incompatible
+force-upgrades were applied; see README's security caveat. Passing compatibility
+checks is not a security or production readiness claim.
 
 ## Acceptance evidence
 
