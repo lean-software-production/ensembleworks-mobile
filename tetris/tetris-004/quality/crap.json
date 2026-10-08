@@ -2,7 +2,7 @@
   "limit": 30,
   "minCoverage": 80,
   "tests": true,
-  "coverage": 57.14,
+  "coverage": 57.46,
   "functions": {
     "src/game.js:TetrisGame.constructor": {
       "crap": 9.65,
@@ -94,6 +94,11 @@
       "complexity": 1,
       "coverage": 0
     },
+    "src/index.js:normalizeInput": {
+      "crap": 1,
+      "complexity": 1,
+      "coverage": 100
+    },
     "src/index.js:renderGame": {
       "crap": 20,
       "complexity": 4,
@@ -160,8 +165,18 @@
       "coverage": 25
     },
     "src/index.js:TerminalController.handleInput": {
-      "crap": 30,
-      "complexity": 30,
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/index.js:TerminalController.dispatchInput": {
+      "crap": 5,
+      "complexity": 5,
+      "coverage": 100
+    },
+    "src/index.js:TerminalController.restart": {
+      "crap": 2,
+      "complexity": 2,
       "coverage": 100
     },
     "src/index.js:startGame": {
