@@ -1,8 +1,8 @@
 # iOS 27 native verification
 
-This record covers the native dependency alignment and unsigned generic-device
-build. Simulator build, installation, launch, and app-flow evidence are tracked
-by later iteration 002 work.
+This record covers the native dependency alignment, unsigned generic-device
+build, simulator launch, and the mode-selection observations made during
+iteration 002.
 
 ## Environment
 
@@ -73,7 +73,48 @@ new `ensembleWorksMobile` crash report.
 
 On 8 October 2026 this command succeeded on the booted iPhone 18 Pro, iOS 27.0
 runtime (`24A434`), with Xcode 27.0 (`27A266a`): the Release simulator build
-installed, `simctl launch` returned PID `43691`, and the process was still
-running after 20 seconds with no new crash report. This establishes native
-scene-lifecycle launch only; demo-flow interaction, permissions, audio, camera,
-and production authentication remain separate checks.
+installed, `simctl launch` returned PID `47125`, and the process was still
+running after 20 seconds with no new crash report.
+
+## Mode observations
+
+The demo Release bundle produced by the launch check was captured from that
+simulator after launch. It displayed **TEST ADAPTER MODE — no real media or
+backend** and the **Simulate sign-in and join** action. This confirms that the
+embedded-bundle environment selected demo mode on the native simulator.
+
+The complete simulated sign-in, display-name, `team` join, Alex/Sam teammate
+tiles, microphone toggle, camera toggle, leave, and rejoin sequence was also
+run by `npm test` in the entry-point component test `tests/demoMode.test.tsx`.
+That test keeps the demo label visible throughout the sequence and passed on 8
+October 2026 (50 application tests and 8 component tests passed). It uses test
+adapters; it does not establish native camera or microphone capture.
+
+For the production composition, a separate Release simulator bundle was built
+with the variable explicitly absent and installed over the demo app:
+
+```sh
+env -u EXPO_PUBLIC_APP_MODE flox activate -d .. -- xcodebuild \
+  -workspace ios/ensembleWorksMobile.xcworkspace \
+  -scheme ensembleWorksMobile -configuration Release -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,id=A4008516-DAA2-4267-A096-5A750182B3A8' \
+  -derivedDataPath .build/ios-27-simulator-production build
+xcrun simctl uninstall A4008516-DAA2-4267-A096-5A750182B3A8 dev.ensembleworks.mobile
+xcrun simctl install A4008516-DAA2-4267-A096-5A750182B3A8 \
+  .build/ios-27-simulator-production/Build/Products/Release-iphonesimulator/ensembleWorksMobile.app
+xcrun simctl launch A4008516-DAA2-4267-A096-5A750182B3A8 dev.ensembleworks.mobile
+```
+
+The build succeeded and the launched screen showed **Production integration
+unresolved** and **Native Cloudflare sign-in remains unresolved for iteration
+002.** It showed neither the demo label nor a sign-in/join control, so no
+permission request was made and there was no UI path to a backend request.
+`tests/productionMode.test.tsx` independently asserts the same entry-point
+selection and absence of simulated join/room UI.
+
+This host provides a headless CoreSimulator runtime but no Simulator.app or
+simulator touch-injection tool. Consequently, the full demo sequence could not
+be tapped through the native simulator in this run; the native evidence above
+is limited to both rendered initial states and the existing automated sequence.
+Do not treat this as evidence of native media, production authentication, or a
+real backend request.
