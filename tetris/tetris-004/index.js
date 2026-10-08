@@ -42,7 +42,9 @@ function render() {
   out.push('└' + '──'.repeat(W) + '┘');
   out.push(`Score: ${score}   Lines: ${lines}${over ? '   GAME OVER — R restart' : ''}`);
   out.push('← → move   ↑ rotate   ↓ drop   Space hard drop   Q quit');
-  process.stdout.write('\x1b[H\x1b[2J' + out.join('\n') + '\n');
+  // 1 top border + 20 board rows + 1 bottom border + 2 status rows = 24.
+  // Avoid a trailing newline: on a 24-row terminal it would scroll the display.
+  process.stdout.write('\x1b[H\x1b[2J' + out.join('\n'));
 }
 function endGame() { over = true; clearInterval(timer); }
 function start() {
