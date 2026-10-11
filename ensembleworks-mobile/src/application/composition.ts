@@ -10,8 +10,8 @@ export class UnresolvedAccessAuthentication implements AuthenticationPort {
 }
 export type Composition =
   | { mode: 'demo'; label: 'TEST ADAPTER MODE — no real media or backend'; ports: ApplicationPorts }
-  | { mode: 'production'; label: 'Production integration unresolved'; ports: ApplicationPorts | null };
-// No fallback: production requires explicitly supplied real adapters once verified.
+  | { mode: 'production'; label: 'Production integration'; ports: ApplicationPorts | null };
+// No fallback: production requires explicitly supplied real adapters.
 export function createComposition(mode: 'demo' | 'production', productionPorts?: ApplicationPorts): Composition {
   if (mode === 'demo') {
     const ports = createTestAdapters();
@@ -21,5 +21,5 @@ export function createComposition(mode: 'demo' | 'production', productionPorts?:
     ];
     return { mode, label: 'TEST ADAPTER MODE — no real media or backend', ports };
   }
-  return { mode, label: 'Production integration unresolved', ports: productionPorts ?? null };
+  return { mode, label: 'Production integration', ports: productionPorts ?? null };
 }

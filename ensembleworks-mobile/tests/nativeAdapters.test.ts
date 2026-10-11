@@ -90,13 +90,26 @@ test('SDK join errors propagate for application recovery; failed disconnect stil
   assert.deepEqual(operations.slice(-2), [['disconnect', true], ['stopAudio']]);
 });
 
-test('native permission boundary requests both capabilities and maps grants/denials without capture', async () => {
+test('native permission boundary maps grants/denials and does not ask for a camera after microphone denial', async () => {
   for (const denied of ['microphone', 'camera', null]) {
     const calls: string[] = [];
     const adapter = new NativePermissionsAdapter({ request: async ({ name }) => { calls.push(name); return name !== denied; } });
-    assert.deepEqual(await adapter.request(), { microphone: denied === 'microphone' ? 'denied' : 'granted', camera: denied === 'camera' ? 'denied' : 'granted' });
-    assert.deepEqual(calls, ['microphone', 'camera']);
+    assert.deepEqual(await adapter.request(), {
+      microphone: denied === 'microphone' ? 'denied' : 'granted',
+      camera: denied === 'microphone' || denied === 'camera' ? 'denied' : 'granted',
+    });
+    assert.deepEqual(calls, denied === 'microphone' ? ['microphone'] : ['microphone', 'camera']);
   }
   const adapter = new NativePermissionsAdapter({ request: async () => { throw new Error('native request failed'); } });
   await assert.rejects(adapter.request(), /native request failed/);
+});
+
+test('native permission boundary reports a missing simulator camera without requesting capture permission', async () => {
+  const calls: string[] = [];
+  const adapter = new NativePermissionsAdapter({
+    request: async ({ name }) => { calls.push(name); return true; },
+    enumerateDevices: async () => [{ kind: 'audioinput' }],
+  });
+  assert.deepEqual(await adapter.request(), { microphone: 'granted', camera: 'unavailable' });
+  assert.deepEqual(calls, ['microphone']);
 });

@@ -6,7 +6,10 @@
   "main": "index.ts",
   "expo": {
     "install": {
-      "exclude": ["@types/jest", "jest"]
+      "exclude": [
+        "@types/jest",
+        "jest"
+      ]
     }
   },
   "engines": {
@@ -17,6 +20,8 @@
     "ios": "expo run:ios --device",
     "android": "expo run:android",
     "prebuild": "expo prebuild",
+    "verify:ios-27-simulator-launch": "bash scripts/verify-ios-27-simulator-launch.sh",
+    "install:ios-device": "bash scripts/install-ios-device.sh",
     "test": "npm run test:application && npm run test:components",
     "test:application": "tsx --test tests/*.test.ts",
     "test:components": "jest --runInBand",
@@ -36,7 +41,8 @@
     "livekit-client": "2.22.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.3"
+    "react-native": "0.88.0-rc.3",
+    "react-native-webview": "14.0.1"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.3",

@@ -1,8 +1,9 @@
 # iOS 27 native verification
 
-This record covers the native dependency alignment and unsigned generic-device
-build. Simulator build, installation, launch, and app-flow evidence are tracked
-by later iteration 002 work.
+This record preserves the iteration 002 native baseline and records the
+iteration 003 credential-free simulator launch check. Where the older iteration
+002 observations describe an unresolved production screen, they are historical
+and superseded by the iteration 003 production sign-in entry point below.
 
 ## Environment
 
@@ -29,8 +30,9 @@ All commands were run from `ensembleworks-mobile/` in the parent flox
 environment:
 
 ```sh
-flox activate -d .. -- bash -lc 'npx expo prebuild --clean --platform ios && cd ios && pod install'
-flox activate -d .. -- bash -lc 'xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build'
+flox activate -d .. -- npx expo prebuild --clean --platform ios
+flox activate -d .. -- pod install --project-directory=ios
+flox activate -d .. -- xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
 ```
 
 Both commands succeeded. CocoaPods installed 111 dependencies. The unsigned
@@ -52,6 +54,134 @@ That plugin and its `app.json` entry were removed rather than retaining an
 unneeded generated-Podfile patch.
 
 The build reports ordinary always-run script-phase warnings (including Expo Dev
-Launcher stripping local-network keys) but no build failures. This evidence is
-not a simulator launch check and establishes neither camera/audio behavior nor
-production authentication.
+Launcher stripping local-network keys) but no build failures.
+
+## Simulator launch check
+
+Run the unattended simulator check from the repository root in the flox
+environment:
+
+```sh
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
+
+It finds the booted simulator (or accepts its UDID in `IOS_SIMULATOR_DEVICE`),
+builds separate demo and production iOS Simulator Release apps with JavaScript
+embedded, installs them, and launches them with `xcrun simctl launch`. It
+passes the mode only to `xcodebuild`; the production build receives a public
+build-time deployment URL, never credentials. For each mode it waits 20
+seconds, rejects a slain app process or a new `ensembleWorksMobile` crash
+report, then captures the entry point under `docs/evidence/`. Set
+`SIMULATOR_LAUNCH_MODE=demo` or `production` to run one mode, or set
+`EXPO_PUBLIC_DEPLOYMENT_URL` to override the public deployment URL.
+
+## Iteration 003 launch evidence — 8 October 2026
+
+`flox activate -d .. -- npm run verify:ios-27-simulator-launch` succeeded on
+the booted iPhone 18 Pro iOS 27.0 simulator (`24A434`) using Xcode 27.0
+(`27A266a`). Both embedded Release builds installed and launched; each process
+was still running after 20 seconds and no new app crash report was found.
+
+- Demo evidence: [entry-point screenshot](evidence/ios-27-simulator-demo-launch.png)
+  shows **TEST ADAPTER MODE — no real media or backend** and the simulated
+  sign-in action.
+- Production evidence:
+  [entry-point screenshot](evidence/ios-27-simulator-production-launch.png)
+  shows **Production integration** and **Sign in with GitHub**, without the demo
+  label. It is the pre-authentication entry point only; no owner credential was
+  entered and the image contains no cookie, token, or authenticated header.
+
+This validates unattended build, install, launch, 20-second survival, crash
+checking, and the two expected entry points. It does not validate Access login,
+token retrieval, LiveKit signaling, media, or any owner acceptance scenario.
+
+## Mode observations
+
+The demo Release bundle produced by the launch check was captured from that
+simulator after launch. It displayed **TEST ADAPTER MODE — no real media or
+backend** and the **Simulate sign-in and join** action. This confirms that the
+embedded-bundle environment selected demo mode on the native simulator.
+
+The complete simulated sign-in, display-name, `team` join, Alex/Sam teammate
+tiles, microphone toggle, camera toggle, leave, and rejoin sequence is covered
+by `npm test` in the entry-point component tests. The final factory run passed
+66 application tests and 18 component tests across 7 suites. It uses test
+adapters; it does not establish native camera or microphone capture.
+
+For the production composition, a separate Release simulator bundle was built
+with the variable explicitly absent and installed over the demo app:
+
+```sh
+env -u EXPO_PUBLIC_APP_MODE flox activate -d .. -- xcodebuild \
+  -workspace ios/ensembleWorksMobile.xcworkspace \
+  -scheme ensembleWorksMobile -configuration Release -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,id=A4008516-DAA2-4267-A096-5A750182B3A8' \
+  -derivedDataPath .build/ios-27-simulator-production build
+xcrun simctl uninstall A4008516-DAA2-4267-A096-5A750182B3A8 dev.ensembleworks.mobile
+xcrun simctl install A4008516-DAA2-4267-A096-5A750182B3A8 \
+  .build/ios-27-simulator-production/Build/Products/Release-iphonesimulator/ensembleWorksMobile.app
+xcrun simctl launch A4008516-DAA2-4267-A096-5A750182B3A8 dev.ensembleworks.mobile
+```
+
+This is a historical iteration 002 observation. It was superseded in iteration
+003: the current production screenshot shows **Production integration** and
+**Sign in with GitHub**, without the demo label. The factory did not enter owner
+credentials or proceed beyond this entry point. Current component tests assert
+production has no demo fallback.
+
+The factory run had no simulator touch-injection tool, so it could not tap
+through the demo sequence itself. Xcode 27 has no `Simulator.app`; the simulator
+window is opened from Xcode's bundled `DeviceHub.app`.
+
+## Manual demo walkthrough
+
+On 8 October 2026 the project owner walked the demo flow by hand in the
+simulator window, on the demo Release build produced by the launch check
+(iPhone 18 Pro, iOS 27.0, Xcode 27.0). The steps requested were: tap **Simulate
+sign-in and join**, enter a name and join; see the simulated teammates and the
+self tile; toggle microphone and camera off and on; leave and rejoin; and check
+that the test-adapter label stays visible. The owner reported that everything
+seemed to work and noted no problems. No screenshots or per-step notes were
+captured.
+
+This is a manual observation of simulated participants through test adapters.
+Do not treat it as evidence of native media, production authentication, or a
+real backend request.
+
+## Final acceptance re-run — 8 October 2026
+
+The complete acceptance command set was re-run in the parent flox environment
+on this Mac (Node `v26.9.0`, npm `11.19.1`, CocoaPods `1.16.2`, Xcode `27.0`
+`27A266a`, and the booted iPhone 18 Pro iOS `27.0` simulator, runtime
+`24A434`):
+
+```sh
+flox activate -d .. -- npm ci
+flox activate -d .. -- npm test
+flox activate -d .. -- npm run check
+flox activate -d .. -- npx expo-doctor
+flox activate -d .. -- npm ls react-native
+flox activate -d .. -- bash -lc 'npx expo prebuild --clean --platform ios && cd ios && pod install'
+flox activate -d .. -- xcodebuild -workspace ios/ensembleWorksMobile.xcworkspace -scheme ensembleWorksMobile -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
+flox activate -d .. -- npm run verify:ios-27-simulator-launch
+```
+
+Every command succeeded. `npm ci` required neither force nor legacy peer
+resolution; `npm ls` showed one deduplicated `react-native@0.88.0-rc.3` copy.
+This historical re-run passed 50 application tests and 8 component tests. The
+iteration 003 final factory validation later passed 66 application tests and 18
+component tests across 7 suites; `npm run check` passed and Expo Doctor reported
+20/20 checks. The clean
+prebuild and CocoaPods install completed with 111 pods, regenerated the scene
+manifest and Expo scene delegate described above, and the unsigned generic
+`iphoneos` Release build succeeded. The launch check built, installed, and
+launched the embedded-demo Release bundle; `simctl` returned PID `59657`, which
+remained running after 20 seconds with no new crash report.
+
+The mode and manual-flow observations above remain the evidence for the two
+UI acceptance scenarios: demo was explicitly labeled and manually exercised,
+while the separately built unset-mode bundle displayed only the unresolved
+production screen. The credential-free component and application tests cover
+the modeled demo sequence and the absence of demo join UI in production. None
+of this expands the stated simulator limitations or substitutes for iteration
+003 physical-device, authenticated-backend, or real-media evidence.

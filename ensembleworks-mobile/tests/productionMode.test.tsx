@@ -7,9 +7,9 @@ jest.mock('expo-crypto', () => ({ randomUUID: jest.fn() }));
 process.env.EXPO_PUBLIC_APP_MODE = 'Demo';
 const App = require('../App').default;
 
-test('unresolved production is visible and never offers simulated joining', () => {
+test('unconfigured production is visible and never offers simulated joining', () => {
   render(<App />);
-  expect(screen.getByText(/Native Cloudflare sign-in remains unresolved/)).toBeTruthy();
+  expect(screen.getByText(/Production is unconfigured/)).toBeTruthy();
   expect(screen.queryByText(/TEST ADAPTER MODE/)).toBeNull();
   expect(screen.queryByText('Simulate sign-in and join')).toBeNull();
   expect(screen.queryByText('Room team')).toBeNull();

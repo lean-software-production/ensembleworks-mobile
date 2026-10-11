@@ -13,7 +13,11 @@ export interface AuthenticatedTransport {
 }
 export class HttpTokenAdapter implements TokenPort {
   private readonly endpoint: URL;
-  constructor(baseUrl: string, private readonly transport: AuthenticatedTransport) {
+  constructor(
+    baseUrl: string,
+    private readonly transport: AuthenticatedTransport,
+    private readonly onAuthenticationRequired: () => void | Promise<void> = () => {},
+  ) {
     this.endpoint = new URL('/api/av/token', baseUrl);
     if (this.endpoint.protocol !== 'https:') throw new Error('Token endpoint must use HTTPS');
   }
@@ -30,6 +34,7 @@ export class HttpTokenAdapter implements TokenPort {
       // Redirects are not a token response, even if Access ultimately returns HTTP 200.
       if (response.redirected || response.status === 401 || response.status === 403 ||
           (response.status >= 300 && response.status < 400)) {
+        await this.expireSession();
         throw new AdapterError('authentication-required', 'Sign in again to access the room.');
       }
       body = await response.text();
@@ -38,6 +43,7 @@ export class HttpTokenAdapter implements TokenPort {
       throw new AdapterError('network', 'Unable to reach the token service. Retry when connected.');
     }
     if (/text\/html/i.test(response.headers.get('content-type') ?? '') || /^\s*</.test(body)) {
+      await this.expireSession();
       throw new AdapterError('authentication-required', 'The token service returned a login page. Sign in again.');
     }
     if (response.status < 200 || response.status >= 300) {
@@ -57,6 +63,17 @@ export class HttpTokenAdapter implements TokenPort {
       if (signaling.protocol !== 'wss:' || !signaling.hostname || signaling.username || signaling.password) return invalid();
     } catch { return invalid(); }
     return { enabled: true, token: value.token, url: value.url };
+  }
+  private async expireSession() {
+    // Authentication owns expiry and marker cleanup. Do not suppress a cleanup
+    // failure: callers must present an explicit sign-in-required outcome, not
+    // retry the request using an unconfirmed session.
+    try {
+      await this.onAuthenticationRequired();
+    } catch (error) {
+      if (error instanceof AdapterError) throw error;
+      throw new AdapterError('authentication-required', 'Unable to clear the expired session. Please sign in again.');
+    }
   }
 }
 function invalid(): never {

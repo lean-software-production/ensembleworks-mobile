@@ -1,17 +1,12 @@
 # Native Cloudflare Access integration gate
 
-## Status: blocked; device verification NOT complete
+## Status: implementation complete; owner validation pending
 
-The iteration 001 scope has since been revised to use ports and adapters with
-Linux test doubles. The real deployment/device gate described here now belongs
-to iteration 002 and does not block implementing or validating iteration 001's
-application logic and call UI. The investigation below remains evidence of
-unresolved production integration, not a successful native connection.
-
-This records work on the second task of iteration 001, not a successful join.
-The Codespace has no signed-in deployment session, Mac/Xcode, or physical iPhone
-available for this run. No call UI or authentication workaround was added.
-This investigation alone does not verify production participant media.
+The production Access adapter is now implemented and factory-tested without
+credentials. This investigation remains the unauthenticated deployment evidence;
+it is not a successful authenticated native connection. The owner has not yet
+run the simulator sign-in, token, signaling, or media checks, so this document
+must not be read as proof of deployed compatibility.
 
 ## Deployed evidence
 
@@ -70,7 +65,7 @@ a successful authenticated native LiveKit join must establish the real contract.
 
 ## Native session feasibility
 
-The installed React Native 0.81.5 implementation at
+The reviewed React Native implementation at
 `node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm` loads cookies
 from `NSHTTPCookieStorage.sharedHTTPCookieStorage` into the handshake. It maps
 `wss` to `https` for secure-cookie lookup and documents sharing with fetch/XHR.
@@ -124,10 +119,10 @@ These are conditional integration requirements, not implemented changes or
 claims that the existing deployment supports them. Return to the owner before
 implementing a broker or changing Access policy.
 
-## Physical-iPhone integration exit criteria for iteration 002
+## Physical-iPhone integration exit criteria
 
-See the [iteration 002 handoff](iteration-002-handoff.md) for Mac build/signing,
-production composition work, and the subsequent real-media acceptance checklist.
+See the [device handoff](device-handoff.md) for Mac build/signing and the
+remaining real-media acceptance checklist.
 
 Use the README's Mac signing/install steps, then an integration-only harness
 (no grid or media publication required):
@@ -151,8 +146,8 @@ Use the README's Mac signing/install steps, then an integration-only harness
 6. Repeat on cellular/different network. Record failures separately (Access
    redirect, JSON/media configuration, signaling failure, network reachability).
 
-Remaining: all six device checks, actual login/cookie bridge implementation,
-authenticated deployed contract, and native signaling. Iteration 002's production integration remains incomplete until there is
-real-device evidence; this is separate from iteration 001's documentation task. `npm run check` passed
-(typecheck and Expo dependency compatibility) during this investigation; it
-cannot validate Cloudflare sessions or iOS WebSockets.
+Remaining: the owner simulator checklist, authenticated deployed contract and
+signaling confirmation, then physical-device checks. The cookie bridge and
+production adapters are implemented, but only an authorized owner can validate
+them against Access. `npm run check` cannot validate Cloudflare sessions or iOS
+WebSockets.
