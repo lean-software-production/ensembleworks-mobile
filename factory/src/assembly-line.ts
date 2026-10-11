@@ -8,6 +8,7 @@ export interface MachineConfig {
   harness: string;
   lens: string;
   prompt?: string;
+  model?: string;
 }
 
 interface Edge {
@@ -39,7 +40,8 @@ export class AssemblyLine {
         role: config.role ?? name,
         harness: config.harness ?? "pi",
         lens: config.lens ?? (config.lensFile ? readFileSync(resolve(dirname(file), config.lensFile), "utf8") : ""),
-        prompt: config.prompt
+        prompt: config.prompt,
+        model: config.model
       });
     }
     for (const edge of graph.edges()) {
@@ -52,6 +54,15 @@ export class AssemblyLine {
       });
       if (edge.w === "finish" && this.machines.get(edge.v)?.role !== "planner") {
         throw new Error("Only a planner may have an edge to finish.");
+      }
+    }
+    for (const [name] of this.outgoing) {
+      const fan = this.fanOut(name);
+      if (!fan) continue;
+      const exits = fan.branches.map(branch => this.outgoing.get(branch)!);
+      if (exits.some(edges => edges.length !== 1 || edges[0].field || !this.machines.has(edges[0].to)) ||
+          new Set(exits.map(edges => edges[0]?.to)).size !== 1) {
+        throw new Error(`The branches from ${name} do not meet.`);
       }
     }
     // Reverse reachability includes retry cycles without assuming a fixed route.
@@ -77,6 +88,12 @@ export class AssemblyLine {
 
   fields(name: string): string[] {
     return [...new Set(this.outgoing.get(name)!.flatMap((edge) => edge.field ? [edge.field] : []))];
+  }
+
+  fanOut(name: string): { branches: string[]; join: string } | undefined {
+    const edges = this.outgoing.get(name)!;
+    if (edges.length < 2 || edges.some(edge => edge.field)) return undefined;
+    return { branches: edges.map(edge => edge.to), join: this.outgoing.get(edges[0].to)?.[0]?.to ?? "" };
   }
 
   next(name: string, result: Record<string, unknown>): string {

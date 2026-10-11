@@ -43,3 +43,11 @@ export function resultPrompt(fields: string[]): string {
     ? ` Include the boolean ${fields.length === 1 ? "field" : "fields"} ${fields.map((field) => JSON.stringify(field)).join(", ")}; these decide which assembly-line edge runs next.`
     : ""}`;
 }
+
+export function synthesisPrompt(name: string, reports: Record<string, unknown>): string {
+  return `You are the ${name}.
+Synthesize these branch results and decide. Do not edit work or the plan.
+Branch results:
+${JSON.stringify(reports)}
+Include an array "findings" with the problems the doer must address.`;
+}

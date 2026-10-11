@@ -115,6 +115,18 @@ Given("a new target, with a seed describing a game of {word}", function (this: F
 Given("the target has the machines planner, doer and validator", function (this: FactoryWorld) {
   for (const name of ["planner", "doer", "validator"]) machineConfig(this, name, { harness: this.chosenAgent });
 });
+const reviewers = ["reviewer_1", "reviewer_2", "reviewer_3"];
+function bigBrains(world: FactoryWorld): void {
+  for (const [index, name] of reviewers.entries()) machineConfig(world, name, {
+    role: "reviewer", harness: world.chosenAgent, model: ["openai/model", "anthropic/model", "google/model"][index]
+  });
+  machineConfig(world, "synthesiser", { harness: world.chosenAgent });
+}
+Given("the target has the three big brains", function (this: FactoryWorld) { bigBrains(this); });
+Then("it reports that the branches from doer do not meet", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /branches from doer do not meet/i);
+});
 const validatedLine = `digraph assembly_line {
   start -> planner
   planner -> doer        [label="not complete"]
@@ -131,6 +143,139 @@ const uncheckedLine = `digraph assembly_line {
   doer -> planner
 }
 `;
+const fanLine = validatedLine.replace("doer -> validator", reviewers.map(name => `doer -> ${name}\n${name} -> synthesiser`).join("\n"))
+  .replaceAll("validator", "synthesiser");
+Given("the three big brains has replaced the validator on the {string} line", function (this: FactoryWorld, name: string) {
+  bigBrains(this);
+  writeLine(this, name, fanLine);
+});
+Given("every reviewer is always satisfied", function (this: FactoryWorld) {
+  this.agentConfig.reviewers = Object.fromEntries(reviewers.map(name => [name, { satisfied: true, findings: [] }]));
+});
+Given("the synthesiser is always satisfied", function (this: FactoryWorld) { this.agentConfig.synthesis = "always"; });
+Given("a plan with one task, not done", function (this: FactoryWorld) { writePlan(this, 0, ["alpha"]); });
+Then("every reviewer has been called once", function (this: FactoryWorld) {
+  successful(this);
+  for (const name of reviewers) assert.equal(calls(this, name).length, 1, this.output);
+});
+Then("the synthesiser has been called once", function (this: FactoryWorld) {
+  successful(this);
+  assert.equal(calls(this, "synthesiser").length, 1, this.output);
+  const order = calls(this).map(call => call.machine);
+  for (const name of reviewers) assert.ok(order.indexOf(name) < order.indexOf("synthesiser"));
+});
+Given("no reviewer finishes until all three have begun", function (this: FactoryWorld) { this.agentConfig.reviewerBarrier = true; });
+Then("every reviewer was asked for a result", function (this: FactoryWorld) {
+  successful(this);
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.match(call.prompt, /Finish with a result: a single line of JSON/);
+  }
+});
+Given("every reviewer is not satisfied, with a finding of its own: {string}, {string} or {string}", function (this: FactoryWorld, first: string, second: string, third: string) {
+  const reports = [first, second, third];
+  reviewers.forEach((name, index) => { this.agentConfig.reviewers![name] = { satisfied: false, findings: [{ issue: reports[index] }] }; });
+});
+Given("the second reviewer is not satisfied, with the finding {string}", function (this: FactoryWorld, report: string) {
+  this.agentConfig.reviewers!.reviewer_2 = { satisfied: false, findings: [{ issue: report }] };
+});
+function synthesisReports(world: FactoryWorld): Record<string, unknown> {
+  successful(world);
+  world.promptRecipients = ["synthesiser"];
+  const call = calls(world, "synthesiser")[0];
+  assert.ok(call);
+  return JSON.parse(call.prompt.match(/Branch results:\n([^\n]+)/)![1]);
+}
+Then("the synthesiser was given {string}, {string} and {string}", function (this: FactoryWorld, first: string, second: string, third: string) {
+  const reports = [first, second, third];
+  const received = synthesisReports(this);
+  assert.deepEqual(received, Object.fromEntries(reviewers.map((name, index) => [name, { satisfied: false, findings: [{ issue: reports[index] }] }])));
+  const prompt = calls(this, "synthesiser")[0].prompt;
+  for (const path of [this.seedPath, this.planPath, this.codebase]) assert.ok(!prompt.includes(path));
+});
+Then("the synthesiser was given {string}", function (this: FactoryWorld, report: string) {
+  assert.deepEqual(synthesisReports(this), Object.fromEntries(reviewers.map(name => [name, this.agentConfig.reviewers![name]])));
+  assert.ok(JSON.stringify(synthesisReports(this)).includes(report));
+});
+Given("the synthesiser is never satisfied", function (this: FactoryWorld) { this.agentConfig.synthesis = "never"; });
+Given("the synthesiser is not satisfied the first time", function (this: FactoryWorld) { this.agentConfig.synthesis = "reject-first"; });
+Then("the doer was given the synthesiser's findings", function (this: FactoryWorld) {
+  successful(this);
+  const retry = calls(this, "doer")[1];
+  assert.ok(retry);
+  assert.deepEqual(JSON.parse(retry.prompt.match(/Validator findings:\n([^\n]+)/)![1]), [{ issue: "Resolve the synthesiser's finding" }]);
+});
+Then("it was not given {string}", function (this: FactoryWorld, report: string) {
+  assert.ok(calls(this, "doer").length);
+  for (const call of calls(this, "doer")) assert.ok(!call.prompt.includes(report));
+});
+Given("the second reviewer answers in prose, with no result", function (this: FactoryWorld) { this.agentConfig.reviewers!.reviewer_2.prose = true; });
+Given("the second reviewer cannot be run", function (this: FactoryWorld) { machineConfig(this, "reviewer_2", { harness: join(this.workspace, "missing-reviewer") }); });
+Then("it reports that it could not read reviewer_2's result", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /could not read the reviewer_2's result/i);
+});
+Then("it reports that it could not run reviewer_2", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /could not run the reviewer_2/i);
+});
+Then("the synthesiser has not been called", function (this: FactoryWorld) {
+  assert.equal(calls(this, "synthesiser").length, 0);
+});
+Then("every reviewer was given the work for the second task", function (this: FactoryWorld) {
+  successful(this);
+  this.promptRecipients = reviewers;
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.match(call.prompt, /Changed work:[\s\S]*work-(beta|gamma)\.txt/);
+    assert.match(calls(this, name)[0].prompt, /\+beta/);
+  }
+});
+Then("every reviewer was given the same prompt", function (this: FactoryWorld) {
+  successful(this);
+  const records = reviewers.map(name => calls(this, name)[0]);
+  assert.ok(records.every(Boolean));
+  assert.equal(new Set(records.map(call => call.prompt)).size, 1);
+  assert.equal(new Set(records.map(call => call.args[call.args.indexOf("--model") + 1])).size, 3);
+});
+Given("the reviewers' lens is testability", function (this: FactoryWorld) {
+  for (const name of reviewers) machineConfig(this, name, { lens: "testability" });
+});
+Then("every reviewer was given {string}", function (this: FactoryWorld, lens: string) {
+  successful(this);
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.ok(call.prompt.includes(lens));
+  }
+});
+Given("the other reviewers keep working until stopped", function (this: FactoryWorld) {
+  this.agentConfig.reviewerBarrier = true;
+  this.agentConfig.holdOtherReviewers = true;
+});
+Then("the other reviewers have been stopped", function (this: FactoryWorld) {
+  assert.deepEqual(readFileSync(join(this.workspace, "reviewers-stopped.txt"), "utf8").trim().split("\n").sort(), ["reviewer_1", "reviewer_3"]);
+});
+Given("each reviewer has its own instructions", function (this: FactoryWorld) {
+  reviewers.forEach((name, index) => machineConfig(this, name, { prompt: `Check aspect ${index + 1}.` }));
+});
+Then("each reviewer received only its own instructions", function (this: FactoryWorld) {
+  successful(this);
+  reviewers.forEach((name, index) => {
+    const record = calls(this, name)[0];
+    assert.ok(record);
+    for (let aspect = 0; aspect < 3; aspect++) assert.equal(record.prompt.includes(`Check aspect ${aspect + 1}.`), aspect === index);
+  });
+});
+Given("the branches meet at a machine called arbiter", function (this: FactoryWorld) {
+  machineConfig(this, "arbiter", { role: "arbiter", harness: this.chosenAgent });
+  editLine(this, line => line.replaceAll("synthesiser", "arbiter"), "careful");
+});
+Then("the arbiter received all three reports", function (this: FactoryWorld) {
+  successful(this);
+  const record = calls(this, "arbiter")[0];
+  assert.ok(record);
+  assert.deepEqual(JSON.parse(record.prompt.match(/Branch results:\n([^\n]+)/)![1]), this.agentConfig.reviewers);
+});
 function linePath(target: string, name: string): string { return join(target, ".assembly-lines", `${name}.dot`); }
 function writeLine(world: FactoryWorld, name: string, line: string): void {
   mkdirSync(join(world.codebase, ".assembly-lines"), { recursive: true });
@@ -558,6 +703,7 @@ Then("the target has no uncommitted changes", function (this: FactoryWorld) {
 });
 Then("the validator was given the work for the second task", function (this: FactoryWorld) {
   successful(this);
+  this.promptRecipients = ["validator"];
   const validator = calls(this, "validator")[0];
   assert.ok(validator, this.output);
   assert.match(validator.prompt, /Changed work:/);
@@ -565,7 +711,9 @@ Then("the validator was given the work for the second task", function (this: Fac
   assert.match(validator.prompt, /\+beta/);
 });
 Then("it was not given the work for the first task", function (this: FactoryWorld) {
-  for (const call of calls(this, "validator")) assert.doesNotMatch(call.prompt.split("Changed work:")[1] ?? call.prompt, /work-alpha\.txt|\+alpha/);
+  const records = calls(this).filter(call => this.promptRecipients.includes(call.machine));
+  assert.ok(records.length);
+  for (const call of records) assert.doesNotMatch(call.prompt.split("Changed work:")[1] ?? call.prompt, /work-alpha\.txt|\+alpha/);
 });
 Then("the validator was given {string}", function (this: FactoryWorld, lens: string) {
   successful(this);
