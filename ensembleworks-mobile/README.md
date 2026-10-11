@@ -143,6 +143,23 @@ the exact observed result and generated scene-lifecycle evidence.
    acceptance; never put credentials into an environment file, command history,
    logs, or screenshots.
 
+Once the team is selected, this builds a signed Release app with its JavaScript
+embedded (no Metro needed), then installs and launches it on the connected,
+unlocked iPhone:
+
+```sh
+flox activate -d .. -- npm run install:ios-device
+```
+
+Set `IOS_DEVICE_MODE=demo` for the demo build, `IOS_DEVICE` to a UDID if more
+than one iPhone is connected, and `EXPO_PUBLIC_DEPLOYMENT_URL` to override the
+deployment. On 2026-10-10 the production build was signed with a free personal
+team, installed, and launched on an iPhone 12 mini (iOS 26.6.2), and was still
+running after 20 seconds with no crash report. That is a launch check only:
+sign-in, camera, audio, and calls on the device remain unverified. iOS only shows
+the Developer Mode switch after the phone has been paired with Xcode over a
+data-capable cable, and the team selection is lost on `expo prebuild --clean`.
+
 A free personal team needs a physical iPhone and a free Apple ID added to Xcode.
 Its development provisioning expires after seven days, so rebuild/reinstall when
 it expires. If `dev.ensembleworks.mobile` is unavailable, choose a unique bundle

@@ -21,6 +21,7 @@
     "android": "expo run:android",
     "prebuild": "expo prebuild",
     "verify:ios-27-simulator-launch": "bash scripts/verify-ios-27-simulator-launch.sh",
+    "install:ios-device": "bash scripts/install-ios-device.sh",
     "test": "npm run test:application && npm run test:components",
     "test:application": "tsx --test tests/*.test.ts",
     "test:components": "jest --runInBand",
