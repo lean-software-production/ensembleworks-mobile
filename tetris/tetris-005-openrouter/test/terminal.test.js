@@ -90,6 +90,34 @@ test('coalesced quit input stops the terminal', () => {
   assert.equal(stops, 1);
 });
 
+test('Escape followed by quit keys stops immediately in separate and coalesced input', () => {
+  for (const key of ['q', 'Q', '\u0003']) {
+    for (const chunks of [['\x1b', key], [`\x1b${key}`]]) {
+      const { game } = controls();
+      const terminal = terminalFor(game);
+      let stops = 0;
+      terminal.stop = () => { stops += 1; };
+
+      for (const chunk of chunks) terminal.handleInput(chunk);
+
+      assert.equal(stops, 1, `Escape followed by ${JSON.stringify(key)} should stop`);
+      assert.equal(terminal.inputBuffer, '');
+    }
+  }
+});
+
+test('Escape followed by movement processes immediately in separate and coalesced input', () => {
+  for (const chunks of [['\x1b', 'd'], ['\x1bd']]) {
+    const { game, calls } = controls();
+    const terminal = terminalFor(game);
+
+    for (const chunk of chunks) terminal.handleInput(chunk);
+
+    assert.deepEqual(calls, ['right']);
+    assert.equal(terminal.inputBuffer, '');
+  }
+});
+
 test('renders clear-line controls before a shorter game-over status', () => {
   const game = new TetrisGame({ random: () => 0 });
   const writes = [];
