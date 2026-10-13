@@ -1,7 +1,14 @@
 'use strict';
 
 const { TetrisGame } = require('./tetris');
+const { TerminalTetris, renderGame } = require('./terminal');
 
-// The terminal renderer and input loop build on this game engine in the next task.
 const game = new TetrisGame();
-console.log(`Tetris game engine ready (${game.width}x${game.height}); first piece: ${game.current.type}.`);
+
+// A redirected start command remains useful in CI: show the complete display
+// once rather than leaving a process waiting for keyboard input it cannot read.
+if (!process.stdin.isTTY || !process.stdout.isTTY) {
+  process.stdout.write(`${renderGame(game)}\n`);
+} else {
+  new TerminalTetris({ game }).start();
+}
