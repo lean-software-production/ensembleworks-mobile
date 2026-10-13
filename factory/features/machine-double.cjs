@@ -30,7 +30,43 @@ const nextTask = prose
   : plan.match(/^- \[ \] (.+)$/m)?.[1];
 let result;
 
-if (machine === "planner") {
+if (machine === "plan_author") {
+  fs.mkdirSync(path.dirname(planPath), { recursive: true });
+  if (!planExists) fs.writeFileSync(planPath, `# Comprehensive plan\n\nResponsibilities, contracts and acceptance examples.\n\n${tasks.map(task => `- [ ] ${task}`).join("\n")}\n`);
+  else fs.appendFileSync(planPath, "\nRevised contracts and acceptance examples.\n");
+  if (config.planAuthorSkipsTask && planExists) {
+    fs.writeFileSync(planPath, fs.readFileSync(planPath, "utf8").replace("- [ ] alpha", "- [x] alpha"));
+  }
+  result = { changes: "Reviewed gameplay contracts and acceptance examples; preserve task identities." };
+} else if (["plan_gameplay", "plan_objects", "plan_testability", "plan_terminal"].includes(machine)) {
+  result = {
+    summary: `${machine} reviewed the plan's contracts and acceptance examples.`,
+    findings: config.planObjection && machine === "plan_testability"
+      ? [{ id: "test-boundary", issue: "Clarify an acceptance boundary", section: "Acceptance", severity: "blocking", recommendation: "Add a behavior example" }]
+      : []
+  };
+  if (config.malformedPlanReport && machine === "plan_testability") delete result.findings;
+} else if (machine === "plan_synthesiser") {
+  const count = priorCalls.filter(call => call.machine === machine).length;
+  const satisfied = config.planSynthesis !== "never" && !(config.planSynthesis === "reject-first" && count === 0);
+  const reports = JSON.parse(prompt.match(/Branch results:\n([^\n]+)/)[1]);
+  result = {
+    satisfied, summary: "Reconciled the plan review reports.",
+    findings: satisfied ? [] : [{ issue: "Resolve the plan synthesis finding" }],
+    dispositions: Object.entries(reports).flatMap(([reviewer, report]) => report.findings.map(finding => ({
+      reviewer, id: finding.id, status: satisfied ? "accepted_limitation" : "revise",
+      reason: satisfied ? "This optional boundary does not prevent the planned behavior." : "Add the missing acceptance example."
+    })))
+  };
+  if (config.missingPlanDisposition) result.dispositions = [];
+} else if (machine === "plan_validator") {
+  const count = priorCalls.filter(call => call.machine === machine).length;
+  const replan = config.planDefectFirst === true && count === 0;
+  const retry = !replan && (config.validation === "never" || (config.validation === "reject-first" && count === 0));
+  result = { satisfied: !replan && !retry, retry, replan, findings: replan
+    ? [{ issue: "The plan's input contract omits a split sequence", section: "Input contract" }]
+    : retry ? [{ issue: "Implement the agreed acceptance example" }] : [], checks: ["Checked the current task"] };
+} else if (machine === "planner") {
   fs.mkdirSync(path.dirname(planPath), { recursive: true });
   if (!planExists) {
     fs.writeFileSync(planPath, config.plannerInProse

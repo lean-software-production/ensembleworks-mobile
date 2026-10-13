@@ -110,6 +110,10 @@ configuration overrides the file, for example `"lens": "testability"`.
 which records and resolves them as subtasks. Exhausting the limit leaves the work
 uncommitted and the parent task unfinished. Invalid results, failed machines,
 failed commits, and tasks with no committable work stop the run too.
+Every planned task needs a committable deliverable. For verification-only tasks,
+the doer writes or updates `VERIFICATION.md` in the target with the checks it
+actually performed, commands, outcomes, and any unperformed checks or limitations.
+An accepted report can then be committed before the planner marks the task done.
 
 On the route back to a planner, the factory commits the task's work before
 asking the planner to mark it done. Commits include only the run's target,
@@ -118,6 +122,51 @@ unstaged changes. The factory never reads the plan's contents.
 
 Do not rebase or switch branches while a factory run is active: both operations
 share the repository's Git index.
+
+## Plan-first assembly lines
+
+The `plan-first` line reviews a comprehensive plan before implementing any task.
+Its configuration is preserved in the [test fixture](features/fixtures/plan-first/.assembly-lines/).
+Copy that `.assembly-lines/` directory into a target to use it:
+
+```sh
+bin/factory --check-line --target path/to/target --line plan-first
+bin/factory --run plan-first-demo --target path/to/target --line plan-first --seed tetris/spec.md
+```
+
+The `plan_author` defines responsibilities, collaboration contracts, behavior
+examples, meaningful tests and committable tasks. Four `plan_reviewer` machines
+fan out over gameplay/scope, object design, testability and terminal experience.
+Their `plan_synthesiser` decides; it may override an objection with a recorded
+reason. Every reviewer finding needs a disposition before implementation starts.
+Later reviews focus on revisions and their consequences for other contracts.
+
+The `planner` tracks completion; the doer chooses coding details within accepted
+contracts. A single `plan_validator` returns exactly one of `satisfied`, `retry`
+or `replan`. Implementation defects retry the doer. Plan defects return to the
+author and reviewers, keeping the current task unfinished and work uncommitted.
+For plan-first lines, accepting a revised plan never commits rejected work;
+successful implementation validation permits the commit before progress tracking.
+
+`--plan-rounds 3` limits each planning episode (initial planning or a plan repair).
+The round count survives restarts; exhaustion stops before another author call.
+`--attempts 3` independently limits doer attempts per task within an invocation;
+repairing a plan does not reset that count. Model or branch failures also consume
+the planning round already started. Limits count calls, not tokens or cost.
+
+The run saves `plan-review.json` beside `plan.md`, with reports, changes,
+acceptance dispositions and repair evidence. Per-round history lives in
+`plan-reviews/episode-<n>-round-<n>.json`. These files stay outside product commits.
+The factory stores machine results and never reads the plan's contents. A small
+local `plan_gate` harness checks the acceptance checkpoint without a model call,
+so resuming an accepted plan proceeds directly to progress tracking. Amend design
+through the author/review route; completion and retry notes can change without
+reopening accepted contracts.
+
+Resume with `bin/factory --run plan-first-demo`. The full run contacts the
+configured Pi models and generates the target. Automated tests use external
+doubles and exercise the real checkpoint gate, including rejection limits,
+overrides and safe plan repair.
 
 ## Checks
 

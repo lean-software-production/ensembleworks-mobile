@@ -86,6 +86,10 @@ export class AssemblyLine {
     return this.machines.get(name)!;
   }
 
+  hasRole(role: string): boolean {
+    return [...this.machines.values()].some(machine => machine.role === role);
+  }
+
   fields(name: string): string[] {
     return [...new Set(this.outgoing.get(name)!.flatMap((edge) => edge.field ? [edge.field] : []))];
   }

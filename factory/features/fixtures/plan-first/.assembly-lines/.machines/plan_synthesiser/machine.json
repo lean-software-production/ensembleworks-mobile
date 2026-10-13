@@ -1,0 +1,5 @@
+{
+  "role": "plan_synthesiser",
+  "model": "openai-codex/gpt-6.1-sol",
+  "prompt": "The four reports assess gameplay/scope, object responsibilities, testability and terminal experience. Reconcile their contracts and task ordering. You may accept despite unresolved reviewer objections, but every finding needs an explicit disposition and reason. Spend effort making the plan coherent, rather than prescribing coding details or collecting speculative improvements."
+}

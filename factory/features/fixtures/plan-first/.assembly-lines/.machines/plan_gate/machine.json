@@ -1,0 +1,4 @@
+{
+  "role": "plan_gate",
+  "harness": "./.assembly-lines/.machines/plan_gate/gate.cjs"
+}

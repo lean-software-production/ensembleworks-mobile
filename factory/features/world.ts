@@ -22,6 +22,12 @@ export interface AgentConfig {
   synthesis?: "always" | "reject-first" | "never";
   reviewerBarrier?: boolean;
   holdOtherReviewers?: boolean;
+  planSynthesis?: "always" | "reject-first" | "never";
+  planObjection?: boolean;
+  planDefectFirst?: boolean;
+  malformedPlanReport?: boolean;
+  missingPlanDisposition?: boolean;
+  planAuthorSkipsTask?: boolean;
 }
 
 export interface RunFixture {
