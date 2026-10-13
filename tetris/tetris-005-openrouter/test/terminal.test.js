@@ -128,6 +128,14 @@ test('renders the complete default game display in 24 terminal rows', () => {
   assert.match(lines.at(-1), /Arrows: move\/rotate\/down.*Space: drop.*Q: quit/);
 });
 
+test('keeps both normal and game-over displays within 24 terminal rows', () => {
+  const game = new TetrisGame({ random: () => 0 });
+
+  assert.equal(renderGame(game).split('\n').length, 24);
+  game.gameOver = true;
+  assert.equal(renderGame(game).split('\n').length, 24);
+});
+
 test('renders clear-line controls before a shorter game-over status', () => {
   const game = new TetrisGame({ random: () => 0 });
   const writes = [];

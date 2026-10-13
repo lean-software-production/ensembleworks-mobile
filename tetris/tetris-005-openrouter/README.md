@@ -1,68 +1,37 @@
-# Tetris 005 — Three big brains
+# Terminal Tetris
 
-A fresh target for the iteration 005 assembly-line experiment, built from
-`tetris/spec.md`. The game and its plan have not been generated yet.
+A playable Tetris game for the terminal. The display, including status and
+controls, is 24 rows high.
 
-The doer's current-task work fans out to three concurrent reviewers. All use
-the same prompt and the shared testability lens at
-`.assembly-lines/.machines/lens.md`; only their models differ.
+## Run
 
-| Machine | Pi model |
+Requires Node.js 18 or later.
+
+```sh
+npm start
+```
+
+Run it in an interactive terminal. If standard input or output is redirected,
+`npm start` prints one complete game display and exits, which is useful for a
+smoke check.
+
+## Controls
+
+| Key | Action |
 | --- | --- |
-| reviewer_1 | `openai-codex/gpt-6.1-sol` |
-| reviewer_2 | `openrouter/anthropic/claude-opus-5.5` |
-| reviewer_3 | `openrouter/moonshotai/kimi-k3` |
-| planner | `openai-codex/gpt-6.1-sol` |
-| doer, synthesiser (final validation decision) | `openai-codex/gpt-5.6-terra` |
+| Arrow keys or `W`/`A`/`S`/`D` | Rotate, move left/down/right |
+| Space | Hard drop |
+| `Q` or Ctrl-C | Quit and restore the terminal |
 
-Kimi K3 is pinned to the standard model ID, rather than the moving
-`moonshotai/kimi-latest` alias or the batch variant. Pi's local catalog and
-[OpenRouter's model page](https://openrouter.ai/moonshotai/kimi-k3) confirm the ID.
-Pi needs working authentication for `openai-codex` and `openrouter`.
+Clear complete rows to score points. Gravity accelerates as the level rises;
+the game ends when a new piece cannot spawn.
 
-```mermaid
-flowchart TD
-    Start --> Planner
-    Planner -->|complete| Finish
-    Planner -->|not complete| Doer
-    Doer --> R1[GPT reviewer]
-    Doer --> R2[Claude reviewer]
-    Doer --> R3[Kimi reviewer]
-    R1 --> Synthesiser
-    R2 --> Synthesiser
-    R3 --> Synthesiser
-    Synthesiser -->|not satisfied: consolidated findings| Doer
-    Synthesiser -->|satisfied: commit work| Planner
-```
-
-Reviewers report without editing files. The synthesiser receives only their
-JSON reports plus its configured instructions, waits for all three, and decides.
-A failed branch stops the run before synthesis or a work commit. Rejection
-retries the same task; the default limit is three doer attempts per task.
-
-From the repository root, validate the line without calling models:
+## Test
 
 ```sh
-bin/factory --check-line --target tetris/tetris-005-openrouter --line careful
+npm test
 ```
 
-Build the game with real model calls:
-
-```sh
-bin/factory --run tetris-005-openrouter --target tetris/tetris-005-openrouter --line careful --seed tetris/spec.md
-```
-
-The first build remembers its settings in
-`factory/runs/tetris-005-openrouter/run.json`. The plan stays alongside that file
-in `plan.md`, outside the target. Resume with:
-
-```sh
-bin/factory --run tetris-005-openrouter
-```
-
-Once the factory has generated the game, test and play it with:
-
-```sh
-npm --prefix tetris/tetris-005-openrouter test
-npm --prefix tetris/tetris-005-openrouter start
-```
+The automated suite covers gameplay (falling, locking, line clearing, scoring,
+rotation boundaries, and blocked spawning), keyboard handling, terminal cleanup,
+gravity, and normal/game-over display height.
