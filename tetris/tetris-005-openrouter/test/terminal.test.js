@@ -4,7 +4,7 @@ const { EventEmitter } = require('node:events');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { TetrisGame } = require('../src/tetris');
-const { TerminalTetris } = require('../src/terminal');
+const { TerminalTetris, renderGame } = require('../src/terminal');
 
 function controls() {
   const calls = [];
@@ -116,6 +116,16 @@ test('Escape followed by movement processes immediately in separate and coalesce
     assert.deepEqual(calls, ['right']);
     assert.equal(terminal.inputBuffer, '');
   }
+});
+
+test('renders the complete default game display in 24 terminal rows', () => {
+  const game = new TetrisGame({ random: () => 0 });
+  const lines = renderGame(game).split('\n');
+
+  assert.equal(lines.length, 24);
+  assert.match(lines[0], /TETRIS.*Score: 0.*Lines: 0.*Level: 1.*Next: I/);
+  assert.match(lines[1], /^\+-+\+$/);
+  assert.match(lines.at(-1), /Arrows: move\/rotate\/down.*Space: drop.*Q: quit/);
 });
 
 test('renders clear-line controls before a shorter game-over status', () => {
