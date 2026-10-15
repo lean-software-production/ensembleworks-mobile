@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="What factory iteration 006 adds: background runs, live watching, token accounting and stop/resume. Illustrated by four recorded colour prompts during the Tetris 007 run, using iteration 007 steering.">
-<title>Watch the factory · Iteration 006, with the Tetris 007 colour story</title>
+<meta name="description" content="Iteration 007: steer a named machine while it works, refuse inactive recipients and record delivery. Illustrated by four colour prompts in the Tetris 007 run.">
+<title>Steer the factory · Tetris 007</title>
 <!-- Embedded sketchbook theme and fonts reused from the Tetris 005 OpenRouter handout. -->
 <style>
 /* Sketchbook kit: tokens + reusable chunks. Spec: README.md. Also include sketchbook.js (wobble filters). */
@@ -214,13 +214,11 @@ figcaption { font-size:15px; text-align:center; color:var(--sk-slate); margin-to
 .timeline h3 { font-size:22px; }
 .timeline p { font-size:17px; margin:0; }
 .receipt { display:block; font-size:16px; color:var(--sk-deep-teal); margin-bottom:2px; }
-.usage h3 { margin-bottom:6px; }
-table { border-collapse:collapse; width:100%; font-size:17px; }
-caption { text-align:left; font-size:15px; color:var(--sk-slate); margin-bottom:4px; }
-th { font:19px var(--sk-font-label); color:var(--sk-deep-teal); }
-th,td { text-align:right; padding:3px 5px; border-bottom:1px solid #36545c40; font-variant-numeric:tabular-nums; }
-th:first-child,td:first-child { text-align:left; padding-left:0; }
-tfoot { font-weight:bold; }
+.principles h3 { margin-bottom:6px; }
+.stats { display:flex; justify-content:space-between; gap:12px; margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid #36545c40; }
+.stats p { margin:0; text-align:center; font-size:16px; }
+.stats strong { display:block; font:32px var(--sk-font-title); color:var(--sk-deep-teal); }
+.principles > p { font-size:17px; }
 .small { font-size:15px; margin:5px 0 0; }
 .outcome { margin-top:10px; padding:9px 11px; border:2px solid var(--sk-forest); border-radius:11px 7px 13px 8px; background:#e9efdf; font-size:17px; }
 .outcome strong { color:#365c36; }
@@ -265,11 +263,11 @@ footer p { margin:0; }
   .timeline h3 { font-size:17px; }
   .timeline p { font-size:12.5px; }
   .receipt { font-size:11.5px; }
-  .usage h3 { margin-bottom:4px; }
-  table { font-size:12px; }
-  caption { font-size:11px; }
-  th { font-size:15px; }
-  th,td { padding:3px 4px; }
+  .principles h3 { margin-bottom:4px; }
+  .stats { gap:8px; margin-bottom:7px; padding-bottom:6px; }
+  .stats p { font-size:12px; }
+  .stats strong { font-size:25px; }
+  .principles > p { font-size:12.5px; }
   .small { font-size:10.5px; margin-top:4px; }
   .outcome { margin-top:7px; padding:7px 9px; font-size:12px; }
   .commands { grid-template-columns:1fr 1fr; gap:16px; }
@@ -287,16 +285,16 @@ footer p { margin:0; }
 <svg id="sk-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="sk-wobble" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><filter id="sk-wobble-soft" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="8"/><feDisplacementMap in="SourceGraphic" scale="5.5"/></filter><filter id="sk-wobble-line" filterUnits="userSpaceOnUse" x="-100" y="-100" width="3000" height="3000"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><marker id="sk-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="context-stroke" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></marker></defs></svg>
 <main class="sk-paper">
   <header>
-    <p class="eyebrow">006 · Watching &amp; monitoring</p>
-    <h1 class="sk-title"><span class="sk-burst"><span class="sk-hl">Watch the factory</span></span></h1>
-    <p class="lede">Start a run. Get your terminal back. Follow every machine.</p>
+    <p class="eyebrow">007 · Steering</p>
+    <h1 class="sk-title"><span class="sk-burst"><span class="sk-hl">Steer the factory</span></span></h1>
+    <p class="lede">Send a message while a machine is working.</p>
   </header>
 
   <figure>
-    <div class="diagram-scroll" tabindex="0" role="region" aria-label="Background run diagram; scroll horizontally on small screens">
+    <div class="diagram-scroll" tabindex="0" role="region" aria-label="Steering delivery diagram; scroll horizontally on small screens">
       <svg class="flow" viewBox="0 0 940 91" role="img" aria-labelledby="flow-title flow-desc">
-        <title id="flow-title">Start once, watch whenever you need</title>
-        <desc id="flow-desc">A start command returns while the daemon runs the planner, doer and validator through ACP. Text, lifecycle events and usage are saved to the run record. Watch replays that history and follows live updates.</desc>
+        <title id="flow-title">A message reaches one named machine during its active attempt</title>
+        <desc id="flow-desc">The operator names the run and machine. The factory sends an ACP steering request to that machine's active session. The machine picks it up at its next step. Acknowledged delivery is saved in the run record. Inactive recipients are refused.</desc>
         <defs><marker id="flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#094854" stroke-width="1.5"/></marker></defs>
         <path class="edge" d="M157 38 L206 38"/>
         <path class="edge" d="M439 38 L489 38"/>
@@ -305,67 +303,65 @@ footer p { margin:0; }
         <rect class="box" x="211" y="8" width="226" height="60" rx="10" fill="#d5e9df"/>
         <rect class="box" x="494" y="8" width="187" height="60" rx="10" fill="#faeed3"/>
         <rect class="box" x="738" y="8" width="195" height="60" rx="10" fill="#dceaf1"/>
-        <text x="80" y="34">Start run</text><text class="sub" x="80" y="55">terminal returns</text>
-        <text x="324" y="34">Daemon + ACP machines</text><text class="sub" x="324" y="55">planner → doer → validator</text>
-        <text x="587" y="34">Saved run record</text><text class="sub" x="587" y="55">text, status, token usage</text>
-        <text x="835" y="34">Watch</text><text class="sub" x="835" y="55">replay history + follow live</text>
+        <text x="80" y="34">Your message</text><text class="sub" x="80" y="55">name run + machine</text>
+        <text x="324" y="34">Factory routes it</text><text class="sub" x="324" y="55">to the active ACP session</text>
+        <text x="587" y="34">Machine hears it</text><text class="sub" x="587" y="55">at its next step</text>
+        <text x="835" y="34">Delivery recorded</text><text class="sub" x="835" y="55">recipient + message + time</text>
       </svg>
     </div>
-    <figcaption>The run keeps working independently of the terminal that started it.</figcaption>
+    <figcaption>A targeted intervention in the current attempt.</figcaption>
   </figure>
 
   <section aria-labelledby="new-heading">
-    <h2 class="sk-section" id="new-heading">What 006 adds</h2>
+    <h2 class="sk-section" id="new-heading">What 007 adds</h2>
     <div class="features">
-      <article class="feature"><h3>01 · Background execution</h3><p>A persistent daemon drives the line. Starting returns immediately; the factory allows one active run at a time.</p></article>
-      <article class="feature"><h3>02 · Live output &amp; replay</h3><p>See each machine’s streamed text and running status. Attach late to catch up; completed runs remain readable.</p></article>
-      <article class="feature"><h3>03 · Usage you can follow</h3><p>Input/output tokens accumulate per machine, provider and run. Usage arrives at prompt completion; token counts are not monetary cost.</p></article>
-      <article class="feature"><h3>04 · Stop &amp; resume</h3><p>Stop an attempt without committing partial work. Restart by name using the saved settings and plan; a fresh planner session resumes progress.</p></article>
+      <article class="feature"><h3>01 · Reach a working machine</h3><p>Send guidance during an active attempt. The machine picks it up at its next step; you do not need to stop and restart it.</p></article>
+      <article class="feature"><h3>02 · Name the recipient</h3><p>Choose the run and machine explicitly. A message to the planner is for the planner; it is not broadcast to the doer or validator.</p></article>
+      <article class="feature"><h3>03 · Refuse inactive recipients</h3><p>A finished or not-yet-started machine cannot receive it. The factory reports what is running; it never queues your message for a later attempt.</p></article>
+      <article class="feature"><h3>04 · Keep a delivery record</h3><p>Once injection is acknowledged, the run records who was told what and when. Delivered messages appear alongside machine output when reading the history.</p></article>
     </div>
-    <p class="underhood"><strong>Under the hood:</strong> ACP carries machine text and usage. The factory saves them beside the plan in the run’s event record; machine JSON results still route the assembly line.</p>
+    <p class="underhood"><strong>Under the hood:</strong> the factory sends ACP’s <code>_session/steering</code> request with the active session ID and your prompt. An <code>injected</code> acknowledgment means the message went in.</p>
   </section>
 
   <section aria-labelledby="story-heading">
-    <h2 class="sk-section" id="story-heading">“Make Tetris more colourful”</h2>
-    <p class="case-intro">The <code>tetris-007</code> record contains four deliveries of <span class="quote">“Ensure you use lots of colours”</span>. Watching arrived in <strong>006</strong>; sending these live messages is <strong>007’s steering</strong>.</p>
+    <h2 class="sk-section" id="story-heading">“Ensure you use lots of colours”</h2>
+    <p class="case-intro">During <code>tetris-007</code>, the same instruction was delivered four times. Each delivery targeted the machine working at that moment.</p>
     <div class="story">
-      <ol class="timeline" aria-label="Three invocations of the same named run">
-        <li><h3>1 · First invocation</h3><span class="receipt">14:38:24 → doer · one recorded delivery</span><p>Validation rejected the task three times. The run stopped at its attempt limit; the work remained uncommitted.</p></li>
-        <li><h3>2 · Resume &amp; repeat</h3><span class="receipt">15:03:11 → planner · 15:03:40 → doer</span><p>Three tasks were eventually accepted and committed. The verification attempt then returned no doer text, and the run failed.</p></li>
-        <li><h3>3 · Resume to completion</h3><span class="receipt">15:22:47 → doer · one more delivery</span><p>The verification report passed validation. The run completed at 15:25:09.</p></li>
+      <ol class="timeline" aria-label="Four recorded steering deliveries">
+        <li><h3>1 · Doer — 14:38:24</h3><p>The colour instruction reached the doer during an implementation attempt. Later attempts had their own sessions.</p></li>
+        <li><h3>2 · Planner — 15:03:11</h3><p>The same words were sent to the active planner. That receipt did not deliver the instruction to the doer.</p></li>
+        <li><h3>3 · Doer — 15:03:40</h3><p>The instruction was sent again, this time directly to the doer once it was working.</p></li>
+        <li><h3>4 · Doer — 15:22:47</h3><p>One more delivery reached the doer during the verification task. The run later completed at 15:25:09.</p></li>
       </ol>
-      <div class="usage">
-        <h3>What the watcher can account for</h3>
-        <table>
-          <caption>24 usage reports across all three invocations</caption>
-          <thead><tr><th scope="col">Machine</th><th scope="col">Input</th><th scope="col">Output</th></tr></thead>
-          <tbody><tr><th scope="row">Planner</th><td>24,673</td><td>1,442</td></tr><tr><th scope="row">Doer</th><td>130,053</td><td>22,539</td></tr><tr><th scope="row">Validator</th><td>96,532</td><td>7,710</td></tr></tbody>
-          <tfoot><tr><th scope="row">Run total</th><td>251,258</td><td>31,691</td></tr></tfoot>
-        </table>
-        <p class="small">All reported usage belongs to the <code>openai-codex</code> provider. Resuming adds to the same history and totals.</p>
-        <aside class="outcome" aria-label="Final verification evidence"><p><strong>Colour was verified:</strong> eight tests passed, normal and game-over displays stayed at 24 rows, and six ANSI colours were reported. Startup and exit were checked in a scripted pseudo-terminal; no human playtest was claimed.</p></aside>
+      <div class="principles">
+        <div class="stats" aria-label="Recorded delivery counts"><p><strong>4</strong>deliveries</p><p><strong>3</strong>to the doer</p><p><strong>1</strong>to the planner</p></div>
+        <h3>Delivered does not mean permanent</h3>
+        <p>Steering belongs to the recipient’s current attempt. It is not copied into another machine’s prompt or automatically repeated on a retry.</p>
+        <p>Changes the machine makes can persist in the product. The message itself does not become a durable run setting.</p>
+        <aside class="outcome" aria-label="Final colour verification"><p><strong>Final evidence:</strong> the verification report recorded six ANSI colours in the completed game. The delivery record alone cannot establish that steering caused those colours.</p></aside>
       </div>
     </div>
   </section>
 
   <section aria-labelledby="commands-heading">
-    <h2 class="sk-section" id="commands-heading">Two terminals, two kinds of control</h2>
+    <h2 class="sk-section" id="commands-heading">Send it to the machine that is running</h2>
     <div class="commands">
-      <div><h3>006 · Watch, stop, resume</h3><pre><code><span class="comment"># From the repository root</span>
-bin/factory watch tetris-007
-bin/factory stop tetris-007
-bin/factory --run tetris-007</code></pre></div>
-      <div><h3>007 · Steer the active machine</h3><pre><code>bin/factory say tetris-007 doer \
+      <div><h3>Deliver to the active doer</h3><pre><code><span class="comment"># From the repository root, while doer works</span>
+bin/factory say tetris-007 doer \
   "Ensure you use lots of colours"
-<span class="comment"># Acknowledgment on delivery:</span>
 delivered to doer</code></pre></div>
+      <div><h3>Refuse the inactive validator</h3><pre><code><span class="comment"># While doer is running, validator is not</span>
+bin/factory say tetris-007 validator \
+  "Check that the pieces use different colours"
+refused: doer is what is running</code></pre></div>
     </div>
+    <p class="small">These are command examples. Target <code>planner</code>, <code>doer</code> or <code>validator</code> only while that machine is shown as running.</p>
   </section>
 
-  <aside class="lesson"><p><strong>Receipt is local to an attempt.</strong> A message targets a named, running machine; inactive machines refuse it. It is not copied into the next attempt. For repeatable colour requirements, put the instruction in the seed, plan or machine configuration. The record shows delivery; it does not prove that a message alone caused the final colours.</p></aside>
+  <aside class="lesson"><p><strong>Steer for an immediate correction; write down lasting intent.</strong> Use a live message to clarify a misunderstanding or request a specific check. If every later attempt must keep Tetris colourful, put that requirement in the seed, plan or machine configuration.</p></aside>
   <footer>
     <p>15 October 2026 · Times: Europe/Dublin (UTC+01:00)</p>
-    <p>Local evidence: <a href="../factory/runs/tetris-007/events.jsonl">run record</a> · <a href="../tetris/tetris-007/VERIFICATION.md">verification</a> · <a href="../tetris/tetris-007/.assembly-lines/careful.dot">line</a></p>
+    <p>Local evidence: <a href="../factory/runs/tetris-007/events.jsonl">four deliveries</a> · <a href="../tetris/tetris-007/VERIFICATION.md">colour verification</a></p>
   </footer>
 </main>
 </body>
