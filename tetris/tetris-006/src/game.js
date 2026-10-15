@@ -49,6 +49,30 @@ function canPlace(board, piece) {
   );
 }
 
+/** Move the active piece one column when its proposed placement is valid. */
+function moveHorizontally(game, columns) {
+  if (!game || !game.activePiece) {
+    throw new TypeError('game must have an activePiece');
+  }
+  if (columns !== -1 && columns !== 1) {
+    throw new RangeError('horizontal movement must be one column left or right');
+  }
+
+  const candidate = { ...game.activePiece, x: game.activePiece.x + columns };
+  if (!canPlace(game.board, candidate)) return false;
+
+  game.activePiece = candidate;
+  return true;
+}
+
+function moveLeft(game) {
+  return moveHorizontally(game, -1);
+}
+
+function moveRight(game) {
+  return moveHorizontally(game, 1);
+}
+
 /**
  * A deterministic pseudo-random source for reproducible games and tests.
  * Supplying a sequence makes it cycle forever; supplying random injects a
@@ -108,5 +132,8 @@ module.exports = {
   canPlace,
   createGame,
   createPieceSource,
+  moveHorizontally,
+  moveLeft,
+  moveRight,
   spawnPiece,
 };

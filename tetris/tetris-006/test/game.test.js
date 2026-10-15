@@ -10,6 +10,8 @@ const {
   canPlace,
   createGame,
   createPieceSource,
+  moveLeft,
+  moveRight,
   spawnPiece,
 } = require('../src/game');
 
@@ -51,6 +53,46 @@ test('a new game uses the injected source for a valid initial piece', () => {
 
   assert.equal(game.activePiece.type, 'L');
   assert.ok(canPlace(game.board, game.activePiece));
+});
+
+test('horizontal movement moves an unobstructed active piece by one column', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const startX = game.activePiece.x;
+
+  assert.equal(moveLeft(game), true);
+  assert.equal(game.activePiece.x, startX - 1);
+  assert.equal(moveRight(game), true);
+  assert.equal(game.activePiece.x, startX);
+});
+
+test('horizontal movement rejects walls and settled cells without changing the piece', () => {
+  const wallGame = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  while (moveLeft(wallGame)) {}
+  const againstWall = wallGame.activePiece;
+  assert.equal(moveLeft(wallGame), false);
+  assert.strictEqual(wallGame.activePiece, againstWall);
+  assert.equal(wallGame.activePiece.x, 0);
+
+  const board = emptyBoard();
+  const blockedGame = createGame({ board, pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const { x, y } = blockedGame.activePiece;
+  board[y][x - 1] = true;
+  const beforeBlock = blockedGame.activePiece;
+  assert.equal(moveLeft(blockedGame), false);
+  assert.strictEqual(blockedGame.activePiece, beforeBlock);
+  assert.equal(blockedGame.activePiece.x, x);
+});
+
+test('repeated horizontal movement stays within both walls and ignores the active piece itself', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['I'] }) });
+
+  while (moveLeft(game)) {}
+  assert.equal(game.activePiece.x, 0);
+  assert.equal(moveLeft(game), false);
+
+  while (moveRight(game)) {}
+  assert.equal(game.activePiece.x, BOARD_WIDTH - 4);
+  assert.equal(moveRight(game), false);
 });
 
 test('active pieces render distinctly from empty and settled cells within 24 rows', () => {
