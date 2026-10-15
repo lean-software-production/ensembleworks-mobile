@@ -20,6 +20,7 @@ function validateScheduler(scheduler) {
 function createGravityController(game, {
   interval = GRAVITY_INTERVAL_MS,
   scheduler = globalThis,
+  onTick = () => {},
 } = {}) {
   if (!game || !game.pieceSource || typeof game.pieceSource.nextType !== 'function') {
     throw new TypeError('game must be a game state');
@@ -28,6 +29,9 @@ function createGravityController(game, {
     throw new RangeError('interval must be a positive number');
   }
   validateScheduler(scheduler);
+  if (typeof onTick !== 'function') {
+    throw new TypeError('onTick must be a function');
+  }
 
   let timer = null;
 
@@ -45,6 +49,7 @@ function createGravityController(game, {
     }
     const result = advanceGame(game);
     if (game.gameOver) clearTimer();
+    onTick(result);
     return result;
   }
 
