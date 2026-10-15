@@ -7,7 +7,7 @@ const BOARD_HEIGHT = 20;
  * Render one complete game frame. Callers redraw this string in place rather
  * than appending frames, which keeps terminal output bounded.
  */
-function renderFrame({ score = 0, board, activePiece } = {}) {
+function renderFrame({ score = 0, board, activePiece, gameOver = false } = {}) {
   const settled = board || Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null));
   const activeCells = new Set((activePiece?.cells || []).map(({ x, y }) => `${x},${y}`));
   const boardRows = Array.from({ length: BOARD_HEIGHT }, (_, y) => {
@@ -20,7 +20,8 @@ function renderFrame({ score = 0, board, activePiece } = {}) {
     `┌${"─".repeat(BOARD_WIDTH)}┐  TETRIS  Score: ${score}`,
     ...boardRows,
     `└${"─".repeat(BOARD_WIDTH)}┘`,
-    "←/→ move  ↑ rotate  ↓ down  Space drop  Q quit"
+    "←/→ move  ↑ rotate  ↓ down  Space drop  Q quit",
+    ...(gameOver ? ["GAME OVER — Q quit"] : [])
   ];
 
   return rows.join("\n");

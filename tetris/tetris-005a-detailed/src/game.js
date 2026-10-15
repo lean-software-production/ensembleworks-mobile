@@ -77,6 +77,7 @@ function createGame({ pieceSource = createPieceSource() } = {}) {
     active: makeActivePiece(type),
     score: 0,
     gravityElapsed: 0,
+    gameOver: false,
     // The number removed by the most recent lock transition. This is kept
     // separate from score so the scoring rule can consume it later.
     lastClearCount: 0
@@ -96,6 +97,7 @@ function canPlace(board, cells) {
 }
 
 function moveHorizontally(game, columns) {
+  if (game.gameOver) return game;
   if (!Number.isInteger(columns) || columns === 0) {
     throw new RangeError("horizontal movement must be a non-zero whole number");
   }
@@ -135,6 +137,7 @@ function clearCompletedRows(board) {
  * transition's result alongside the fixed score award for this lock.
  */
 function lockActivePiece(game, pieceSource) {
+  if (game.gameOver) return game;
   if (typeof pieceSource !== "function") {
     throw new TypeError("pieceSource must be a function when locking a piece");
   }
@@ -148,11 +151,28 @@ function lockActivePiece(game, pieceSource) {
   const cleared = clearCompletedRows(board);
   const nextType = pieceSource();
   assertPiece(nextType);
+  const active = makeActivePiece(nextType);
+  const score = game.score + scoreForLineClear(cleared.count);
+
+  // Spawning is checked only after the lock and simultaneous row clear. A
+  // blocked successor ends play without changing the newly settled board.
+  if (!canPlace(cleared.board, active.cells)) {
+    return {
+      ...game,
+      board: cleared.board,
+      active: null,
+      score,
+      lastClearCount: cleared.count,
+      gameOver: true,
+      gravityElapsed: 0
+    };
+  }
+
   return {
     ...game,
     board: cleared.board,
-    active: makeActivePiece(nextType),
-    score: game.score + scoreForLineClear(cleared.count),
+    active,
+    score,
     lastClearCount: cleared.count
   };
 }
@@ -162,6 +182,7 @@ function lockActivePiece(game, pieceSource) {
  * is no lock delay. `pieceSource` is consulted only by that lock transition.
  */
 function moveDown(game, pieceSource) {
+  if (game.gameOver) return game;
   const cells = game.active.cells.map(({ x, y }) => ({ x, y: y + 1 }));
   if (!canPlace(game.board, cells)) return lockActivePiece(game, pieceSource);
 
@@ -178,6 +199,7 @@ function moveDown(game, pieceSource) {
  * inherits time that belonged to the piece that just locked.
  */
 function advanceGravity(game, elapsedMs, pieceSource) {
+  if (game.gameOver) return game;
   if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
     throw new RangeError("elapsed time must be a non-negative finite number");
   }
@@ -208,6 +230,7 @@ function advanceGravity(game, elapsedMs, pieceSource) {
  * if that exact rotated footprint is outside the board or hits settled cells.
  */
 function rotateClockwise(game) {
+  if (game.gameOver) return game;
   const { active } = game;
   // The O piece deliberately has one rotation state. Its footprint never
   // changes, including when it is rotated four times.

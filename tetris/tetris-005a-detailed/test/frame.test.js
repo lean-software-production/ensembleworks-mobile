@@ -32,6 +32,15 @@ test("rendered score is included without changing frame height", () => {
   assert.match(lines[0], /Score: 123456789/);
 });
 
+test("game-over frame remains within 24 rows and shows the terminal message", () => {
+  const lines = renderFrame({ score: 800, gameOver: true }).split("\n");
+
+  assert.equal(lines.length, 24);
+  assert.ok(lines.length <= 24);
+  assert.match(lines[23], /GAME OVER/);
+  assert.match(lines[0], /Score: 800/);
+});
+
 test("entry point prints one frame and exits when it is not attached to a TTY", () => {
   const result = spawnSync(process.execPath, [path.join(__dirname, "..", "index.js")], {
     encoding: "utf8",

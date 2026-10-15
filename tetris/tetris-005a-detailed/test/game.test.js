@@ -410,3 +410,65 @@ test("gravity locking spawns once and discards remaining timing debt", () => {
   assert.equal(locked.gravityElapsed, 0);
   for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], "O");
 });
+
+function groundedI() {
+  return at(createGame({ pieceSource: () => "I" }), 0, BOARD_HEIGHT - 1);
+}
+
+test("a blocked successor spawn ends the game while retaining the final board and score", () => {
+  const game = groundedI();
+  // O spawns at columns 4–5 in rows 0–1, so this settled cell blocks it.
+  game.board[0][4] = "J";
+  const over = moveDown(game, () => "O");
+
+  assert.equal(over.gameOver, true);
+  assert.equal(over.active, null);
+  assert.equal(over.board[0][4], "J");
+  for (const cell of game.active.cells) assert.equal(over.board[cell.y][cell.x], "I");
+  assert.equal(over.score, 0);
+});
+
+test("a clear is applied before the successor spawn check", () => {
+  const game = groundedI();
+  // This row would obstruct every spawn, but it is removed as part of locking.
+  game.board[0].fill("Z");
+  const next = moveDown(game, () => "O");
+
+  assert.equal(next.gameOver, false);
+  assert.equal(next.active.type, "O");
+  assert.equal(next.lastClearCount, 1);
+  assert.equal(next.board[0][4], null);
+});
+
+test("an unobstructed near-top successor spawns normally", () => {
+  const game = groundedI();
+  game.board[0][0] = "J";
+  const next = moveDown(game, () => "T");
+
+  assert.equal(next.gameOver, false);
+  assert.equal(next.active.type, "T");
+  assert.equal(canPlace(next.board, next.active.cells), true);
+});
+
+test("game-over states reject gameplay actions and do not draw another piece", () => {
+  const game = groundedI();
+  game.board[0][4] = "J";
+  const over = moveDown(game, () => "O");
+  let draws = 0;
+  const source = () => {
+    draws += 1;
+    return "L";
+  };
+
+  assert.equal(moveLeft(over), over);
+  assert.equal(moveRight(over), over);
+  assert.equal(rotateClockwise(over), over);
+  assert.equal(moveDown(over, source), over);
+  assert.equal(advanceGravity(over, GRAVITY_INTERVAL_MS, source), over);
+  assert.equal(draws, 0);
+});
+
+test("above-board cells are never legal placements", () => {
+  const board = createBoard();
+  assert.equal(canPlace(board, [{ x: 4, y: -1 }]), false);
+});
