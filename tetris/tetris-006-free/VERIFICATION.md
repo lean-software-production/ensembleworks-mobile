@@ -1,7 +1,7 @@
 # Verification
 
-- `npm test` — passed (`Gameplay tests passed`).
-- `npm start | awk '{ print NR, length($0), $0 }'` — passed; the complete non-TTY display is exactly 24 output rows, including score, borders, board, and controls.
-- `npm start | wc -l` — returned `24`; the startup output does not include npm's lifecycle banner because `.npmrc` sets `loglevel=silent`.
+- `npm test` — passed; output: `Gameplay tests passed`.
+- `npm start | wc -l` — returned `24`.
+- `npm start | awk '{ print NR, length($0), $0 }'` — passed; displayed all 24 startup rows, including score, bordered board, and controls. The npm startup banner is suppressed by `.npmrc` (`loglevel=silent`).
 
-Interactive terminal input was not exercised manually; the input handler is implemented for arrow keys/WASD, space, and `q`.
+Interactive terminal input was not exercised manually. The input handler supports arrow keys/WASD, space, and `q`.
