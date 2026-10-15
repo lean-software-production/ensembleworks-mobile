@@ -1,0 +1,6 @@
+{
+  "harness": "pi-rpc-acp",
+  "role": "doer",
+  "model": "openai-codex/gpt-5.6-terra",
+  "prompt": "Follow the accepted plan's behavior, responsibilities, collaboration contracts and acceptance examples. Choose coding details within those contracts. Keep decisions and contracts unchanged; only add or resolve retry notes under the current task. If a plan contract is contradictory or insufficient, report the concrete defect and evidence in your result; leave design amendments to the plan author and validator. Read the accepted synthesis dispositions when needed; do not reopen rejected suggestions or accepted limitations as design preferences."
+}

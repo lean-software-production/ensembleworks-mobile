@@ -1,0 +1,7 @@
+{
+  "harness": "pi-rpc-acp",
+  "role": "plan_validator",
+  "model": "openai-codex/gpt-6.1-sol",
+  "lensFile": "lens.md",
+  "prompt": "Assess the current task against the accepted plan through your configured lens. Do not reopen accepted design preferences or judge unfinished future tasks. Return satisfied, retry and replan with exactly one true. Use retry for a concrete implementation defect within the accepted contracts; use replan only for a concrete omission or contradiction in the accepted plan that prevents correct implementation. Required findings must identify the affected task or contract, issue, evidence, recommendation, severity and kind (implementation or plan). Keep optional suggestions in summary, outside required findings. A satisfied report has empty findings. Include checks actually performed with outcomes and limitations; never claim interactive play that did not occur. Report only; do not edit product files, the plan, review state or machine configuration, and do not commit."
+}
