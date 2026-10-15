@@ -77,21 +77,32 @@ function start() {
   const draw = () => process.stdout.write('\x1b[H\x1b[2J' + render(game));
   process.stdin.setRawMode(true);
   process.stdin.resume();
+  process.stdout.write('\x1b[?25l');
   draw();
   const timer = setInterval(() => { act(game, 'tick'); draw(); }, 700);
-  process.stdin.on('data', (buffer) => {
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    clearInterval(timer);
+    process.stdin.removeListener('data', onData);
+    process.stdin.setRawMode(false);
+    process.stdin.pause();
+    process.stdout.write('\x1b[?25h\n');
+  };
+  const onData = (buffer) => {
     const key = buffer.toString();
     if (key === 'q' || buffer[0] === 3) {
-      clearInterval(timer);
-      process.stdin.setRawMode(false);
-      process.stdin.pause();
-      process.stdout.write('\n');
+      close();
       process.exit(0);
     }
     const actions = { '\u001b[D': 'left', '\u001b[C': 'right', '\u001b[A': 'rotate', '\u001b[B': 'down', a: 'left', d: 'right', w: 'rotate', s: 'down', ' ': 'drop' };
-    act(game, actions[key]);
+    const action = actions[key.toLowerCase()] || actions[key];
+    if (action) act(game, action);
     draw();
-  });
+  };
+  process.stdin.on('data', onData);
+  process.once('SIGTERM', close);
 }
 
 if (require.main === module) start();
