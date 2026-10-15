@@ -193,6 +193,25 @@ function moveDown(game, pieceSource) {
 }
 
 /**
+ * Move straight down until the next row would be illegal, then use the normal
+ * lock transition exactly once. Hard drops receive no points; only the
+ * established line-clear score is awarded by lockActivePiece.
+ */
+function hardDrop(game, pieceSource) {
+  if (game.gameOver) return game;
+
+  let dropped = game;
+  while (true) {
+    const cells = dropped.active.cells.map(({ x, y }) => ({ x, y: y + 1 }));
+    if (!canPlace(dropped.board, cells)) return lockActivePiece(dropped, pieceSource);
+    dropped = {
+      ...dropped,
+      active: { ...dropped.active, y: dropped.active.y + 1, cells }
+    };
+  }
+}
+
+/**
  * Apply elapsed time to gravity without relying on a clock. One call processes
  * at most MAX_GRAVITY_STEPS descents; elapsed time beyond that cap is dropped.
  * Locking ends the update and resets the accumulator, so a successor never
@@ -271,6 +290,7 @@ module.exports = {
   createBoard,
   createGame,
   createPieceSource,
+  hardDrop,
   lockActivePiece,
   makeActivePiece,
   moveDown,

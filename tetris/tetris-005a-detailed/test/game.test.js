@@ -15,6 +15,7 @@ const {
   createBoard,
   createGame,
   createPieceSource,
+  hardDrop,
   makeActivePiece,
   moveDown,
   moveLeft,
@@ -471,4 +472,80 @@ test("game-over states reject gameplay actions and do not draw another piece", (
 test("above-board cells are never legal placements", () => {
   const board = createBoard();
   assert.equal(canPlace(board, [{ x: 4, y: -1 }]), false);
+});
+
+test("hard drop reaches the floor and locks exactly once on an empty board", () => {
+  const game = createGame({ pieceSource: () => "I" });
+  let draws = 0;
+  const dropped = hardDrop(game, () => {
+    draws += 1;
+    return "O";
+  });
+
+  assert.equal(draws, 1);
+  assert.equal(dropped.active.type, "O");
+  for (let x = 3; x < 7; x += 1) assert.equal(dropped.board[BOARD_HEIGHT - 1][x], "I");
+  assert.equal(dropped.score, 0, "hard drops do not receive drop points");
+});
+
+test("hard drop stops above an uneven stack and equals repeated descent through its lock", () => {
+  const game = createGame({ pieceSource: () => "I" });
+  game.board[15][3] = "J";
+  const repeated = structuredClone(game);
+  const startingBoard = repeated.board;
+  let dropDraws = 0;
+  let stepDraws = 0;
+
+  const dropped = hardDrop(game, () => {
+    dropDraws += 1;
+    return "O";
+  });
+  let stepped = repeated;
+  while (stepped.board === startingBoard) {
+    stepped = moveDown(stepped, () => {
+      stepDraws += 1;
+      return "O";
+    });
+  }
+
+  assert.equal(dropDraws, 1);
+  assert.equal(stepDraws, 1);
+  assert.deepEqual(dropped, stepped);
+  assert.equal(dropped.board[15][3], "J", "the stack cell was not tunneled through or overwritten");
+  for (let x = 3; x < 7; x += 1) assert.equal(dropped.board[14][x], "I");
+});
+
+test("hard drop locks an already grounded piece once", () => {
+  const game = groundedI();
+  let draws = 0;
+  const dropped = hardDrop(game, () => {
+    draws += 1;
+    return "L";
+  });
+
+  assert.equal(draws, 1);
+  assert.equal(dropped.active.type, "L");
+  for (const { x, y } of game.active.cells) assert.equal(dropped.board[y][x], "I");
+});
+
+test("hard drop uses the normal line-clear scoring transition", () => {
+  const game = at(createGame({ pieceSource: () => "I" }), 6, 0);
+  for (let x = 0; x < 6; x += 1) game.board[BOARD_HEIGHT - 1][x] = "J";
+  const dropped = hardDrop(game, () => "T");
+
+  assert.equal(dropped.lastClearCount, 1);
+  assert.equal(dropped.score, LINE_CLEAR_SCORES[1]);
+  assert.deepEqual(dropped.board, createBoard());
+  assert.equal(dropped.active.type, "T");
+});
+
+test("hard drop can end the game when its successor cannot spawn", () => {
+  const game = createGame({ pieceSource: () => "I" });
+  game.board[0][4] = "J";
+  const dropped = hardDrop(game, () => "O");
+
+  assert.equal(dropped.gameOver, true);
+  assert.equal(dropped.active, null);
+  assert.equal(dropped.board[0][4], "J");
+  for (let x = 3; x < 7; x += 1) assert.equal(dropped.board[BOARD_HEIGHT - 1][x], "I");
 });
