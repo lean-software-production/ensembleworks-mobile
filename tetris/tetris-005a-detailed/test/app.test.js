@@ -71,6 +71,49 @@ test("repeated input and idle gravity use the engine while unsupported input is 
   assert.equal(timers.interval, 1000);
 });
 
+test("undersized terminals pause gameplay, show a bounded warning, and reset gravity on resize", () => {
+  const input = new EventEmitter();
+  const output = new EventEmitter();
+  output.writes = [];
+  output.rows = 24;
+  output.columns = 53;
+  output.write = (text) => output.writes.push(text);
+  const timers = new FakeTimers();
+  const app = createLiveGame({ input, output, timers, pieceSource: () => "T" });
+  app.start();
+  assert.equal(app.paused, false, "the documented exact-fit size plays");
+
+  output.rows = 23;
+  output.emit("resize");
+  assert.equal(app.paused, true);
+  assert.match(output.writes.at(-1), /Terminal too small/);
+  assert.ok(output.writes.at(-1).split("\n").length <= 1);
+  const y = app.game.active.y;
+  input.emit("data", "\x1b[B");
+  timers.tick();
+  assert.equal(app.game.active.y, y, "input and gravity do not run while paused");
+
+  output.rows = 24;
+  output.columns = 52;
+  output.emit("resize");
+  assert.equal(app.paused, true, "width is checked independently");
+  assert.ok(output.writes.at(-1).replace(/^\x1b\[2J\x1b\[H/, "").length <= 52);
+
+  app.game.gravityElapsed = 500;
+  output.columns = 53;
+  output.emit("resize");
+  assert.equal(app.paused, false);
+  assert.equal(app.game.gravityElapsed, 0, "resuming drops paused timing debt");
+  timers.tick();
+  assert.equal(app.game.active.y, y + 1);
+
+  app.quit();
+  const writesAfterQuit = output.writes.length;
+  output.emit("resize");
+  timers.tick();
+  assert.equal(output.writes.length, writesAfterQuit, "resize and timer callbacks are detached after exit");
+});
+
 test("quit works after game over and cancels the live timer with no later callbacks", () => {
   const base = createGame({ pieceSource: () => "I" });
   const gameOver = { ...base, active: null, gameOver: true };

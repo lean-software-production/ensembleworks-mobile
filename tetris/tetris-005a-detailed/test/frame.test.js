@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
 const path = require("node:path");
 const test = require("node:test");
-const { BOARD_HEIGHT, BOARD_WIDTH, renderFrame } = require("../src/frame");
+const { BOARD_HEIGHT, BOARD_WIDTH, FRAME_MIN_COLUMNS, FRAME_ROWS, renderFrame, renderSizeWarning } = require("../src/frame");
 
 const stripAnsi = (text) => text.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, "");
 
@@ -24,6 +24,16 @@ test("empty frame has a bounded 10 by 20 board and required labels", () => {
   assert.match(lines[22], /move/);
   assert.match(lines[22], /rotate/);
   assert.match(lines[22], /Q\/Ctrl-C quit/);
+});
+
+test("normal frames fit their documented minimum terminal dimensions", () => {
+  const lines = renderFrame({ score: 999999999999999999999999999999999999999999999 }).split("\n");
+  assert.equal(FRAME_MIN_COLUMNS, 53);
+  assert.equal(FRAME_ROWS, 24);
+  assert.ok(lines.length <= FRAME_ROWS);
+  assert.ok(lines.every((line) => line.length <= FRAME_MIN_COLUMNS));
+  assert.equal(renderSizeWarning({ rows: 1, columns: 12 }).length, 12);
+  assert.equal(renderSizeWarning({ rows: 0, columns: 12 }), "");
 });
 
 test("rendered score is included without changing frame height", () => {
