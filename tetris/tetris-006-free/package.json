@@ -1,0 +1,17 @@
+{
+  "author": "",
+  "description": "A terminal Tetris game",
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ISC",
+  "main": "src/index.js",
+  "name": "terminal-tetris",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "version": "1.0.0",
+  "dependencies": {}
+}
