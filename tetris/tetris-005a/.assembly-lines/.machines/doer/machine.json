@@ -1,0 +1,5 @@
+{
+  "role": "doer",
+  "harness": "pi",
+  "model": "openai-codex/gpt-5.6-terra"
+}
