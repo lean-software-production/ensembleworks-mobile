@@ -44,6 +44,16 @@ test('game-over frame uses the existing controls row and remains within budget',
   assert.match(rows[BOARD_HEIGHT + 3], /q quit/);
 });
 
+test('paused frame uses the existing controls row and remains within budget', () => {
+  const frame = renderFrame({ board: emptyBoard(), score: 50, paused: true });
+  const rows = visibleRows(frame);
+
+  assert.equal(rows.length, 24);
+  assert.equal(rows[BOARD_HEIGHT + 2], 'Score: 50');
+  assert.match(rows[BOARD_HEIGHT + 3], /PAUSED/);
+  assert.match(rows[BOARD_HEIGHT + 3], /p resume/);
+});
+
 test('npm start output is capturable without an interactive terminal', () => {
   const output = execFileSync(process.execPath, ['src/index.js'], { encoding: 'utf8' });
   const rows = visibleRows(output);

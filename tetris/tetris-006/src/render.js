@@ -33,7 +33,9 @@ function renderFrame(state = {}) {
   rows.push(`Score: ${score}`);
   rows.push(state.gameOver
     ? 'GAME OVER — r restart  q quit'
-    : 'Controls: ← → move  ↑ rotate  ↓ drop  q quit');
+    : state.paused
+      ? 'PAUSED — p resume  q quit'
+      : 'Controls: ← → move  ↑ rotate  ↓ drop  p pause  q quit');
   return rows.join('\n');
 }
 

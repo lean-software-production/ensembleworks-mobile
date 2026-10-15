@@ -249,6 +249,7 @@ function restartGame(game) {
   game.score = 0;
   game.activePiece = spawnPiece(game.pieceSource.nextType());
   game.gameOver = false;
+  game.paused = false;
   return game;
 }
 
@@ -265,7 +266,7 @@ function createGame({ board = emptyBoard(), pieceSource = createPieceSource() } 
   }
 
   return {
-    board, score: 0, activePiece, pieceSource, gameOver: false,
+    board, score: 0, activePiece, pieceSource, gameOver: false, paused: false,
   };
 }
 

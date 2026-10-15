@@ -8,3 +8,9 @@ A score starts at zero. Points are awarded only when a falling piece locks and
 clears lines: 0 lines = 0 points, 1 = 100, 2 = 300, 3 = 500, and 4 = 800.
 Scores accumulate across locks. Moving, failed movement, and rotation do not
 award points. The live score is shown in the fixed status row below the board.
+
+## Gravity
+
+The game model's gravity controller advances one step every 1000 ms. It can be
+paused and resumed; pause and game over stop its timer, and restarting creates
+only one fresh timer.

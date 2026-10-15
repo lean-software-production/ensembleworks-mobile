@@ -22,6 +22,32 @@ const {
   restartGame,
   spawnPiece,
 } = require('../src/game');
+const { GRAVITY_INTERVAL_MS, createGravityController } = require('../src/gravity');
+
+function createFakeClock() {
+  let nextId = 1;
+  const timers = new Map();
+  return {
+    setInterval(callback, interval) {
+      const timer = { callback, interval, elapsed: 0 };
+      timers.set(nextId, timer);
+      return nextId++;
+    },
+    clearInterval(id) {
+      timers.delete(id);
+    },
+    advance(milliseconds) {
+      for (const timer of [...timers.values()]) {
+        timer.elapsed += milliseconds;
+        while (timer.elapsed >= timer.interval && [...timers.values()].includes(timer)) {
+          timer.elapsed -= timer.interval;
+          timer.callback();
+        }
+      }
+    },
+    get timerCount() { return timers.size; },
+  };
+}
 
 test('all seven tetrominoes contain four distinct cells', () => {
   assert.deepEqual(Object.keys(TETROMINOES), PIECE_TYPES);
@@ -390,6 +416,81 @@ test('game-over actions preserve settled cells and score, and restart makes a fr
   assert.equal(game.activePiece.type, 'L');
   assert.ok(game.board.every((row) => row.every((cell) => !cell)));
   assert.ok(canPlace(game.board, game.activePiece));
+});
+
+test('gravity waits for its fixed interval and advances one game action per tick', () => {
+  const clock = createFakeClock();
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const gravity = createGravityController(game, { scheduler: clock });
+
+  assert.equal(GRAVITY_INTERVAL_MS, 1000);
+  assert.equal(gravity.start(), true);
+  clock.advance(GRAVITY_INTERVAL_MS - 1);
+  assert.equal(game.activePiece.y, 0, 'no fall occurs before an interval elapses');
+  clock.advance(1);
+  assert.equal(game.activePiece.y, 1);
+  clock.advance(GRAVITY_INTERVAL_MS);
+  assert.equal(game.activePiece.y, 2, 'each elapsed interval takes one step');
+});
+
+test('gravity locks grounded pieces and progresses to the next piece', () => {
+  const clock = createFakeClock();
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O', 'T'] }) });
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  const gravity = createGravityController(game, { scheduler: clock });
+
+  gravity.start();
+  clock.advance(GRAVITY_INTERVAL_MS);
+  assert.equal(game.board.flat().filter(Boolean).length, 4);
+  assert.equal(game.activePiece.type, 'T');
+  assert.equal(game.activePiece.y, 0);
+});
+
+test('gravity pause and game over stop advancement', () => {
+  const clock = createFakeClock();
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const gravity = createGravityController(game, { scheduler: clock });
+
+  gravity.start();
+  assert.equal(gravity.pause(), true);
+  assert.equal(game.paused, true);
+  assert.equal(clock.timerCount, 0);
+  clock.advance(GRAVITY_INTERVAL_MS * 2);
+  assert.equal(game.activePiece.y, 0);
+  gravity.resume();
+  clock.advance(GRAVITY_INTERVAL_MS);
+  assert.equal(game.activePiece.y, 1);
+
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  game.board[0][game.activePiece.x] = true;
+  clock.advance(GRAVITY_INTERVAL_MS);
+  assert.equal(game.gameOver, true);
+  assert.equal(clock.timerCount, 0);
+  const board = game.board.map((row) => [...row]);
+  clock.advance(GRAVITY_INTERVAL_MS * 2);
+  assert.deepEqual(game.board, board);
+});
+
+test('repeated resume and restart retain one timer and do not cause catch-up falls', () => {
+  const clock = createFakeClock();
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O', 'T'] }) });
+  const gravity = createGravityController(game, { scheduler: clock });
+
+  gravity.start();
+  gravity.resume();
+  assert.equal(clock.timerCount, 1);
+  gravity.pause();
+  gravity.resume();
+  gravity.resume();
+  assert.equal(clock.timerCount, 1);
+  gravity.restart();
+  assert.equal(clock.timerCount, 1);
+  assert.equal(game.activePiece.type, 'T');
+  assert.equal(game.activePiece.y, 0);
+  clock.advance(GRAVITY_INTERVAL_MS - 1);
+  assert.equal(game.activePiece.y, 0);
+  clock.advance(1);
+  assert.equal(game.activePiece.y, 1);
 });
 
 test('active pieces render distinctly from empty and settled cells within 24 rows', () => {
