@@ -68,7 +68,10 @@ function createGame({ pieceSource = createPieceSource() } = {}) {
     board: createBoard(),
     active: makeActivePiece(type),
     score: 0,
-    gravityElapsed: 0
+    gravityElapsed: 0,
+    // The number removed by the most recent lock transition. This is kept
+    // separate from score so the scoring rule can consume it later.
+    lastClearCount: 0
   };
 }
 
@@ -106,10 +109,22 @@ function moveRight(game) {
 }
 
 /**
- * Settle the current legal active piece and create its successor. The caller
- * owns the injected source, so game state remains plain data and a lock draws
- * exactly one new piece. Line clearing and spawn validation intentionally
- * follow this transition in later rules.
+ * Remove every full row in one simultaneous operation. Remaining rows retain
+ * their top-to-bottom order, and newly empty rows are inserted above them.
+ * Neither the input board nor any of its rows are changed.
+ */
+function clearCompletedRows(board) {
+  const survivors = board.filter((row) => row.some((cell) => cell === null));
+  const count = board.length - survivors.length;
+  const emptyRows = Array.from({ length: count }, () => Array(BOARD_WIDTH).fill(null));
+  return { board: [...emptyRows, ...survivors.map((row) => row.slice())], count };
+}
+
+/**
+ * Settle the current legal active piece, clear completed rows, and create its
+ * successor. The caller owns the injected source, so game state remains plain
+ * data and a lock draws exactly one new piece. `lastClearCount` exposes this
+ * transition's result to the later scoring rule.
  */
 function lockActivePiece(game, pieceSource) {
   if (typeof pieceSource !== "function") {
@@ -122,9 +137,15 @@ function lockActivePiece(game, pieceSource) {
   const board = game.board.map((row) => row.slice());
   for (const { x, y } of game.active.cells) board[y][x] = game.active.type;
 
+  const cleared = clearCompletedRows(board);
   const nextType = pieceSource();
   assertPiece(nextType);
-  return { ...game, board, active: makeActivePiece(nextType) };
+  return {
+    ...game,
+    board: cleared.board,
+    active: makeActivePiece(nextType),
+    lastClearCount: cleared.count
+  };
 }
 
 /**
@@ -213,6 +234,7 @@ module.exports = {
   MAX_GRAVITY_STEPS,
   advanceGravity,
   canPlace,
+  clearCompletedRows,
   createBoard,
   createGame,
   createPieceSource,

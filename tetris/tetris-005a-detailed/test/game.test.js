@@ -10,6 +10,7 @@ const {
   MAX_GRAVITY_STEPS,
   advanceGravity,
   canPlace,
+  clearCompletedRows,
   createBoard,
   createGame,
   createPieceSource,
@@ -264,6 +265,56 @@ test("a stack blocks descent, locks without overwriting settled cells, and prese
   for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], "T");
   assert.equal(locked.board.flat().filter((cell) => cell === "T").length, 4);
   assert.deepEqual(game.board, before);
+});
+
+test("completed rows clear simultaneously for zero through four rows and preserve survivors", () => {
+  const cases = [
+    { name: "zero", fullRows: [] },
+    { name: "one", fullRows: [18] },
+    { name: "two adjacent", fullRows: [17, 18] },
+    { name: "three separated", fullRows: [4, 10, 18] },
+    { name: "four adjacent", fullRows: [16, 17, 18, 19] }
+  ];
+
+  for (const { name, fullRows } of cases) {
+    const board = createBoard();
+    // These incomplete rows give each surviving row an observable identity.
+    board[3][0] = "I";
+    board[9][0] = "J";
+    board[15][0] = "L";
+    for (const row of fullRows) board[row].fill("Z");
+    const before = structuredClone(board);
+
+    const cleared = clearCompletedRows(board);
+    assert.equal(cleared.count, fullRows.length, name);
+    assert.equal(cleared.board.length, BOARD_HEIGHT, name);
+    assert.ok(cleared.board.every((row) => row.length === BOARD_WIDTH), name);
+    assert.deepEqual(board, before, `${name} does not mutate input`);
+
+    const expectedSurvivors = before.filter((_, row) => !fullRows.includes(row));
+    assert.deepEqual(cleared.board.slice(fullRows.length), expectedSurvivors, name);
+    assert.ok(
+      cleared.board.slice(0, fullRows.length).every((row) => row.every((cell) => cell === null)),
+      `${name} inserts empty rows at top`
+    );
+  }
+});
+
+test("locking clears rows before spawning and exposes the lock clear count", () => {
+  const game = at(createGame({ pieceSource: () => "I" }), 6, BOARD_HEIGHT - 1);
+  // The horizontal I completes this row without overwriting these settled cells.
+  for (let x = 0; x < 6; x += 1) game.board[BOARD_HEIGHT - 1][x] = "J";
+  let draws = 0;
+  const locked = moveDown(game, () => {
+    draws += 1;
+    return "O";
+  });
+
+  assert.equal(draws, 1);
+  assert.equal(locked.lastClearCount, 1);
+  assert.equal(locked.active.type, "O");
+  assert.deepEqual(locked.board, createBoard());
+  assert.equal(game.board[BOARD_HEIGHT - 1][0], "J", "source board is unchanged");
 });
 
 test("gravity waits for a complete fixed interval", () => {
