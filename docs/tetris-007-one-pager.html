@@ -287,7 +287,7 @@ footer p { margin:0; }
   <header>
     <p class="eyebrow">007 · Steering</p>
     <h1 class="sk-title"><span class="sk-burst"><span class="sk-hl">Steer the factory</span></span></h1>
-    <p class="lede">Send a message while a machine is working.</p>
+    <p class="lede">Guide a machine while it works.</p>
   </header>
 
   <figure>
@@ -309,56 +309,56 @@ footer p { margin:0; }
         <text x="835" y="34">Delivery recorded</text><text class="sub" x="835" y="55">recipient + message + time</text>
       </svg>
     </div>
-    <figcaption>A targeted intervention in the current attempt.</figcaption>
+    <figcaption>For this attempt.</figcaption>
   </figure>
 
   <section aria-labelledby="new-heading">
     <h2 class="sk-section" id="new-heading">What 007 adds</h2>
     <div class="features">
-      <article class="feature"><h3>01 · Reach a working machine</h3><p>Send guidance during an active attempt. The machine picks it up at its next step; you do not need to stop and restart it.</p></article>
-      <article class="feature"><h3>02 · Name the recipient</h3><p>Choose the run and machine explicitly. A message to the planner is for the planner; it is not broadcast to the doer or validator.</p></article>
-      <article class="feature"><h3>03 · Refuse inactive recipients</h3><p>A finished or not-yet-started machine cannot receive it. The factory reports what is running; it never queues your message for a later attempt.</p></article>
-      <article class="feature"><h3>04 · Keep a delivery record</h3><p>Once injection is acknowledged, the run records who was told what and when. Delivered messages appear alongside machine output when reading the history.</p></article>
+      <article class="feature"><h3>01 · Reach a working machine</h3><p>Send guidance mid-attempt. The machine picks it up at its next step, without restarting.</p></article>
+      <article class="feature"><h3>02 · Name the recipient</h3><p>Name the run and machine. Only that recipient receives your message.</p></article>
+      <article class="feature"><h3>03 · Refuse inactive recipients</h3><p>Inactive machines refuse messages. The factory reports what is running; messages are never queued.</p></article>
+      <article class="feature"><h3>04 · Keep a delivery record</h3><p>Acknowledged deliveries record the recipient, message and time alongside machine output.</p></article>
     </div>
-    <p class="underhood"><strong>Under the hood:</strong> the factory sends ACP’s <code>_session/steering</code> request with the active session ID and your prompt. An <code>injected</code> acknowledgment means the message went in.</p>
+    <p class="underhood"><strong>Under the hood:</strong> ACP’s <code>_session/steering</code> carries the session ID and prompt; <code>injected</code> confirms delivery.</p>
   </section>
 
   <section aria-labelledby="story-heading">
     <h2 class="sk-section" id="story-heading">“Ensure you use lots of colours”</h2>
-    <p class="case-intro">During <code>tetris-007</code>, the same instruction was delivered four times. Each delivery targeted the machine working at that moment.</p>
+    <p class="case-intro">In <code>tetris-007</code>, four deliveries targeted the machine working at that moment.</p>
     <div class="story">
       <ol class="timeline" aria-label="Four recorded steering deliveries">
-        <li><h3>1 · Doer — 14:38:24</h3><p>The colour instruction reached the doer during an implementation attempt. Later attempts had their own sessions.</p></li>
-        <li><h3>2 · Planner — 15:03:11</h3><p>The same words were sent to the active planner. That receipt did not deliver the instruction to the doer.</p></li>
-        <li><h3>3 · Doer — 15:03:40</h3><p>The instruction was sent again, this time directly to the doer once it was working.</p></li>
-        <li><h3>4 · Doer — 15:22:47</h3><p>One more delivery reached the doer during the verification task. The run later completed at 15:25:09.</p></li>
+        <li><h3>1 · Doer — 14:38:24</h3><p>The doer received colour guidance during implementation.</p></li>
+        <li><h3>2 · Planner — 15:03:11</h3><p>The planner received the same words; the doer did not.</p></li>
+        <li><h3>3 · Doer — 15:03:40</h3><p>The instruction was repeated directly to the active doer.</p></li>
+        <li><h3>4 · Doer — 15:22:47</h3><p>Another delivery during verification. The run completed at 15:25:09.</p></li>
       </ol>
       <div class="principles">
         <div class="stats" aria-label="Recorded delivery counts"><p><strong>4</strong>deliveries</p><p><strong>3</strong>to the doer</p><p><strong>1</strong>to the planner</p></div>
-        <h3>Delivered does not mean permanent</h3>
-        <p>Steering belongs to the recipient’s current attempt. It is not copied into another machine’s prompt or automatically repeated on a retry.</p>
-        <p>Changes the machine makes can persist in the product. The message itself does not become a durable run setting.</p>
-        <aside class="outcome" aria-label="Final colour verification"><p><strong>Final evidence:</strong> the verification report recorded six ANSI colours in the completed game. The delivery record alone cannot establish that steering caused those colours.</p></aside>
+        <h3>Delivery is temporary</h3>
+        <p>The message belongs to this attempt. Other machines and retries get no automatic copy.</p>
+        <p>Product changes can persist; the message is not a lasting run setting.</p>
+        <aside class="outcome" aria-label="Final colour verification"><p><strong>Final evidence:</strong> verification recorded six ANSI colours. Delivery receipts alone cannot establish that steering caused them.</p></aside>
       </div>
     </div>
   </section>
 
   <section aria-labelledby="commands-heading">
-    <h2 class="sk-section" id="commands-heading">Send it to the machine that is running</h2>
+    <h2 class="sk-section" id="commands-heading">Target the active machine</h2>
     <div class="commands">
-      <div><h3>Deliver to the active doer</h3><pre><code><span class="comment"># From the repository root, while doer works</span>
+      <div><h3>Active doer</h3><pre><code><span class="comment"># While doer works (repository root)</span>
 bin/factory say tetris-007 doer \
   "Ensure you use lots of colours"
 delivered to doer</code></pre></div>
-      <div><h3>Refuse the inactive validator</h3><pre><code><span class="comment"># While doer is running, validator is not</span>
+      <div><h3>Refuse the inactive validator</h3><pre><code><span class="comment"># Validator inactive</span>
 bin/factory say tetris-007 validator \
   "Check that the pieces use different colours"
 refused: doer is what is running</code></pre></div>
     </div>
-    <p class="small">These are command examples. Target <code>planner</code>, <code>doer</code> or <code>validator</code> only while that machine is shown as running.</p>
+    <p class="small">Examples: target <code>planner</code>, <code>doer</code> or <code>validator</code> while it is running.</p>
   </section>
 
-  <aside class="lesson"><p><strong>Steer for an immediate correction; write down lasting intent.</strong> Use a live message to clarify a misunderstanding or request a specific check. If every later attempt must keep Tetris colourful, put that requirement in the seed, plan or machine configuration.</p></aside>
+  <aside class="lesson"><p><strong>Steer now; record lasting intent.</strong> Clarify a misunderstanding or request a check. For every later attempt to keep Tetris colourful, put that requirement in the seed, plan or machine configuration.</p></aside>
   <footer>
     <p>15 October 2026 · Times: Europe/Dublin (UTC+01:00)</p>
     <p>Local evidence: <a href="../factory/runs/tetris-007/events.jsonl">four deliveries</a> · <a href="../tetris/tetris-007/VERIFICATION.md">colour verification</a></p>
