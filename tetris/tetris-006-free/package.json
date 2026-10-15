@@ -1,0 +1,9 @@
+{
+  "name": "tetris-006-free",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Terminal Tetris",
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
