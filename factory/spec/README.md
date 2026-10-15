@@ -1,46 +1,72 @@
-# Homework 5 — Fan out
+# Homework 6 — Watching
 
-Read `FACTORY.md`, then the feature files in `features/`.
+Read `FACTORY.md`, then the feature files in `features/`. Together they
+are the whole spec of the factory at this point, not just the new parts.
 
-Until now an assembly line has been a single path: one machine, then the
-next. This time the line itself learns a new move. A machine with several
-edges out and no labels on them **fans out**: every machine those edges
-lead to runs, at the same time. The branches **fan in** where they meet:
-each branch's one edge leads to the same machine, which runs once all of
-them have finished, and is given what each of them answered and nothing
-else. The factory refuses a line whose branches do not meet, and a
-branch that fails, by crashing or by answering with no result, stops the
-run.
+The factory builds the same software it built for homework 5. What is new
+is that you can watch it: what every machine generates, and what every
+machine costs.
 
-That is all the factory learns. What you fan out to is up to the line.
-The course's example is **the three big brains**: the doer's work fans
-out to three reviewers, the same job on three different providers'
-models, and a synthesiser reads their reports and decides.
+This is where your factory stops being something you run and becomes
+something that is running. You start a run and get your terminal back.
+Watching is a separate command that attaches to a run in flight. How it
+attaches — a socket, a pipe, a file the daemon appends to, an HTTP
+endpoint — is yours to choose.
 
-```dot
-doer -> reviewer_1
-doer -> reviewer_2
-doer -> reviewer_3
-reviewer_1 -> synthesiser
-reviewer_2 -> synthesiser
-reviewer_3 -> synthesiser
-synthesiser -> doer     [label="not satisfied"]
-synthesiser -> planner  [label="satisfied"]
+## Your machines speak ACP
+
+Until now each machine was one call: a prompt in, an answer out. To watch
+a machine as it works, and see what it spends, the factory now runs each
+one as an ACP agent — the [Agent Client
+Protocol](https://agentclientprotocol.com), JSON-RPC over the machine's
+stdin and stdout — and is itself the ACP client. A machine's harness is
+an ACP agent from here on:
+
+- Claude Code: `claude-agent-acp` (npm `@agentclientprotocol/claude-agent-acp`)
+- Codex: `codex-acp` (npm `@agentclientprotocol/codex-acp`)
+- pi: `pi-rpc-acp`, the small bridge over pi's RPC mode in your starter
+  repo
+
+What the factory reads: the `agent_message_chunk` updates, as what the
+machine generates; the last line of that text, as its result; and the
+`usage` on its `session/prompt` response — `inputTokens` and
+`outputTokens` — as what it spent. That usage is still a draft in ACP,
+but the Claude Code and Codex adapters send it, and so does the pi
+bridge.
+
+## The commands you'll end up with
+
+Run these commands from the repository root, through `bin/factory`:
+
+```sh
+# start a run — you get your terminal back
+$ bin/factory --run tetris --target tetris/tetris-002 --line careful --seed tetris/spec.md
+started run tetris
+
+# attach to it, now or later — catches you up, then follows live
+$ bin/factory watch tetris
+planner    | ...
+doer       | ...
+tokens     doer 12.4k in / 3.1k out   anthropic 15.5k   google 4.2k   openai 3.9k   run 23.6k
+
+# a second run while one is running is refused
+$ bin/factory --run snake --target snake/snake1 --line quick --seed snake/spec.md
+refused: run tetris is running
+
+# stop the run (the factory stays up); start it again later by name alone
+$ bin/factory stop tetris
+$ bin/factory --run tetris
+
+# stop the factory itself — its run stops with it
+$ bin/factory stop
 ```
 
-The reviewers being alike is the three big brains' choice, not something
-fanning out needs: each branch is run as that machine would be run
-anywhere, with its own prompt.
+Before you start, look at what your factory does today. It probably
+prints as it goes, and printing is not this: it is gone when the
+scrollback is gone, and it belongs to the terminal that started the run.
+A record you can attach to late, catch up on, and still read tomorrow is
+a different piece of machinery.
 
-The three reviewers assess and report; they do not
-decide. The synthesiser decides, and the line routes on its result, as it
-did on the validator's.
+## Your doubles speak ACP too
 
-## Checks that see machines at work
-
-Some examples need a machine caught part-way through its work: three
-reviewers working at the same time, say.
-
-When using test doubles, it would be good to set their state manually
-in the test, instead of running something that has a sleep or other runtime.
-It saves you from potential race conditions.
+Your test doubles, which used to replace machines, now replace "machines that communicate via ACP".

@@ -2,12 +2,13 @@ Feature: Machines
 
   No machine's work is written by the factory. The planner, the doer and
   the validator are machines on the line. Each has a name, and a harness
-  that runs it: a coding agent such as pi by default, or another named in
-  the machine's configuration. Each machine has a folder of its own in the
-  target, .assembly-lines/.machines/<name>/, holding its configuration;
-  every line in a target that names the doer runs the same doer. A machine
-  could as well be ordinary code. Whatever runs it, a machine answers with
-  a result: JSON describing the job it did.
+  that runs it: an ACP agent, which the factory speaks the Agent Client
+  Protocol to over stdio — pi, through its ACP bridge, by default, or
+  another named in the machine's configuration. Each machine has a folder
+  of its own in the target, .assembly-lines/.machines/<name>/, holding its
+  configuration; every line in a target that names the doer runs the same
+  doer. A machine could as well be ordinary code. Whatever runs it, a
+  machine answers with a result: JSON describing the job it did.
 
   Most examples say what each machine does in them: the planner plans
   the tasks alpha and beta, say, and the validator is never satisfied.
