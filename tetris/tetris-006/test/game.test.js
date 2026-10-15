@@ -8,6 +8,7 @@ const {
   TETROMINOES,
   activeCells,
   canPlace,
+  clearCompletedLines,
   createGame,
   createPieceSource,
   moveLeft,
@@ -164,7 +165,7 @@ test('advanceGame moves without locking and does not consume a next piece', () =
   const boardBefore = game.board.map((row) => [...row]);
 
   assert.deepEqual(advanceGame(game), {
-    moved: true, locked: false, spawned: false, spawnBlocked: false,
+    moved: true, locked: false, spawned: false, spawnBlocked: false, linesCleared: 0,
   });
   assert.equal(calls, 1);
   assert.equal(game.activePiece.type, 'O');
@@ -178,7 +179,7 @@ test('a blocked advance locks once and consumes exactly one next piece', () => {
   game.activePiece.y = BOARD_HEIGHT - 2;
 
   assert.deepEqual(advanceGame(game), {
-    moved: false, locked: true, spawned: true, spawnBlocked: false,
+    moved: false, locked: true, spawned: true, spawnBlocked: false, linesCleared: 0,
   });
   assert.equal(calls, 2);
   assert.equal(game.board.flat().filter(Boolean).length, 4);
@@ -195,10 +196,56 @@ test('a blocked next spawn leaves no overlapping active piece', () => {
   game.board[0][game.activePiece.x] = true;
 
   assert.deepEqual(advanceGame(game), {
-    moved: false, locked: true, spawned: false, spawnBlocked: true,
+    moved: false, locked: true, spawned: false, spawnBlocked: true, linesCleared: 0,
   });
   assert.equal(game.activePiece, null);
   assert.equal(game.board.flat().filter(Boolean).length, 5);
+});
+
+test('completed-line clearing handles zero through four simultaneous rows', () => {
+  for (let count = 0; count <= 4; count += 1) {
+    const board = emptyBoard();
+    for (let y = BOARD_HEIGHT - count; y < BOARD_HEIGHT; y += 1) board[y].fill(true);
+
+    assert.equal(clearCompletedLines(board), count);
+    assert.equal(board.length, BOARD_HEIGHT);
+    assert.ok(board.every((row) => row.length === BOARD_WIDTH));
+    assert.ok(board.slice(0, count).every((row) => row.every((cell) => !cell)));
+    assert.ok(board.slice(count).every((row) => row.every((cell) => !cell)));
+  }
+});
+
+test('line clearing compacts nonadjacent rows while retaining remaining row order', () => {
+  const board = emptyBoard();
+  board[2][0] = true;
+  board[4].fill(true);
+  board[7][1] = true;
+  board[12].fill(true);
+  board[18][2] = true;
+
+  assert.equal(clearCompletedLines(board), 2);
+  assert.ok(board[0].every((cell) => !cell));
+  assert.ok(board[1].every((cell) => !cell));
+  assert.equal(board[4][0], true, 'old row 2 follows the inserted empty rows');
+  assert.equal(board[8][1], true, 'old row 7 retains its order after compaction');
+  assert.equal(board[18][2], true, 'old row 18 retains its order after compaction');
+});
+
+test('a blocked advance locks, clears a completed row, and then spawns the next piece', () => {
+  const board = emptyBoard();
+  // A horizontal I at its centered x=3 completes this otherwise filled row.
+  for (let x = 0; x < BOARD_WIDTH; x += 1) {
+    if (x < 3 || x > 6) board[BOARD_HEIGHT - 1][x] = true;
+  }
+  const game = createGame({ board, pieceSource: createPieceSource({ sequence: ['I', 'O'] }) });
+  game.activePiece.y = BOARD_HEIGHT - 1;
+
+  assert.deepEqual(advanceGame(game), {
+    moved: false, locked: true, spawned: true, spawnBlocked: false, linesCleared: 1,
+  });
+  assert.equal(game.activePiece.type, 'O');
+  assert.ok(game.board[BOARD_HEIGHT - 1].every((cell) => !cell));
+  assert.equal(game.board.flat().filter(Boolean).length, 0);
 });
 
 test('clockwise rotation preserves four cells and four rotations restore every shape', () => {

@@ -90,6 +90,21 @@ function moveDown(game) {
   return true;
 }
 
+/**
+ * Remove every full row and prepend the same number of empty rows. This
+ * mutates the supplied board and returns how many completed lines it removed.
+ */
+function clearCompletedLines(board) {
+  validateBoard(board);
+
+  const remainingRows = board.filter((row) => !row.every(Boolean));
+  const cleared = BOARD_HEIGHT - remainingRows.length;
+  if (cleared > 0) {
+    board.splice(0, BOARD_HEIGHT, ...emptyBoard().slice(0, cleared), ...remainingRows);
+  }
+  return cleared;
+}
+
 /** Copy a valid active piece into the settled board without spawning another. */
 function lockPiece(game) {
   if (!game || !game.activePiece) {
@@ -106,26 +121,36 @@ function lockPiece(game) {
 
 /**
  * Advance a game by one gravity/soft-drop step. A successful step moves only;
- * a blocked step locks then consumes one source piece. If that piece cannot
- * spawn, no overlapping active piece is installed. Game-over state is added
- * by the later game-over task.
+ * a blocked step locks, clears completed lines, then consumes one source
+ * piece. The result reports the cleared-line count for later scoring. If that
+ * piece cannot spawn, no overlapping active piece is installed. Game-over
+ * state is added by the later game-over task.
  */
 function advanceGame(game) {
   if (!game || !game.activePiece || !game.pieceSource || typeof game.pieceSource.nextType !== 'function') {
     throw new TypeError('game must have an activePiece and pieceSource');
   }
 
-  if (moveDown(game)) return { moved: true, locked: false, spawned: false, spawnBlocked: false };
+  if (moveDown(game)) {
+    return {
+      moved: true, locked: false, spawned: false, spawnBlocked: false, linesCleared: 0,
+    };
+  }
 
   lockPiece(game);
+  const linesCleared = clearCompletedLines(game.board);
   const nextPiece = spawnPiece(game.pieceSource.nextType());
   if (!canPlace(game.board, nextPiece)) {
     game.activePiece = null;
-    return { moved: false, locked: true, spawned: false, spawnBlocked: true };
+    return {
+      moved: false, locked: true, spawned: false, spawnBlocked: true, linesCleared,
+    };
   }
 
   game.activePiece = nextPiece;
-  return { moved: false, locked: true, spawned: true, spawnBlocked: false };
+  return {
+    moved: false, locked: true, spawned: true, spawnBlocked: false, linesCleared,
+  };
 }
 
 /**
@@ -210,6 +235,7 @@ module.exports = {
   TETROMINOES,
   activeCells,
   canPlace,
+  clearCompletedLines,
   createGame,
   createPieceSource,
   moveHorizontally,
