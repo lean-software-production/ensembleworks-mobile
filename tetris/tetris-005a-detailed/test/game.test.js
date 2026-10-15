@@ -11,6 +11,7 @@ const {
   createGame,
   createPieceSource,
   makeActivePiece,
+  moveDown,
   moveLeft,
   moveRight,
   rotateClockwise
@@ -206,4 +207,58 @@ test("no-wall-kick rotation rejects walls, floor, and settled cells without muta
   const blockedBefore = structuredClone(blocked);
   assert.equal(rotateClockwise(blocked), blocked, "settled cell");
   assert.deepEqual(blocked, blockedBefore);
+});
+
+test("downward movement advances one row without settling or drawing a successor", () => {
+  const game = at(createGame({ pieceSource: () => "T" }), 4, 8);
+  let draws = 0;
+  const descended = moveDown(game, () => {
+    draws += 1;
+    return "I";
+  });
+
+  assert.equal(descended.active.y, 9);
+  assert.deepEqual(descended.active.cells, game.active.cells.map(({ x, y }) => ({ x, y: y + 1 })));
+  assert.deepEqual(descended.board, game.board);
+  assert.equal(descended.board, game.board);
+  assert.equal(draws, 0);
+});
+
+test("floor locks every tetromino's four cells once and spawns one successor", () => {
+  for (const type of PIECE_NAMES) {
+    const initial = createGame({ pieceSource: () => type });
+    const maxY = Math.max(...initial.active.cells.map(({ y }) => y));
+    const game = at(initial, 3, BOARD_HEIGHT - 1 - maxY);
+    const before = structuredClone(game.board);
+    let draws = 0;
+    const locked = moveDown(game, () => {
+      draws += 1;
+      return "L";
+    });
+
+    assert.equal(draws, 1, type);
+    assert.equal(locked.active.type, "L", type);
+    assert.deepEqual(locked.active, makeActivePiece("L"), type);
+    assert.notEqual(locked.board, game.board, type);
+    for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], type, `${type} ${x},${y}`);
+    assert.equal(locked.board.flat().filter((cell) => cell === type).length, 4, type);
+    assert.deepEqual(game.board, before, type);
+  }
+});
+
+test("a stack blocks descent, locks without overwriting settled cells, and preserves it", () => {
+  const game = at(createGame({ pieceSource: () => "T" }), 4, 8);
+  game.board[10][5] = "J";
+  const before = structuredClone(game.board);
+  let draws = 0;
+  const locked = moveDown(game, () => {
+    draws += 1;
+    return "O";
+  });
+
+  assert.equal(draws, 1);
+  assert.equal(locked.board[10][5], "J");
+  for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], "T");
+  assert.equal(locked.board.flat().filter((cell) => cell === "T").length, 4);
+  assert.deepEqual(game.board, before);
 });

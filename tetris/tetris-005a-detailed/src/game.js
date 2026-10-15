@@ -95,6 +95,42 @@ function moveRight(game) {
 }
 
 /**
+ * Settle the current legal active piece and create its successor. The caller
+ * owns the injected source, so game state remains plain data and a lock draws
+ * exactly one new piece. Line clearing and spawn validation intentionally
+ * follow this transition in later rules.
+ */
+function lockActivePiece(game, pieceSource) {
+  if (typeof pieceSource !== "function") {
+    throw new TypeError("pieceSource must be a function when locking a piece");
+  }
+  if (!canPlace(game.board, game.active.cells)) {
+    throw new RangeError("cannot lock an active piece in an invalid placement");
+  }
+
+  const board = game.board.map((row) => row.slice());
+  for (const { x, y } of game.active.cells) board[y][x] = game.active.type;
+
+  const nextType = pieceSource();
+  assertPiece(nextType);
+  return { ...game, board, active: makeActivePiece(nextType) };
+}
+
+/**
+ * Move the active piece down one row. A blocked step locks immediately; there
+ * is no lock delay. `pieceSource` is consulted only by that lock transition.
+ */
+function moveDown(game, pieceSource) {
+  const cells = game.active.cells.map(({ x, y }) => ({ x, y: y + 1 }));
+  if (!canPlace(game.board, cells)) return lockActivePiece(game, pieceSource);
+
+  return {
+    ...game,
+    active: { ...game.active, y: game.active.y + 1, cells }
+  };
+}
+
+/**
  * Rotate an active piece clockwise inside its current bounding box. Rotation
  * has no wall kicks: the piece keeps its x/y origin and the action is rejected
  * if that exact rotated footprint is outside the board or hits settled cells.
@@ -135,7 +171,9 @@ module.exports = {
   createBoard,
   createGame,
   createPieceSource,
+  lockActivePiece,
   makeActivePiece,
+  moveDown,
   moveHorizontally,
   moveLeft,
   moveRight,
