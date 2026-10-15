@@ -12,6 +12,7 @@ const {
   createPieceSource,
   moveLeft,
   moveRight,
+  moveDown,
   rotateClockwise,
   spawnPiece,
 } = require('../src/game');
@@ -94,6 +95,50 @@ test('repeated horizontal movement stays within both walls and ignores the activ
   while (moveRight(game)) {}
   assert.equal(game.activePiece.x, BOARD_WIDTH - 4);
   assert.equal(moveRight(game), false);
+});
+
+test('downward movement moves exactly one row without locking', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const startY = game.activePiece.y;
+  const boardBefore = game.board.map((row) => [...row]);
+
+  assert.equal(moveDown(game), true);
+  assert.equal(game.activePiece.y, startY + 1);
+  assert.deepEqual(game.board, boardBefore);
+  assert.equal(game.board.flat().filter(Boolean).length, 0);
+});
+
+test('downward movement rejects floor and settled cells without changing state', () => {
+  const floorGame = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  floorGame.activePiece.y = BOARD_HEIGHT - 2;
+  const onFloor = floorGame.activePiece;
+  const floorBoard = floorGame.board.map((row) => [...row]);
+  assert.equal(moveDown(floorGame), false);
+  assert.strictEqual(floorGame.activePiece, onFloor);
+  assert.deepEqual(floorGame.board, floorBoard);
+
+  const board = emptyBoard();
+  const blockedGame = createGame({ board, pieceSource: createPieceSource({ sequence: ['O'] }) });
+  const { x, y } = blockedGame.activePiece;
+  board[y + 2][x] = true;
+  const aboveBlock = blockedGame.activePiece;
+  assert.equal(moveDown(blockedGame), false);
+  assert.strictEqual(blockedGame.activePiece, aboveBlock);
+  assert.equal(board[y + 2][x], true);
+});
+
+test('repeated downward movement stops at the first obstruction without locking', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['I'] }) });
+  const boardBefore = game.board.map((row) => [...row]);
+
+  let steps = 0;
+  while (moveDown(game)) steps += 1;
+
+  assert.equal(steps, BOARD_HEIGHT - 1);
+  assert.equal(game.activePiece.y, BOARD_HEIGHT - 1);
+  assert.equal(moveDown(game), false);
+  assert.deepEqual(game.board, boardBefore);
+  assert.equal(game.board.flat().filter(Boolean).length, 0);
 });
 
 test('clockwise rotation preserves four cells and four rotations restore every shape', () => {

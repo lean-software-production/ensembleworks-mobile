@@ -74,6 +74,23 @@ function moveRight(game) {
 }
 
 /**
+ * Move the active piece down one row without locking it. Returns false when
+ * the floor or a settled block prevents the step, leaving all game state
+ * unchanged; locking and piece progression are separate actions.
+ */
+function moveDown(game) {
+  if (!game || !game.activePiece) {
+    throw new TypeError('game must have an activePiece');
+  }
+
+  const candidate = { ...game.activePiece, y: game.activePiece.y + 1 };
+  if (!canPlace(game.board, candidate)) return false;
+
+  game.activePiece = candidate;
+  return true;
+}
+
+/**
  * Rotate clockwise in the active shape's bounding box: (x, y) becomes
  * (height - 1 - y, x). No wall kicks are applied; an out-of-bounds or
  * settled-cell collision rejects the rotation and leaves the piece intact.
@@ -160,6 +177,7 @@ module.exports = {
   moveHorizontally,
   moveLeft,
   moveRight,
+  moveDown,
   rotateClockwise,
   spawnPiece,
 };
