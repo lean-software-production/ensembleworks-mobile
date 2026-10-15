@@ -51,8 +51,8 @@ function startInteractiveSession({
   output = process.stdout,
   scheduler,
   processObject = process,
+  game = createGame(),
 } = {}) {
-  const game = createGame();
   let cleanedUp = false;
   let rawModeEnabled = false;
   let onData;
@@ -122,13 +122,21 @@ function startInteractiveSession({
   };
 }
 
-function main() {
+function main({
+  input = process.stdin,
+  output = process.stdout,
+  scheduler,
+  processObject = process,
+  game,
+} = {}) {
   // Captured/non-interactive launches produce one bounded frame and exit.
-  if (!process.stdin.isTTY || !process.stdout.isTTY) {
-    writeFrame(process.stdout, createGame());
-    return;
+  if (!input.isTTY || !output.isTTY) {
+    writeFrame(output, game || createGame());
+    return null;
   }
-  startInteractiveSession();
+  return startInteractiveSession({
+    input, output, ...(scheduler ? { scheduler } : {}), processObject, ...(game ? { game } : {}),
+  });
 }
 
 if (require.main === module) main();
