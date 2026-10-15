@@ -122,3 +122,30 @@ Feature: Public entrypoint and commit-boundary regression checks
     When I watch the "tetris" run
     Then I see "naïve 🧩" from the doer
     And I do not see "second line"
+
+  Scenario Outline: An unaccepted steering request is refused without stopping the run
+    Given a plan with one task, not done
+    And the adapter's steering response is "<response>"
+    And the "tetris" run is running, with the doer part-way through an attempt
+    When I say "use curses, not print" to the doer
+    Then the factory refuses
+    And no steering delivery is recorded
+    And the "tetris" run is running
+    When the doer finishes its attempt
+    And the "tetris" run has run to the end
+    And I watch the "tetris" run
+    Then there is one new work commit
+
+    Examples:
+      | response       |
+      | promptRequired |
+      | unsupported    |
+
+  Scenario: Watching replays delivered messages alongside machine output
+    Given a plan with one task, not done
+    And the "tetris" run is running, with the doer part-way through an attempt
+    When I say "use curses, not print" to the doer
+    And the doer finishes its attempt
+    And the "tetris" run has run to the end
+    And I watch the "tetris" run
+    Then watching shows that the doer was told "use curses, not print"

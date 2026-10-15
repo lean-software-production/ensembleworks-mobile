@@ -7,13 +7,14 @@ import {
 import { PlanReview } from "./plan-review";
 import { Run } from "./runs";
 import { initializeTarget, changedWork, commitWork } from "./work";
-import { callMachine } from "./acp";
+import { callMachine, MachineTurns } from "./acp";
 import { RunRecord } from "./record";
 import { Options } from "./options";
 
 type Result = Record<string, unknown>;
 
-export async function runFactory(options: Options, record: RunRecord, signal: AbortSignal): Promise<void> {
+export async function runFactory(options: Options, record: RunRecord, signal: AbortSignal,
+  turns = new MachineTurns()): Promise<void> {
   if (options.checkLine) {
     if (!options.target || !options.line) throw new Error("Checking a line needs --target <folder> and --line <name>.");
     new AssemblyLine(options.target, options.line);
@@ -77,7 +78,7 @@ export async function runFactory(options: Options, record: RunRecord, signal: Ab
       attempts += 1;
     }
     if (machine.prompt) prompt += `\n${machine.prompt}`;
-    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`, record, signal);
+    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`, record, signal, turns);
     const fan = line.fanOut(node);
     const next = fan ? fan.join : line.next(node, result);
     if (machine.role === "plan_author") review!.recordAuthor(result);
@@ -115,7 +116,7 @@ export async function runFactory(options: Options, record: RunRecord, signal: Ab
         const branchPrompt = promptFor(branch, work);
         try {
           let report = await callMachine(branch, target,
-            `${branchPrompt}${branch.prompt ? `\n${branch.prompt}` : ""}\n${resultPrompt(line.fields(name))}`, record, branchSignal);
+            `${branchPrompt}${branch.prompt ? `\n${branch.prompt}` : ""}\n${resultPrompt(line.fields(name))}`, record, branchSignal, turns);
           if (branch.role === "plan_reviewer") report = { ...report, review: review!.reportContext() };
           branchSignal.throwIfAborted();
           return [name, report] as const;

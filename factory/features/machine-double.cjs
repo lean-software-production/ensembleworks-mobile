@@ -174,6 +174,7 @@ if (machine === "validator" && config.invalidLastVerdict) console.log('{"note":"
 }
 let initialized = false;
 let session = false;
+let working = false;
 createInterface({ input: process.stdin }).on("line", async line => {
   const message = JSON.parse(line);
   const { id, method, params } = message;
@@ -186,8 +187,27 @@ createInterface({ input: process.stdin }).on("line", async line => {
     send({ id, result: { sessionId: "double" } });
   } else if (method === "session/prompt") {
     if (!session || params.sessionId !== "double") throw new Error("Invalid ACP prompt");
+    working = true;
     await execute(params.prompt.map(block => block.text).join("\n"));
+    working = false;
     send({ id, result: { stopReason: "end_turn", usage: { inputTokens: 101, outputTokens: 23 } } });
+  } else if (method === "_session/steering") {
+    if (!working || params.sessionId !== "double" || !Array.isArray(params.prompt) ||
+        params.prompt.some(block => block.type !== "text" || typeof block.text !== "string")) {
+      send({ id, error: { code: -32602, message: "Invalid ACP steering" } });
+      return;
+    }
+    const config = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
+    if (config.steeringResponse === "unsupported") {
+      send({ id, error: { code: -32601, message: "Steering unsupported" } });
+      return;
+    }
+    if (config.steeringResponse === "promptRequired") {
+      send({ id, result: { outcome: "promptRequired", reason: "noRunningTurn" } });
+      return;
+    }
+    for (const block of params.prompt) text(`heard: ${block.text}\n`);
+    send({ id, result: { outcome: "injected" } });
   }
 });
 process.stdin.on("end", () => process.exit(0));

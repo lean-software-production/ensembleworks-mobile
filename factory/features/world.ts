@@ -32,6 +32,7 @@ export interface AgentConfig {
   holdMachines?: string[];
   doerLines?: string[];
   partialText?: boolean;
+  steeringResponse?: "promptRequired" | "unsupported";
 }
 
 export interface RunFixture {

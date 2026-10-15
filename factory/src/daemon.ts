@@ -8,6 +8,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { Options } from "./options";
 import { RunRecord, runsFolder } from "./record";
 import { runFactory } from "./runner";
+import { MachineTurns } from "./acp";
 
 // One endpoint per factory, with a short path even in deeply nested workspaces.
 export const socket = join(tmpdir(), `lean-factory-${createHash("sha256").update(resolve(__dirname, "..")).digest("hex").slice(0, 20)}.sock`);
@@ -62,7 +63,7 @@ export async function ensureDaemon(): Promise<void> {
 }
 
 export function serve(): void {
-  let active: { name: string; controller: AbortController; done: Promise<void> } | undefined;
+  let active: { name: string; controller: AbortController; done: Promise<void>; turns: MachineTurns } | undefined;
   let closing = false;
   async function stopRun(): Promise<void> {
     const run = active;
@@ -83,14 +84,23 @@ export function serve(): void {
         const options = body as Options;
         const record = new RunRecord(options.run);
         const controller = new AbortController();
+        const turns = new MachineTurns();
         record.append({ type: "run", status: "running" });
-        const done = Promise.resolve().then(() => runFactory(options, record, controller.signal)).then(() => {
+        const done = Promise.resolve().then(() => runFactory(options, record, controller.signal, turns)).then(() => {
           record.append({ type: "run", status: controller.signal.aborted ? "stopped" : "completed" });
         }, error => {
           record.append({ type: "run", status: controller.signal.aborted ? "stopped" : "failed", message: controller.signal.aborted ? undefined : error.message });
         }).finally(() => { active = undefined; });
-        active = { name: options.run, controller, done };
+        active = { name: options.run, controller, done, turns };
         response = { message: `started run ${options.run}` };
+      } else if (req.url === "/say") {
+        if (!active) throw new Error("refused: nothing is running");
+        if (active.name !== body.name) throw new Error(`refused: run ${active.name} is running`);
+        if (typeof body.machine !== "string" || typeof body.message !== "string" || !body.message.trim()) {
+          throw new Error("Usage: factory say <run> <machine> <message>");
+        }
+        await active.turns.say(body.machine, body.message);
+        response = { message: `delivered to ${body.machine}` };
       } else if (req.url === "/stop") {
         if (body.name && active && body.name !== active.name) throw new Error(`Run ${body.name} is not running.`);
         if (!body.name) closing = true;

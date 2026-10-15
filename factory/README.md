@@ -1,4 +1,4 @@
-# Factory — iteration 006: Watching
+# Factory — iteration 007: Steering
 
 Start a named run from the repository root, giving it a target, one of that
 target's assembly lines, and a seed:
@@ -14,6 +14,23 @@ Starting returns `started run tetris` while the factory continues in a daemon.
 status, and cumulative input/output token counts. Totals are grouped by provider
 and for the whole run. A completed run's output can be watched again tomorrow.
 
+Send a message to a named machine while it is working:
+
+```sh
+bin/factory say tetris doer "use curses, not print"
+```
+
+The command returns `delivered to doer` after the ACP adapter acknowledges
+injection through `_session/steering`. During parallel review, name a reviewer
+such as `reviewer_2`. A message to an inactive machine is refused with the names
+of the machines currently working, or `refused: nothing is running`.
+Unsupported steering requests and responses other than `injected` are errors.
+
+Messages belong to the active machine's current attempt. They are never queued
+for another machine or copied into a later attempt's prompt. Put lasting
+instructions in the seed, plan, or machine configuration. Delivered messages
+are timestamped in the run's record and replayed by `watch` as `told doer: …`.
+
 ```sh
 bin/factory stop tetris   # interrupt the current attempt, leave the daemon up
 bin/factory --run tetris  # resume using its remembered settings and plan
@@ -27,8 +44,8 @@ the target, and abandons the unvalidated attempt without committing or advancing
 the plan. A stopped run starts again at the planner. Attempts reset on restart.
 
 Each run keeps an append-only `factory/runs/<name>/events.jsonl`: streamed text,
-machine start/finish events, token usage, and run lifecycle events. Resuming adds
-to the record, so token totals include earlier attempts. The daemon communicates
+machine start/finish events, delivered steering messages, token usage, and run
+lifecycle events. Resuming adds to the record, so token totals include earlier attempts. The daemon communicates
 through a local Unix socket; `factory/runs/daemon.log` holds daemon diagnostics.
 
 The run remembers all three in `factory/runs/tetris/run.json`. After that its

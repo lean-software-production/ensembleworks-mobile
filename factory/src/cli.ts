@@ -6,6 +6,19 @@ import { command, ensureDaemon, serve } from "./daemon";
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (args[0] === "--daemon") { serve(); return; }
+  if (args[0] === "say") {
+    if (args.length !== 4 || !args[2].trim() || !args[3].trim()) throw new Error("Usage: factory say <run> <machine> <message>");
+    new RunRecord(args[1]);
+    try {
+      console.log((await command("say", { name: args[1], machine: args[2], message: args[3] })).message);
+    } catch (error) {
+      if (["ENOENT", "ECONNREFUSED"].includes((error as NodeJS.ErrnoException).code ?? "")) {
+        throw new Error("refused: nothing is running");
+      }
+      throw error;
+    }
+    return;
+  }
   if (args[0] === "watch") {
     if (args.length !== 2) throw new Error("Usage: factory watch <run>");
     const status = await watch(args[1]);

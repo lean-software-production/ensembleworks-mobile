@@ -8,6 +8,7 @@ export type Event =
   | { type: "run"; status: RunStatus; message?: string }
   | { type: "machine"; machine: string; status: "running" | "finished" | "stopped" }
   | { type: "text"; machine: string; text: string }
+  | { type: "steering"; machine: string; text: string }
   | { type: "usage"; machine: string; provider: string; inputTokens: number; outputTokens: number };
 
 export class RunRecord {
@@ -57,6 +58,9 @@ export async function watch(name: string, write = (text: string) => process.stdo
     for (const event of events.slice(seen)) {
       if (event.type === "text") {
         text(event.machine, event.text);
+      } else if (event.type === "steering") {
+        endLine();
+        write(`told ${event.machine}: ${event.text}\n`);
       } else if (event.type === "machine") {
         endLine();
         if (event.status === "running") running.add(event.machine);

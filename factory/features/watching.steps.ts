@@ -14,7 +14,7 @@ async function until(check: () => boolean, message: string): Promise<void> {
     await delay(15);
   }
 }
-function events(world: FactoryWorld, name: string): any[] {
+export function events(world: FactoryWorld, name: string): any[] {
   const file = join(world.factoryDir, "runs", name, "events.jsonl");
   return existsSync(file) ? readFileSync(file, "utf8").split("\n").slice(0, -1).map(line => JSON.parse(line)) : [];
 }
@@ -30,6 +30,7 @@ function daemonStatus(world: FactoryWorld): { running: boolean; run: string | nu
   return status;
 }
 function start(world: FactoryWorld, name: string): void {
+  world.watchingRun = name;
   const fixture = world.runs[name];
   saveAgentConfig(world, fixture.plan);
   const previousCalls = calls(world).length;
@@ -44,11 +45,15 @@ async function hold(world: FactoryWorld, name: string, machines: string[], first
   if (machines.includes("doer")) world.agentConfig.doerLines ??= [firstLine];
   start(world, name);
   successful(world);
-  await until(() => machines.every(machine => existsSync(waitingPath(world, machine))), `Machines did not start: ${world.output}`);
-  // The fixture is blocked inside session/prompt until explicitly released.
-  for (const machine of machines) assert.ok(events(world, name).some(event => event.type === "text" && event.machine === machine));
+  // The marker file and stdout travel independently. Wait for the daemon to
+  // record the first chunk as well as for the double to enter its hold.
+  await until(() => {
+    const recorded = events(world, name);
+    return machines.every(machine => existsSync(waitingPath(world, machine)) &&
+      recorded.some(event => event.type === "text" && event.machine === machine));
+  }, `Machines did not start: ${world.output}`);
 }
-function release(world: FactoryWorld): void {
+export function release(world: FactoryWorld): void {
   for (const machine of world.agentConfig.holdMachines ?? []) {
     writeFileSync(join(dirname(waitingPath(world, machine)), `${machine}.release`), "finish");
   }

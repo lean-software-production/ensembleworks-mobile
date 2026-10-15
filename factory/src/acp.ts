@@ -5,6 +5,21 @@ import { RunRecord } from "./record";
 
 type Result = Record<string, unknown>;
 
+// A fresh registry for each run; entries exist only during a machine's prompt.
+export class MachineTurns {
+  readonly running = new Map<string, (message: string) => Promise<void>>();
+
+  async say(machine: string, message: string): Promise<void> {
+    const deliver = this.running.get(machine);
+    if (!deliver) {
+      const names = [...this.running.keys()];
+      throw new Error(names.length === 0 ? "refused: nothing is running"
+        : `refused: ${names.join(", ")} ${names.length === 1 ? "is" : "are"} what is running`);
+    }
+    await deliver(message);
+  }
+}
+
 function readResult(output: string): Result {
   for (const line of output.split(/\r?\n/).reverse()) {
     try {
@@ -17,7 +32,7 @@ function readResult(output: string): Result {
 }
 
 export async function callMachine(machine: MachineConfig, target: string, prompt: string,
-  record: RunRecord, signal: AbortSignal): Promise<Result> {
+  record: RunRecord, signal: AbortSignal, turns: MachineTurns): Promise<Result> {
   signal.throwIfAborted();
   const child = spawn(machine.harness, machine.model ? ["--model", machine.model] : [], {
     cwd: target, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"]
@@ -87,12 +102,21 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
   record.append({ type: "machine", machine: machine.name, status: "running" });
   try {
     const initialized = await request("initialize", {
-      protocolVersion: 1, clientCapabilities: {}, clientInfo: { name: "lean-factory", version: "006" }
+      protocolVersion: 1, clientCapabilities: {}, clientInfo: { name: "lean-factory", version: "007" }
     });
     if (initialized.protocolVersion !== 1) throw new Error(`Could not run the ${machine.name}: unsupported ACP version`);
     const session = await request("session/new", { cwd: target, mcpServers: [] });
     sessionId = session.sessionId;
-    const response = await request("session/prompt", { sessionId, prompt: [{ type: "text", text: prompt }] });
+    const prompted = request("session/prompt", { sessionId, prompt: [{ type: "text", text: prompt }] });
+    turns.running.set(machine.name, async message => {
+      signal.throwIfAborted();
+      const result = await request("_session/steering", { sessionId, prompt: [{ type: "text", text: message }] });
+      if (result?.outcome !== "injected") throw new Error(`refused: ${machine.name} did not accept the message`);
+      record.append({ type: "steering", machine: machine.name, text: message });
+    });
+    let response;
+    try { response = await prompted; }
+    finally { turns.running.delete(machine.name); }
     signal.throwIfAborted();
     if (response.stopReason === "cancelled") throw new Error(`Could not run the ${machine.name}: prompt cancelled`);
     if (response.usage) record.append({ type: "usage", machine: machine.name, provider: machine.provider ?? "unknown",
