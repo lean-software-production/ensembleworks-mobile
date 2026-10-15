@@ -1,0 +1,6 @@
+{
+  "role": "doer",
+  "harness": "pi-rpc-acp",
+  "model": "openrouter/cohere/north-mini-code:free",
+  "provider": "openrouter"
+}
