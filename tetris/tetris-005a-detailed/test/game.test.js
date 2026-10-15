@@ -6,6 +6,9 @@ const { BOARD_HEIGHT, BOARD_WIDTH, renderFrame } = require("../src/frame");
 const {
   PIECES,
   PIECE_NAMES,
+  GRAVITY_INTERVAL_MS,
+  MAX_GRAVITY_STEPS,
+  advanceGravity,
   canPlace,
   createBoard,
   createGame,
@@ -261,4 +264,55 @@ test("a stack blocks descent, locks without overwriting settled cells, and prese
   for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], "T");
   assert.equal(locked.board.flat().filter((cell) => cell === "T").length, 4);
   assert.deepEqual(game.board, before);
+});
+
+test("gravity waits for a complete fixed interval", () => {
+  const game = at(createGame({ pieceSource: () => "T" }), 4, 8);
+  const updated = advanceGravity(game, GRAVITY_INTERVAL_MS - 1, () => "I");
+
+  assert.equal(updated.active.y, 8);
+  assert.equal(updated.gravityElapsed, GRAVITY_INTERVAL_MS - 1);
+  assert.equal(updated.board, game.board);
+});
+
+test("gravity descends exactly once at an interval and accumulates partial updates", () => {
+  const game = at(createGame({ pieceSource: () => "T" }), 4, 8);
+  const once = advanceGravity(game, GRAVITY_INTERVAL_MS, () => "I");
+  assert.equal(once.active.y, 9);
+  assert.equal(once.gravityElapsed, 0);
+
+  const partial = advanceGravity(game, 400, () => "I");
+  const accumulated = advanceGravity(partial, 600, () => "I");
+  assert.equal(partial.active.y, 8);
+  assert.equal(accumulated.active.y, 9);
+  assert.equal(accumulated.gravityElapsed, 0);
+});
+
+test("a large gravity update is capped at a deterministic number of descents", () => {
+  const game = createGame({ pieceSource: () => "T" });
+  let draws = 0;
+  const updated = advanceGravity(game, GRAVITY_INTERVAL_MS * 100, () => {
+    draws += 1;
+    return "I";
+  });
+
+  assert.equal(updated.active.y, MAX_GRAVITY_STEPS);
+  assert.equal(updated.gravityElapsed, 0);
+  assert.equal(draws, 0);
+});
+
+test("gravity locking spawns once and discards remaining timing debt", () => {
+  const initial = createGame({ pieceSource: () => "O" });
+  const game = at(initial, 4, BOARD_HEIGHT - 2);
+  let draws = 0;
+  const locked = advanceGravity(game, GRAVITY_INTERVAL_MS * 5, () => {
+    draws += 1;
+    return "L";
+  });
+
+  assert.equal(draws, 1);
+  assert.equal(locked.active.type, "L");
+  assert.equal(locked.active.y, 0);
+  assert.equal(locked.gravityElapsed, 0);
+  for (const { x, y } of game.active.cells) assert.equal(locked.board[y][x], "O");
 });

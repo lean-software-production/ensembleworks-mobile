@@ -16,6 +16,12 @@ const PIECES = Object.freeze({
 
 const PIECE_NAMES = Object.freeze(Object.keys(PIECES));
 
+// Gravity advances once per second. At most ten rows are processed by one
+// elapsed-time update; excess elapsed time is deliberately discarded so a
+// delayed event-loop callback cannot make a piece fall an unbounded distance.
+const GRAVITY_INTERVAL_MS = 1000;
+const MAX_GRAVITY_STEPS = 10;
+
 function createBoard() {
   return Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null));
 }
@@ -58,7 +64,12 @@ function createGame({ pieceSource = createPieceSource() } = {}) {
   if (typeof pieceSource !== "function") throw new TypeError("pieceSource must be a function");
   const type = pieceSource();
   assertPiece(type);
-  return { board: createBoard(), active: makeActivePiece(type), score: 0 };
+  return {
+    board: createBoard(),
+    active: makeActivePiece(type),
+    score: 0,
+    gravityElapsed: 0
+  };
 }
 
 /**
@@ -131,6 +142,37 @@ function moveDown(game, pieceSource) {
 }
 
 /**
+ * Apply elapsed time to gravity without relying on a clock. One call processes
+ * at most MAX_GRAVITY_STEPS descents; elapsed time beyond that cap is dropped.
+ * Locking ends the update and resets the accumulator, so a successor never
+ * inherits time that belonged to the piece that just locked.
+ */
+function advanceGravity(game, elapsedMs, pieceSource) {
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
+    throw new RangeError("elapsed time must be a non-negative finite number");
+  }
+
+  const previousElapsed = game.gravityElapsed ?? 0;
+  const elapsed = Math.min(
+    previousElapsed + elapsedMs,
+    GRAVITY_INTERVAL_MS * MAX_GRAVITY_STEPS
+  );
+  let steps = Math.floor(elapsed / GRAVITY_INTERVAL_MS);
+  let next = { ...game, gravityElapsed: elapsed % GRAVITY_INTERVAL_MS };
+
+  while (steps > 0) {
+    const descended = moveDown(next, pieceSource);
+    // moveDown retains the board object for an ordinary descent and replaces it
+    // only when it locks, making the transition explicit without extra state.
+    if (descended.board !== next.board) return { ...descended, gravityElapsed: 0 };
+    next = descended;
+    steps -= 1;
+  }
+
+  return next;
+}
+
+/**
  * Rotate an active piece clockwise inside its current bounding box. Rotation
  * has no wall kicks: the piece keeps its x/y origin and the action is rejected
  * if that exact rotated footprint is outside the board or hits settled cells.
@@ -167,6 +209,9 @@ function rotateClockwise(game) {
 module.exports = {
   PIECES,
   PIECE_NAMES,
+  GRAVITY_INTERVAL_MS,
+  MAX_GRAVITY_STEPS,
+  advanceGravity,
   canPlace,
   createBoard,
   createGame,
