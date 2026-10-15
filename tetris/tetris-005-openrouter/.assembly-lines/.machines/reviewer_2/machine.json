@@ -1,5 +1,4 @@
 {
   "role": "reviewer",
-  "model": "openrouter/anthropic/claude-opus-5.5",
-  "lensFile": "../lens.md"
+  "model": "openrouter/anthropic/claude-opus-5.5"
 }

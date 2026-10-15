@@ -113,3 +113,23 @@ Feature: Public entrypoint and commit-boundary regression checks
     And the doer was pointed at the plan and at the seed
     And there are three new work commits
     And the target has no uncommitted changes
+
+  Scenario Outline: Each harness uses only the machine configuration
+    Given a copy of the factory
+    And a new target, with a seed describing a game of Tetris
+    And the target has the machines planner, doer and validator
+    And the target has an assembly line "careful" on which the doer's work is validated
+    And a run named "tetris", on the "careful" line, with that seed and target
+    And the planner plans the tasks alpha and beta
+    And the doer does the next task in the plan
+    And the validator is always satisfied
+    And a plan with one pending task
+    And the doer uses the <harness> harness
+    When the factory runs the "tetris" run
+    Then the doer's <harness> configuration is isolated
+
+    Examples:
+      | harness |
+      | pi      |
+      | claude  |
+      | codex   |

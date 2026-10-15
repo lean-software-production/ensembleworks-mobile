@@ -6,8 +6,10 @@ export interface MachineConfig {
   name: string;
   role: string;
   harness: string;
-  lens: string;
-  prompt?: string;
+  folder: string;
+  instructions: string;
+  provider?: string;
+  adapter?: string;
   model?: string;
 }
 
@@ -39,8 +41,10 @@ export class AssemblyLine {
         name,
         role: config.role ?? name,
         harness: config.harness ?? "pi",
-        lens: config.lens ?? (config.lensFile ? readFileSync(resolve(dirname(file), config.lensFile), "utf8") : ""),
-        prompt: config.prompt,
+        folder: resolve(dirname(file)),
+        instructions: readFileSync(join(dirname(file), "AGENTS.md"), "utf8"),
+        provider: config.provider,
+        adapter: config.adapter,
         model: config.model
       });
     }
@@ -84,6 +88,10 @@ export class AssemblyLine {
 
   machine(name: string): MachineConfig {
     return this.machines.get(name)!;
+  }
+
+  allMachines(): MachineConfig[] {
+    return [...this.machines.values()];
   }
 
   hasRole(role: string): boolean {

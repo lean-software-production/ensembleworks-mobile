@@ -5,3 +5,9 @@
 !config.toml
 !settings.json
 !machine.json
+auth.json
+.credentials.json
+sessions/
+logs/
+history.jsonl
+models.json

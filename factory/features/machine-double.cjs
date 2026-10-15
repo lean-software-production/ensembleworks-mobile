@@ -10,16 +10,21 @@ const prompt = fs.readFileSync(0, "utf8");
 let machine = prompt.match(/You are the (\w+)\./)?.[1];
 if (machine === "reviewer") machine = `reviewer_${["openai/model", "anthropic/model", "google/model"].indexOf(args[args.indexOf("--model") + 1]) + 1}`;
 const cwd = process.cwd();
+const configDir = process.env.PI_CODING_AGENT_DIR || process.env.CLAUDE_CONFIG_DIR || process.env.CODEX_HOME || "";
+const configDirs = Object.fromEntries(["PI_CODING_AGENT_DIR", "CLAUDE_CONFIG_DIR", "CODEX_HOME"].filter(key => process.env[key]).map(key => [key, process.env[key]]));
+if (!machine && configDir) machine = path.basename(configDir);
+const ownLogin = !!configDir && ["auth.json", ".credentials.json"].some(file => fs.existsSync(path.join(configDir, file)));
+const apiKey = !!process.env.ANTHROPIC_API_KEY;
 // The run being invoked keeps its plan with the factory; the test names it.
 const planPath = config.planPath;
 const priorCalls = fs.existsSync(config.callLog)
-  ? fs.readFileSync(config.callLog, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse)
+  ? fs.readFileSync(config.callLog, "utf8").split("\n").slice(0, -1).filter(Boolean).map(JSON.parse)
   : [];
 const planExists = fs.existsSync(planPath);
 const plan = planExists ? fs.readFileSync(planPath, "utf8") : "";
 const count = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd, encoding: "utf8" });
 const commits = count.status === 0 ? Number(count.stdout) : 0;
-fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan }) + "\n");
+fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan, configDir, ownLogin, apiKey, configDirs }) + "\n");
 fs.mkdirSync(config.promptsDir, { recursive: true });
 fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.filter(call => call.machine === machine).length + 1}-${machine}.txt`), prompt);
 
@@ -142,7 +147,7 @@ if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
     });
   }
   function checkStarted() {
-    const started = fs.readFileSync(config.callLog, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse)
+    const started = fs.readFileSync(config.callLog, "utf8").split("\n").slice(0, -1).filter(Boolean).map(JSON.parse)
       .filter(call => call.machine?.startsWith("reviewer_") && call.commits === commits);
     if (new Set(started.map(call => call.machine)).size === 3) {
       if (config.holdOtherReviewers && machine !== "reviewer_2") return;

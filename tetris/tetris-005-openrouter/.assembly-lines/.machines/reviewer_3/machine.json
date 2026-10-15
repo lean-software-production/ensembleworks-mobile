@@ -1,5 +1,4 @@
 {
   "role": "reviewer",
-  "model": "openrouter/moonshotai/kimi-k3",
-  "lensFile": "../lens.md"
+  "model": "openrouter/moonshotai/kimi-k3"
 }

@@ -2,10 +2,8 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { AssemblyLine, MachineConfig } from "./assembly-line";
-import {
-  plannerPrompt, doerPrompt, validatorPrompt, resultPrompt, synthesisPrompt,
-  planAuthorPrompt, planReviewerPrompt, planSynthesisPrompt, planValidatorPrompt
-} from "./prompts";
+import { machinePrompt, resultPrompt } from "./prompts";
+import { prepareMachines, harnessInvocation } from "./harness";
 import { PlanReview } from "./plan-review";
 import { Run } from "./runs";
 import { initializeTarget, changedWork, commitWork } from "./work";
@@ -60,8 +58,8 @@ function readResult(output: string): unknown {
 
 async function callMachine(machine: MachineConfig, target: string, prompt: string, signal?: AbortSignal): Promise<Result> {
   const output = await new Promise<string>((resolve, reject) => {
-    const args = ["-p", ...(machine.model ? ["--model", machine.model] : [])];
-    const child = spawn(machine.harness, args, { cwd: target, signal });
+    const { args, env } = harnessInvocation(machine);
+    const child = spawn(machine.harness, args, { cwd: target, signal, env });
     const chunks: Buffer[] = [];
     let bytes = 0;
     child.on("error", error => reject(new Error(`Could not run the ${machine.name}: ${error.message}`)));
@@ -72,11 +70,12 @@ async function callMachine(machine: MachineConfig, target: string, prompt: strin
         reject(new Error(`Could not run the ${machine.name}: output exceeds 10 MiB.`));
       } else chunks.push(chunk);
     });
-    child.stderr.resume();
+    let diagnostic = "";
+    child.stderr.on("data", chunk => { diagnostic = (diagnostic + chunk.toString("utf8")).slice(-16_384); });
     child.stdin.on("error", () => {}); // An exiting harness can close stdin before consuming the prompt.
     child.on("close", status => status === 0
       ? resolve(Buffer.concat(chunks).toString("utf8"))
-      : reject(new Error(`Could not run the ${machine.name}.`)));
+      : reject(new Error(`Could not run the ${machine.name}.${diagnostic.trim() ? ` ${diagnostic.trim()}` : ""}`)));
     child.stdin.end(prompt);
   });
   const result = readResult(output);
@@ -102,6 +101,7 @@ async function runFactory(options: Options): Promise<void> {
     throw new Error("A plan-first line requires a plan author.");
   }
   const review = line.hasRole("plan_author") ? new PlanReview(plan, options.planRounds) : undefined;
+  prepareMachines(line.allMachines());
   run.remember();
 
   initializeTarget(target);
@@ -112,35 +112,30 @@ async function runFactory(options: Options): Promise<void> {
   let attempts = 0;
   let reports: Record<string, Result> | undefined;
 
-  function promptFor(machine: MachineConfig, work?: string): string {
-    if (machine.role === "plan_author") return planAuthorPrompt(seed, plan, target, review!.context());
-    if (machine.role === "plan_reviewer") {
-      return planReviewerPrompt(machine.name, seed, plan, target, machine.lens, review!.context());
+  function promptFor(machine: MachineConfig, work?: string, branchReports?: Record<string, Result>): string {
+    if (machine.role === "plan_validator" && (!pendingWork || !review!.accepted)) {
+      throw new Error("Plan validation requires current work and an accepted plan.");
     }
-    if (machine.role === "plan_validator") {
-      if (!pendingWork || !review!.accepted) throw new Error("Plan validation requires current work and an accepted plan.");
-      return planValidatorPrompt(seed, plan, target, machine.lens, work ?? changedWork(target), pendingWork) +
-        `\nAccepted synthesis decision: ${review!.path}. Consult its dispositions when needed; do not edit it.`;
-    }
-    if (machine.role === "planner") return plannerPrompt(seed, plan, target, committedTask);
-    if (machine.role === "doer") {
-      return doerPrompt(seed, plan, target, findings) + (review
-        ? `\nAccepted synthesis decision: ${review.path}. Consult its dispositions when needed; do not edit it.${review.taskName === undefined ? "" : `\nTask in progress: ${JSON.stringify(review.taskName)}. Stay on this task through retries and plan repair.`}` : "");
-    }
-    if (machine.role === "validator" || machine.role === "reviewer") {
-      return validatorPrompt(seed, target, machine.lens, work ?? changedWork(target))
-        .replace("You are the validator.", `You are the ${machine.role}.`);
-    }
-    return `You are the ${machine.name}.\nTarget: ${target}\nSeed: ${seed}\nPlan: ${plan}${review ? `\n${review.context()}` : ""}`;
+    const joining = branchReports !== undefined;
+    const accepted = review && ["doer", "plan_validator"].includes(machine.role)
+      ? JSON.stringify({ decision: review.path, task: review.taskName }) : "";
+    const data = {
+      name: machine.role === "reviewer" ? "reviewer" : machine.name,
+      seed: joining ? "" : seed, plan: joining ? "" : plan, target: joining ? "" : target,
+      committed: committedTask ?? "", findings: JSON.stringify(findings),
+      review: !joining && ["plan_author", "plan_reviewer", "plan_gate"].includes(machine.role) ? review?.context() ?? "" : "", accepted,
+      task: JSON.stringify(pendingWork ?? {}), reports: JSON.stringify(branchReports ?? {}),
+      work: !joining && ["validator", "reviewer", "plan_validator"].includes(machine.role)
+        ? work ?? changedWork(target) : ""
+    };
+    return machinePrompt(machine.instructions, data) + `\nRun context:\n${JSON.stringify(joining ? { reports: branchReports } : data)}`;
   }
 
   while (node !== "finish") {
     const machine = line.machine(node);
     const joining = reports !== undefined;
     if (machine.role === "plan_author") review!.startRound();
-    let prompt = joining
-      ? (machine.role === "plan_synthesiser" ? planSynthesisPrompt(machine.name, reports!) : synthesisPrompt(machine.name, reports!))
-      : promptFor(machine);
+    const prompt = promptFor(machine, undefined, reports);
     reports = undefined;
     if (!joining && machine.role === "planner") committedTask = undefined;
     if (machine.role === "doer") {
@@ -148,7 +143,6 @@ async function runFactory(options: Options): Promise<void> {
       if (attempts >= options.attempts) throw new Error(`A task hit its limit of ${options.attempts} attempts.`);
       attempts += 1;
     }
-    if (machine.prompt) prompt += `\n${machine.prompt}`;
     const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`);
     const fan = line.fanOut(node);
     const next = fan ? fan.join : line.next(node, result);
@@ -185,7 +179,7 @@ async function runFactory(options: Options): Promise<void> {
         const branchPrompt = promptFor(branch, work);
         try {
           let report = await callMachine(branch, target,
-            `${branchPrompt}${branch.prompt ? `\n${branch.prompt}` : ""}\n${resultPrompt(line.fields(name))}`, controller.signal);
+            `${branchPrompt}\n${resultPrompt(line.fields(name))}`, controller.signal);
           if (branch.role === "plan_reviewer") report = { ...report, review: review!.reportContext() };
           console.log(JSON.stringify({ machine: name, ...report }));
           return [name, report] as const;

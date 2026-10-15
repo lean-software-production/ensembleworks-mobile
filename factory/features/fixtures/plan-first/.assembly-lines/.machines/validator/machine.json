@@ -1,5 +1,4 @@
 {
   "role": "plan_validator",
-  "model": "openai-codex/gpt-6.1-sol",
-  "lensFile": "lens.md"
+  "model": "openai-codex/gpt-6.1-sol"
 }

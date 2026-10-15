@@ -1,4 +1,4 @@
-# Factory — iteration 005
+# Factory — iteration 005a
 
 Start a named run from the repository root, giving it a target, one of that
 target's assembly lines, and a seed:
@@ -87,22 +87,51 @@ bin/factory --check-line --target tetris/tetris-003 --line careful
 
 ## Configure machines
 
-Each named node has `.assembly-lines/.machines/<name>/machine.json` in the
-target. A machine's name is unique in its target: every line there that names
-the doer runs the same doer. Set `harness` to a command or executable path;
-omitting it selects `pi`. The command receives `-p` and runs in the target, with
-the full UTF-8 prompt supplied on stdin and stdin closed when input is complete.
-Custom harnesses must support this input contract. Prompts, including the
-validator's complete changed-work diff, do not consume command-line argument space.
-Git and machine output buffers are limited to 10 MiB per invocation.
-`role` selects the machine's responsibility; optional `prompt` adds instructions.
-An optional `model` adds `--model <provider/model>` to the harness invocation.
-Custom harnesses using this setting must accept that flag as well as `-p`.
+Each named node has its own directory at
+`.assembly-lines/.machines/<name>/` in the target. Write its instructions in
+`AGENTS.md` and select its harness and model in `machine.json`:
 
-The validator's `lensFile` is relative to its configuration file. In tetris-003
-it points to `lens.md` beside it, the OO-design lens influenced by Metz,
-Wirfs-Brock, West, Beck, Cunningham, and Smalltalk. A `lens` string in its
-configuration overrides the file, for example `"lens": "testability"`.
+```json
+{"role": "doer", "harness": "pi", "model": "anthropic/your-model"}
+```
+
+Omitting `harness` selects Pi. All role instructions and review lenses now live
+in the machine's `AGENTS.md`; the factory has no built-in role prompts. Existing
+Tetris machines and the plan-first fixture have been migrated. Edit their
+`AGENTS.md` to change behavior; `lens`, `lensFile` and `prompt` in `machine.json`
+are no longer used.
+
+Pi runs with `PI_CODING_AGENT_DIR` set to the machine folder,
+`--no-context-files`, and `--append-system-prompt <folder>/AGENTS.md`.
+Claude Code uses `CLAUDE_CONFIG_DIR`, `--setting-sources user`, and a generated
+`CLAUDE.md` importing `AGENTS.md`. Codex uses `CODEX_HOME`, `exec`, and
+`project_doc_max_bytes = 0` in its local `config.toml`. Each runs in the target,
+which is its work rather than its configuration. Antigravity is unsupported.
+
+Copy the harness's login into each machine folder: `auth.json` for Pi/Codex,
+or `.credentials.json` for Claude Code. With no login, supply the provider's
+API key in the environment (for example `ANTHROPIC_API_KEY` for Claude/Pi,
+`CODEX_API_KEY` for Codex, or `OPENROUTER_API_KEY` for Pi's OpenRouter models).
+Pi infers the provider from its `provider/model` model setting, defaulting to
+Anthropic when none is given. All machines are checked before any is called;
+a missing login and API key stops the run. A copied login takes precedence.
+The factory adds local ignore rules for credentials and harness runtime files.
+Existing tracked credentials must be removed from Git before using a machine.
+
+Ordinary executable machines still receive `-p`, an optional `--model`, and
+the prompt on stdin, with no agent authentication required. A custom executable
+wrapping an agent can select `"adapter": "pi"`, `"claude"`, or `"codex"`
+to receive that harness's configuration environment, flags and credential checks.
+Prompts travel on stdin, so changed-work diffs do not consume argument space.
+Git and machine output buffers are limited to 10 MiB per invocation.
+
+The factory supplies run data after the machine's instructions. Optional
+`{{seed}}`, `{{plan}}`, `{{target}}`, `{{work}}`, `{{findings}}`, `{{reports}}`,
+`{{task}}`, `{{review}}`, `{{accepted}}`, `{{name}}` and `{{committed}}` placeholders
+place that data inline. `{{#committed}}...{{/committed}}` selects instructions
+following a work commit, and `{{^committed}}...{{/committed}}` selects the initial
+invocation. Inserted run data is never expanded as a template. Joining machines
+receive only branch results, without target, seed, plan or changed-work context.
 
 ## Work, retries, and history
 

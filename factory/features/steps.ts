@@ -29,6 +29,10 @@ interface MachineCall {
   cwd: string;
   commits: number;
   plan: string;
+  configDir: string;
+  ownLogin: boolean;
+  apiKey: boolean;
+  configDirs: Record<string, string>;
 }
 function calls(world: FactoryWorld, machine?: string): MachineCall[] {
   if (!existsSync(world.callLog)) return [];
@@ -44,6 +48,20 @@ function machineConfig(world: FactoryWorld, name: string, changes: Record<string
     else config[key] = value;
   }
   mkdirSync(dirname(path), { recursive: true });
+  if (config.harness === world.chosenAgent) config.adapter ??= "pi";
+  const instructions = join(dirname(path), "AGENTS.md");
+  if (!existsSync(instructions)) {
+    writeFileSync(instructions, readFileSync(join(source, "features", "fixtures", "machines", `${config.role}.md`), "utf8"));
+  }
+  if (!existsSync(join(dirname(path), "auth.json"))) writeFileSync(join(dirname(path), "auth.json"), '{"fixture":true}\n');
+  let text = readFileSync(instructions, "utf8");
+  if (changes.lens !== undefined) text = text.replaceAll("{{lens}}", String(changes.lens)) + `\n${changes.lens}\n`;
+  if (changes.prompt !== undefined) text += `\n${changes.prompt}\n`;
+  if (changes.lensFile !== undefined) text += `\n${readFileSync(join(dirname(path), String(changes.lensFile)), "utf8")}\n`;
+  writeFileSync(instructions, text);
+  delete config.lens;
+  delete config.lensFile;
+  delete config.prompt;
   writeFileSync(path, JSON.stringify(config, null, 2) + "\n");
 }
 // Lines and machines travel with the target; runs that build it follow.
@@ -208,8 +226,9 @@ Then("the doer was given the synthesiser's findings", function (this: FactoryWor
   assert.deepEqual(JSON.parse(retry.prompt.match(/Validator findings:\n([^\n]+)/)![1]), [{ issue: "Resolve the synthesiser's finding" }]);
 });
 Then("it was not given {string}", function (this: FactoryWorld, report: string) {
-  assert.ok(calls(this, "doer").length);
-  for (const call of calls(this, "doer")) assert.ok(!call.prompt.includes(report));
+  const records = calls(this).filter(call => (this.promptRecipients.length ? this.promptRecipients : ["doer"]).includes(call.machine));
+  assert.ok(records.length);
+  for (const call of records) assert.ok(!call.prompt.includes(report));
 });
 Given("the second reviewer answers in prose, with no result", function (this: FactoryWorld) { this.agentConfig.reviewers!.reviewer_2.prose = true; });
 Given("the second reviewer cannot be run", function (this: FactoryWorld) { machineConfig(this, "reviewer_2", { harness: join(this.workspace, "missing-reviewer") }); });
@@ -306,7 +325,7 @@ Given("a run named {string}, on the {string} line, with that seed and target", f
 function invoke(world: FactoryWorld, args: string[]): void {
   const result = spawnSync(relative(world.callerCwd, join(world.repoRoot, "bin", "factory")), args, {
     cwd: world.callerCwd, encoding: "utf8",
-    env: { ...process.env, ...identity, FACTORY_TEST_CONFIG: world.configPath,
+    env: { ...process.env, ...identity, ...world.agentEnv, FACTORY_TEST_CONFIG: world.configPath,
       // Typecheck separately; avoid typechecking the copied source on every CLI run.
       TS_NODE_TRANSPILE_ONLY: "true",
       PATH: `${world.fakeBin}${delimiter}${process.env.PATH ?? ""}` },
@@ -483,8 +502,8 @@ Given("the factory allows at most three attempts at a task", function (this: Fac
 Given("the validator is never satisfied", function (this: FactoryWorld) { this.agentConfig.validation = "never"; });
 Given("the validator is not satisfied the first time", function (this: FactoryWorld) { this.agentConfig.validation = "reject-first"; });
 Given("the validator's lens is kept in a file beside its configuration, saying {string}", function (this: FactoryWorld, lens: string) {
-  machineConfig(this, "validator", { lensFile: "lens.md" });
   writeFileSync(join(this.codebase, ".assembly-lines", ".machines", "validator", "lens.md"), lens + "\n");
+  machineConfig(this, "validator", { lensFile: "lens.md" });
 });
 Given("the validator's lens is testability", function (this: FactoryWorld) { machineConfig(this, "validator", { lens: "testability", lensFile: undefined }); });
 Given("the seed has been deleted", function (this: FactoryWorld) { rmSync(this.seedPath); });
@@ -718,6 +737,7 @@ Then("it was not given the work for the first task", function (this: FactoryWorl
   for (const call of records) assert.doesNotMatch(call.prompt.split("Changed work:")[1] ?? call.prompt, /work-alpha\.txt|\+alpha/);
 });
 Then("the validator was given {string}", function (this: FactoryWorld, lens: string) {
+  this.promptRecipients = ["validator"];
   successful(this);
   assert.ok(calls(this, "validator").length);
   for (const call of calls(this, "validator")) assert.ok(call.prompt.includes(lens), `Missing lens: ${lens}`);
@@ -809,7 +829,10 @@ Then("the validator receives the entire lockfile diff through stdin", function (
   assert.equal(validators.length, 1);
   const addedLines = this.agentConfig.largeLockfile!.trimEnd().split("\n").map(line => `+${line}`).join("\n");
   assert.ok(validators[0].prompt.includes(addedLines), "Validator input must contain the full lockfile diff");
-  for (const call of calls(this)) assert.deepEqual(call.args, ["-p"], "Prompts must not travel in command arguments");
+  for (const call of calls(this)) {
+    assert.ok(call.args.join(" ").length < 4096, "Large prompts must not travel in command arguments");
+    assert.ok(!call.args.some(arg => arg.includes("large-prompt-fixture")));
+  }
 });
 Then("it reports that there is no committable work", function (this: FactoryWorld) {
   assert.equal(this.exitCode, 1, this.output);
@@ -1013,4 +1036,84 @@ Then("switching tasks during repair stopped the run without a commit", function 
   assert.equal(commitCount(this), this.initialCommitCount);
   assert.equal(calls(this, "plan_validator").length, 1);
   assert.equal(planReviewState(this).task.task, "alpha");
+});
+
+for (const name of ["doer", "validator"]) {
+  Given(`the ${name}'s AGENTS.md says {string}`, function (this: FactoryWorld, text: string) {
+    const path = join(this.codebase, ".assembly-lines", ".machines", name, "AGENTS.md");
+    writeFileSync(path, text + "\n");
+  });
+}
+Then("the doer was given {string}", function (this: FactoryWorld, text: string) {
+  successful(this);
+  const records = calls(this, "doer");
+  assert.ok(records.length);
+  for (const call of records) {
+    assert.ok(call.prompt.includes(text));
+    assert.equal(call.configDir, join(this.codebase, ".assembly-lines", ".machines", "doer"));
+    assert.ok(call.args.includes("--no-context-files"));
+    assert.equal(call.args[call.args.indexOf("--append-system-prompt") + 1], join(call.configDir, "AGENTS.md"));
+  }
+});
+Given("the doer has its own login", function (this: FactoryWorld) {
+  writeFileSync(join(this.codebase, ".assembly-lines", ".machines", "doer", "auth.json"), '{"fixture":true}\n');
+  this.agentEnv.ANTHROPIC_API_KEY = "fixture-key";
+});
+Given("the doer has no login", function (this: FactoryWorld) {
+  rmSync(join(this.codebase, ".assembly-lines", ".machines", "doer", "auth.json"), { force: true });
+});
+Given("there is an API key for the doer's provider", function (this: FactoryWorld) {
+  this.agentEnv.ANTHROPIC_API_KEY = "fixture-key";
+});
+Given("there is no API key for the doer's provider", function (this: FactoryWorld) {
+  this.agentEnv.ANTHROPIC_API_KEY = "";
+});
+Then("the doer signed in with its own login", function (this: FactoryWorld) {
+  successful(this);
+  assert.ok(calls(this, "doer").length);
+  for (const call of calls(this, "doer")) { assert.ok(call.ownLogin); assert.equal(call.apiKey, false); }
+});
+Then("the doer signed in with the API key", function (this: FactoryWorld) {
+  successful(this);
+  assert.ok(calls(this, "doer").length);
+  for (const call of calls(this, "doer")) { assert.equal(call.ownLogin, false); assert.ok(call.apiKey); }
+});
+Then("the doer's login is ignored by Git", function (this: FactoryWorld) {
+  const login = join(this.codebase, ".assembly-lines", ".machines", "doer", "auth.json");
+  assert.equal(run(this.codebase, "git", ["check-ignore", login]), login);
+  assert.equal(run(this.codebase, "git", ["ls-files", "--", login]), "");
+});
+Then("it reports that the doer cannot sign in", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1);
+  assert.match(this.output, /doer cannot sign in/);
+});
+
+Given("the doer uses the {word} harness", function (this: FactoryWorld, harness: string) {
+  const executable = join(this.fakeBin, harness);
+  copyFileSync(join(source, "features", "machine-double.cjs"), executable);
+  chmodSync(executable, 0o755);
+  machineConfig(this, "doer", { harness: executable, adapter: harness });
+  if (harness === "claude") {
+    const folder = join(this.codebase, ".assembly-lines", ".machines", "doer");
+    copyFileSync(join(folder, "auth.json"), join(folder, ".credentials.json"));
+  }
+  this.agentEnv.PI_CODING_AGENT_DIR = join(this.workspace, "foreign-pi");
+  this.agentEnv.CLAUDE_CONFIG_DIR = join(this.workspace, "foreign-claude");
+  this.agentEnv.CODEX_HOME = join(this.workspace, "foreign-codex");
+});
+Then("the doer's {word} configuration is isolated", function (this: FactoryWorld, harness: string) {
+  successful(this);
+  const folder = join(this.codebase, ".assembly-lines", ".machines", "doer");
+  const variable: Record<string, string> = { pi: "PI_CODING_AGENT_DIR", claude: "CLAUDE_CONFIG_DIR", codex: "CODEX_HOME" };
+  const records = calls(this, "doer");
+  assert.ok(records.length);
+  for (const call of records) {
+    assert.deepEqual(call.configDirs, { [variable[harness]]: folder });
+    assert.equal(call.cwd, this.codebase);
+    if (harness === "pi") assert.ok(call.args.includes("--no-context-files"));
+    if (harness === "claude") assert.equal(call.args[call.args.indexOf("--setting-sources") + 1], "user");
+    if (harness === "codex") { assert.equal(call.args[0], "exec"); assert.equal(call.args.at(-1), "-"); }
+  }
+  if (harness === "claude") assert.equal(readFileSync(join(folder, "CLAUDE.md"), "utf8"), "@AGENTS.md\n");
+  if (harness === "codex") assert.match(readFileSync(join(folder, "config.toml"), "utf8"), /^project_doc_max_bytes = 0/m);
 });

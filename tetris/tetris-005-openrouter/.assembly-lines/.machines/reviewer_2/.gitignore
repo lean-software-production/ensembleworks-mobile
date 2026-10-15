@@ -1,0 +1,7 @@
+*
+!.gitignore
+!AGENTS.md
+!CLAUDE.md
+!config.toml
+!machine.json
+!gate.cjs

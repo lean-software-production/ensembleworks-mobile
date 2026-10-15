@@ -54,6 +54,7 @@ export class FactoryWorld extends World {
   fakeBin = "";
   callLog = "";
   configPath = "";
+  agentEnv: Record<string, string> = {};
   attempts = 3;
   omitTarget = false;
   output = "";
