@@ -12,7 +12,8 @@ const {
   createPieceSource,
   makeActivePiece,
   moveLeft,
-  moveRight
+  moveRight,
+  rotateClockwise
 } = require("../src/game");
 
 const key = ({ x, y }) => `${x},${y}`;
@@ -126,4 +127,83 @@ test("settled cells block horizontal movement for every shape without board corr
     assert.equal(moveRight(game), game, type);
     assert.deepEqual(game, before, type);
   }
+});
+
+function relativeCells(active) {
+  return active.cells.map(({ x, y }) => [x - active.x, y - active.y]);
+}
+
+function at(game, x, y) {
+  const dx = x - game.active.x;
+  const dy = y - game.active.y;
+  return {
+    ...game,
+    active: {
+      ...game.active,
+      x,
+      y,
+      cells: game.active.cells.map((cell) => ({ x: cell.x + dx, y: cell.y + dy }))
+    }
+  };
+}
+
+test("clockwise rotation has defined first orientations for every tetromino", () => {
+  const expected = {
+    I: [[0, 0], [0, 1], [0, 2], [0, 3]],
+    O: [[0, 0], [1, 0], [0, 1], [1, 1]],
+    T: [[1, 0], [1, 1], [1, 2], [0, 1]],
+    S: [[1, 1], [1, 2], [0, 0], [0, 1]],
+    Z: [[1, 0], [1, 1], [0, 1], [0, 2]],
+    J: [[1, 0], [0, 0], [0, 1], [0, 2]],
+    L: [[1, 2], [0, 0], [0, 1], [0, 2]]
+  };
+
+  for (const type of PIECE_NAMES) {
+    const game = createGame({ pieceSource: () => type });
+    const rotated = rotateClockwise(game);
+    assert.deepEqual(relativeCells(rotated.active), expected[type], type);
+    assert.equal(rotated.active.rotation, type === "O" ? 0 : 1, type);
+    assert.deepEqual(game.board, createBoard(), type);
+  }
+});
+
+test("four clockwise rotations restore every piece orientation and footprint", () => {
+  for (const type of PIECE_NAMES) {
+    const game = createGame({ pieceSource: () => type });
+    let rotated = game;
+    for (let count = 0; count < 4; count += 1) rotated = rotateClockwise(rotated);
+    assert.equal(rotated.active.rotation, 0, type);
+    assert.deepEqual(rotated.active.cells, game.active.cells, type);
+    assert.deepEqual(rotated.board, game.board, type);
+  }
+});
+
+test("rotation is allowed in open space and preserves the square footprint", () => {
+  for (const type of PIECE_NAMES) {
+    const game = at(createGame({ pieceSource: () => type }), 4, 8);
+    const rotated = rotateClockwise(game);
+    assert.notEqual(rotated, game, type);
+    assert.equal(canPlace(rotated.board, rotated.active.cells), true, type);
+  }
+
+  const square = at(createGame({ pieceSource: () => "O" }), 4, 8);
+  assert.deepEqual(rotateClockwise(square).active.cells, square.active.cells);
+});
+
+test("no-wall-kick rotation rejects walls, floor, and settled cells without mutation", () => {
+  const wall = at(rotateClockwise(at(createGame({ pieceSource: () => "T" }), 4, 4)), 8, 4);
+  const wallBefore = structuredClone(wall);
+  assert.equal(rotateClockwise(wall), wall, "right wall");
+  assert.deepEqual(wall, wallBefore);
+
+  const floor = at(createGame({ pieceSource: () => "I" }), 4, 17);
+  const floorBefore = structuredClone(floor);
+  assert.equal(rotateClockwise(floor), floor, "floor");
+  assert.deepEqual(floor, floorBefore);
+
+  const blocked = at(createGame({ pieceSource: () => "T" }), 4, 8);
+  blocked.board[8][5] = "L";
+  const blockedBefore = structuredClone(blocked);
+  assert.equal(rotateClockwise(blocked), blocked, "settled cell");
+  assert.deepEqual(blocked, blockedBefore);
 });

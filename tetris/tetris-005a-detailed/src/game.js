@@ -94,6 +94,40 @@ function moveRight(game) {
   return moveHorizontally(game, 1);
 }
 
+/**
+ * Rotate an active piece clockwise inside its current bounding box. Rotation
+ * has no wall kicks: the piece keeps its x/y origin and the action is rejected
+ * if that exact rotated footprint is outside the board or hits settled cells.
+ */
+function rotateClockwise(game) {
+  const { active } = game;
+  // The O piece deliberately has one rotation state. Its footprint never
+  // changes, including when it is rotated four times.
+  if (active.type === "O") {
+    return {
+      ...game,
+      active: { ...active, cells: active.cells.map(({ x, y }) => ({ x, y })) }
+    };
+  }
+
+  const localCells = active.cells.map(({ x, y }) => ({ x: x - active.x, y: y - active.y }));
+  const height = Math.max(...localCells.map(({ y }) => y)) + 1;
+  const cells = localCells.map(({ x, y }) => ({
+    x: active.x + height - 1 - y,
+    y: active.y + x
+  }));
+
+  if (!canPlace(game.board, cells)) return game;
+  return {
+    ...game,
+    active: {
+      ...active,
+      rotation: (active.rotation + 1) % 4,
+      cells
+    }
+  };
+}
+
 module.exports = {
   PIECES,
   PIECE_NAMES,
@@ -104,5 +138,6 @@ module.exports = {
   makeActivePiece,
   moveHorizontally,
   moveLeft,
-  moveRight
+  moveRight,
+  rotateClockwise
 };
