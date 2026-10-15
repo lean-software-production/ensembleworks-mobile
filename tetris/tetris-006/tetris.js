@@ -1,5 +1,6 @@
 const WIDTH = 10;
 const HEIGHT = 20;
+const MAX_TERMINAL_ROWS = 24;
 const SHAPES = [
   [[1, 1, 1, 1]],
   [[1, 1], [1, 1]],
@@ -53,6 +54,9 @@ function render() {
   for (const row of view) output.push(`│${row.map(cell => cell ? block(cell) : empty).join('')}│`);
   output.push(`└${'──'.repeat(WIDTH)}┘`, '←/→ move  ↑ rotate  ↓ drop  q quit');
   if (ended) output[0] = ` GAME OVER   Score: ${score}   Lines: ${lines}`;
+  if (output.length > MAX_TERMINAL_ROWS) {
+    throw new Error(`Display exceeds ${MAX_TERMINAL_ROWS} terminal rows (${output.length}).`);
+  }
   process.stdout.write('\x1b[H\x1b[2J' + output.join('\n') + '\n');
 }
 function finish() {
