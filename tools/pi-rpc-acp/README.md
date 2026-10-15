@@ -23,6 +23,21 @@ It gives the factory what it needs from a machine:
   `steer`;
 - `session/cancel`, passed on to pi's `abort`.
 
+The bridge waits for Pi's `agent_settled` event before completing an ACP prompt.
+An `agent_end` event can be followed by automatic retries, recovery or queued
+work. Usage accumulates across those attempts. If recovery fails, the bridge
+returns the model's error through ACP instead of reporting a successful turn
+with an empty result. This requires a Pi version with `agent_settled` support
+(the installed Pi 1.1.0 provides it).
+
+Run the bridge's protocol regression tests without contacting models:
+
+```sh
+node --test tools/pi-rpc-acp/pi-rpc-acp.test.cjs
+```
+
+These tests also run as part of `npm test` from `factory/`.
+
 Not yet: MCP servers named in `session/new`. pi has no MCP of its own, so
 homework 8's `run_command` tool does not reach pi through this bridge.
 

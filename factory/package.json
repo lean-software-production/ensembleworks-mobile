@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "cucumber-js --profile default",
+    "test": "node --test ../tools/pi-rpc-acp/pi-rpc-acp.test.cjs && cucumber-js --profile default",
     "test:real-agent": "cucumber-js --profile real-agent",
     "typecheck": "tsc --noEmit"
   },

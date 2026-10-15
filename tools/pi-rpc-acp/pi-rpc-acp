@@ -64,14 +64,24 @@ function onPiEvent(session, e) {
     });
   } else if (e.type === 'tool_execution_end') {
     update(sessionId, { sessionUpdate: 'tool_call_update', toolCallId: e.toolCallId, status: e.isError ? 'failed' : 'completed' });
-  } else if (e.type === 'turn_end' && e.message?.role === 'assistant' && e.message.usage) {
+  } else if (e.type === 'turn_end' && e.message?.role === 'assistant') {
+    // A later successful retry replaces this error. Do not fail before Pi settles.
+    turn.error = e.message.stopReason === 'error' ? (e.message.errorMessage || 'Pi model response failed') : undefined;
     const u = e.message.usage;
-    turn.usage.inputTokens += u.input ?? 0;
-    turn.usage.outputTokens += u.output ?? 0;
-    turn.usage.cachedReadTokens += u.cacheRead ?? 0;
-    turn.usage.cachedWriteTokens += u.cacheWrite ?? 0;
-  } else if (e.type === 'agent_end') {
-    turn.done();
+    if (u) {
+      turn.usage.inputTokens += u.input ?? 0;
+      turn.usage.outputTokens += u.output ?? 0;
+      turn.usage.cachedReadTokens += u.cacheRead ?? 0;
+      turn.usage.cachedWriteTokens += u.cacheWrite ?? 0;
+    }
+  } else if (e.type === 'auto_retry_end' && e.success === false) {
+    turn.error = e.finalError || turn.error || 'Pi exhausted its retries';
+  } else if (e.type === 'agent_settled') {
+    // agent_end only closes a low-level run; automatic recovery or queued work
+    // can still follow, even when willRetry is false.
+    turn.cancelled ||= e.aborted;
+    if (turn.error && !turn.cancelled) turn.fail(turn.error);
+    else turn.done();
   }
 }
 
