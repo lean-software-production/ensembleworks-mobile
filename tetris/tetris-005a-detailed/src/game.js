@@ -61,11 +61,48 @@ function createGame({ pieceSource = createPieceSource() } = {}) {
   return { board: createBoard(), active: makeActivePiece(type), score: 0 };
 }
 
+/**
+ * Whether cells can occupy the board. This game keeps all active cells within
+ * the visible board: cells above row zero are not legal placements.
+ */
+function canPlace(board, cells) {
+  return cells.every(({ x, y }) =>
+    Number.isInteger(x) && Number.isInteger(y) &&
+    x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT &&
+    !board[y]?.[x]
+  );
+}
+
+function moveHorizontally(game, columns) {
+  if (!Number.isInteger(columns) || columns === 0) {
+    throw new RangeError("horizontal movement must be a non-zero whole number");
+  }
+  const cells = game.active.cells.map(({ x, y }) => ({ x: x + columns, y }));
+  if (!canPlace(game.board, cells)) return game;
+
+  return {
+    ...game,
+    active: { ...game.active, x: game.active.x + columns, cells }
+  };
+}
+
+function moveLeft(game) {
+  return moveHorizontally(game, -1);
+}
+
+function moveRight(game) {
+  return moveHorizontally(game, 1);
+}
+
 module.exports = {
   PIECES,
   PIECE_NAMES,
+  canPlace,
   createBoard,
   createGame,
   createPieceSource,
-  makeActivePiece
+  makeActivePiece,
+  moveHorizontally,
+  moveLeft,
+  moveRight
 };
