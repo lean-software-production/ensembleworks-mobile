@@ -3,6 +3,8 @@
 const { BOARD_HEIGHT, BOARD_WIDTH, emptyBoard, validateBoard } = require('./render');
 
 const PIECE_TYPES = Object.freeze(['I', 'O', 'T', 'S', 'Z', 'J', 'L']);
+// Points awarded for clearing 0, 1, 2, 3, or 4 lines with one locked piece.
+const SCORE_BY_LINES = Object.freeze([0, 100, 300, 500, 800]);
 
 // Coordinates are relative to each piece's top-left bounding box.
 const TETROMINOES = Object.freeze({
@@ -90,6 +92,14 @@ function moveDown(game) {
   return true;
 }
 
+/** Return the fixed score awarded for a single lock's cleared-line count. */
+function pointsForLines(linesCleared) {
+  if (!Number.isInteger(linesCleared) || linesCleared < 0) {
+    throw new RangeError('linesCleared must be a non-negative integer');
+  }
+  return SCORE_BY_LINES[linesCleared] || 0;
+}
+
 /**
  * Remove every full row and prepend the same number of empty rows. This
  * mutates the supplied board and returns how many completed lines it removed.
@@ -139,6 +149,7 @@ function advanceGame(game) {
 
   lockPiece(game);
   const linesCleared = clearCompletedLines(game.board);
+  game.score += pointsForLines(linesCleared);
   const nextPiece = spawnPiece(game.pieceSource.nextType());
   if (!canPlace(game.board, nextPiece)) {
     game.activePiece = null;
@@ -232,6 +243,7 @@ function createGame({ board = emptyBoard(), pieceSource = createPieceSource() } 
 
 module.exports = {
   PIECE_TYPES,
+  SCORE_BY_LINES,
   TETROMINOES,
   activeCells,
   canPlace,
@@ -243,6 +255,7 @@ module.exports = {
   moveRight,
   moveDown,
   lockPiece,
+  pointsForLines,
   advanceGame,
   rotateClockwise,
   spawnPiece,

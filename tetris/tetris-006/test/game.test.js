@@ -5,6 +5,7 @@ const test = require('node:test');
 const { BOARD_HEIGHT, BOARD_WIDTH, emptyBoard, renderFrame } = require('../src/render');
 const {
   PIECE_TYPES,
+  SCORE_BY_LINES,
   TETROMINOES,
   activeCells,
   canPlace,
@@ -15,6 +16,7 @@ const {
   moveRight,
   moveDown,
   lockPiece,
+  pointsForLines,
   advanceGame,
   rotateClockwise,
   spawnPiece,
@@ -246,6 +248,62 @@ test('a blocked advance locks, clears a completed row, and then spawns the next 
   assert.equal(game.activePiece.type, 'O');
   assert.ok(game.board[BOARD_HEIGHT - 1].every((cell) => !cell));
   assert.equal(game.board.flat().filter(Boolean).length, 0);
+});
+
+test('scoring uses the documented table for each supported lock clear count', () => {
+  assert.deepEqual(SCORE_BY_LINES, [0, 100, 300, 500, 800]);
+  for (const [lines, points] of SCORE_BY_LINES.entries()) {
+    assert.equal(pointsForLines(lines), points);
+
+    const board = emptyBoard();
+    for (let y = BOARD_HEIGHT - lines; y < BOARD_HEIGHT; y += 1) {
+      board[y].fill(true);
+      board[y][3] = false;
+    }
+    const game = createGame({ board, pieceSource: createPieceSource({ sequence: ['I', 'O'] }) });
+    game.activePiece = {
+      ...game.activePiece,
+      x: 3,
+      y: BOARD_HEIGHT - 4,
+      cells: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }],
+    };
+
+    assert.equal(advanceGame(game).linesCleared, lines);
+    assert.equal(game.score, points);
+  }
+});
+
+test('score updates once for each locking clear and accumulates across locks', () => {
+  const board = emptyBoard();
+  const game = createGame({ board, pieceSource: createPieceSource({ sequence: ['I', 'I', 'O'] }) });
+
+  // First I completes one row, then the second completes another one.
+  for (const y of [BOARD_HEIGHT - 1, BOARD_HEIGHT - 2]) {
+    for (let x = 0; x < BOARD_WIDTH; x += 1) {
+      if (x < 3 || x > 6) board[y][x] = true;
+    }
+  }
+  game.activePiece.y = BOARD_HEIGHT - 1;
+  assert.equal(advanceGame(game).linesCleared, 1);
+  assert.equal(game.score, 100);
+
+  game.activePiece.y = BOARD_HEIGHT - 1;
+  assert.equal(advanceGame(game).linesCleared, 1);
+  assert.equal(game.score, 200);
+});
+
+test('movement, failed movement, rotation, and zero-line locks do not score points', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O', 'T'] }) });
+  assert.equal(moveDown(game), true);
+  assert.equal(moveLeft(game), true);
+  assert.equal(rotateClockwise(game), true);
+  while (moveLeft(game)) {}
+  assert.equal(moveLeft(game), false);
+  assert.equal(game.score, 0);
+
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  assert.equal(advanceGame(game).linesCleared, 0);
+  assert.equal(game.score, 0);
 });
 
 test('clockwise rotation preserves four cells and four rotations restore every shape', () => {
