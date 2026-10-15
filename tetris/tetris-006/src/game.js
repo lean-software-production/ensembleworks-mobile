@@ -90,6 +90,44 @@ function moveDown(game) {
   return true;
 }
 
+/** Copy a valid active piece into the settled board without spawning another. */
+function lockPiece(game) {
+  if (!game || !game.activePiece) {
+    throw new TypeError('game must have an activePiece');
+  }
+  if (!canPlace(game.board, game.activePiece)) {
+    throw new RangeError('Active piece cannot be locked outside or into the board');
+  }
+
+  for (const { x, y } of activeCells(game.activePiece)) {
+    game.board[y][x] = true;
+  }
+}
+
+/**
+ * Advance a game by one gravity/soft-drop step. A successful step moves only;
+ * a blocked step locks then consumes one source piece. If that piece cannot
+ * spawn, no overlapping active piece is installed. Game-over state is added
+ * by the later game-over task.
+ */
+function advanceGame(game) {
+  if (!game || !game.activePiece || !game.pieceSource || typeof game.pieceSource.nextType !== 'function') {
+    throw new TypeError('game must have an activePiece and pieceSource');
+  }
+
+  if (moveDown(game)) return { moved: true, locked: false, spawned: false, spawnBlocked: false };
+
+  lockPiece(game);
+  const nextPiece = spawnPiece(game.pieceSource.nextType());
+  if (!canPlace(game.board, nextPiece)) {
+    game.activePiece = null;
+    return { moved: false, locked: true, spawned: false, spawnBlocked: true };
+  }
+
+  game.activePiece = nextPiece;
+  return { moved: false, locked: true, spawned: true, spawnBlocked: false };
+}
+
 /**
  * Rotate clockwise in the active shape's bounding box: (x, y) becomes
  * (height - 1 - y, x). No wall kicks are applied; an out-of-bounds or
@@ -178,6 +216,8 @@ module.exports = {
   moveLeft,
   moveRight,
   moveDown,
+  lockPiece,
+  advanceGame,
   rotateClockwise,
   spawnPiece,
 };

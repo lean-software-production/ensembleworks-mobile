@@ -13,6 +13,8 @@ const {
   moveLeft,
   moveRight,
   moveDown,
+  lockPiece,
+  advanceGame,
   rotateClockwise,
   spawnPiece,
 } = require('../src/game');
@@ -139,6 +141,64 @@ test('repeated downward movement stops at the first obstruction without locking'
   assert.equal(moveDown(game), false);
   assert.deepEqual(game.board, boardBefore);
   assert.equal(game.board.flat().filter(Boolean).length, 0);
+});
+
+test('locking copies exactly the active piece into the settled board', () => {
+  const board = emptyBoard();
+  board[0][0] = true;
+  const game = createGame({ board, pieceSource: createPieceSource({ sequence: ['O'] }) });
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  const cells = activeCells(game.activePiece);
+
+  lockPiece(game);
+
+  assert.equal(board.flat().filter(Boolean).length, 5);
+  assert.equal(board[0][0], true);
+  for (const { x, y } of cells) assert.equal(board[y][x], true);
+});
+
+test('advanceGame moves without locking and does not consume a next piece', () => {
+  let calls = 0;
+  const source = { nextType: () => ['O', 'T', 'L'][calls++] };
+  const game = createGame({ pieceSource: source });
+  const boardBefore = game.board.map((row) => [...row]);
+
+  assert.deepEqual(advanceGame(game), {
+    moved: true, locked: false, spawned: false, spawnBlocked: false,
+  });
+  assert.equal(calls, 1);
+  assert.equal(game.activePiece.type, 'O');
+  assert.deepEqual(game.board, boardBefore);
+});
+
+test('a blocked advance locks once and consumes exactly one next piece', () => {
+  let calls = 0;
+  const source = { nextType: () => ['O', 'T', 'L'][calls++] };
+  const game = createGame({ pieceSource: source });
+  game.activePiece.y = BOARD_HEIGHT - 2;
+
+  assert.deepEqual(advanceGame(game), {
+    moved: false, locked: true, spawned: true, spawnBlocked: false,
+  });
+  assert.equal(calls, 2);
+  assert.equal(game.board.flat().filter(Boolean).length, 4);
+  assert.equal(game.activePiece.type, 'T');
+
+  assert.equal(moveDown(game), true);
+  assert.equal(calls, 2, 'the action that spawned T must not advance to L');
+  assert.equal(game.board.flat().filter(Boolean).length, 4);
+});
+
+test('a blocked next spawn leaves no overlapping active piece', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O'] }) });
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  game.board[0][game.activePiece.x] = true;
+
+  assert.deepEqual(advanceGame(game), {
+    moved: false, locked: true, spawned: false, spawnBlocked: true,
+  });
+  assert.equal(game.activePiece, null);
+  assert.equal(game.board.flat().filter(Boolean).length, 5);
 });
 
 test('clockwise rotation preserves four cells and four rotations restore every shape', () => {
