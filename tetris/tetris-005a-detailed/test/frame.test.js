@@ -23,7 +23,7 @@ test("empty frame has a bounded 10 by 20 board and required labels", () => {
   assert.equal(lines[21], "└──────────┘");
   assert.match(lines[22], /move/);
   assert.match(lines[22], /rotate/);
-  assert.match(lines[22], /Q quit/);
+  assert.match(lines[22], /Q\/Ctrl-C quit/);
 });
 
 test("rendered score is included without changing frame height", () => {

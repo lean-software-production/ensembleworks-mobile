@@ -1,21 +1,17 @@
 "use strict";
 
+const { createLiveGame } = require("./src/app");
 const { renderFrame } = require("./src/frame");
-
-const frame = renderFrame();
+const { createPieceSource } = require("./src/game");
 
 // CI, pipes, and redirected output receive one readable frame and terminate.
-// The live loop is intentionally enabled only when both streams are terminals.
+// The live loop is deliberately enabled only when both streams are terminals.
 if (!process.stdin.isTTY || !process.stdout.isTTY) {
-  process.stdout.write(`${frame}\n`);
+  process.stdout.write(`${renderFrame()}\n`);
 } else {
   let closed = false;
 
-  function draw() {
-    process.stdout.write(`\x1b[2J\x1b[H${frame}`);
-  }
-
-  function close() {
+  function restoreTerminal() {
     if (closed) return;
     closed = true;
     process.stdin.setRawMode(false);
@@ -23,20 +19,24 @@ if (!process.stdin.isTTY || !process.stdout.isTTY) {
     process.stdout.write("\x1b[?25h\n");
   }
 
+  const app = createLiveGame({
+    input: process.stdin,
+    output: process.stdout,
+    pieceSource: createPieceSource(),
+    onQuit() {
+      restoreTerminal();
+      process.exit(0);
+    }
+  });
+
   function quit() {
-    close();
-    process.exit(0);
+    app.quit();
   }
 
   process.stdin.setRawMode(true);
   process.stdin.resume();
-  process.stdin.on("data", (input) => {
-    if (input.equals(Buffer.from("q")) || input.equals(Buffer.from("Q")) || input.equals(Buffer.from([3]))) {
-      quit();
-    }
-  });
   process.once("SIGINT", quit);
   process.once("SIGTERM", quit);
   process.stdout.write("\x1b[?25l");
-  draw();
+  app.start();
 }

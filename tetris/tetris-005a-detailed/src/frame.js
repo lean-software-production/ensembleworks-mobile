@@ -20,7 +20,7 @@ function renderFrame({ score = 0, board, activePiece, gameOver = false } = {}) {
     `┌${"─".repeat(BOARD_WIDTH)}┐  TETRIS  Score: ${score}`,
     ...boardRows,
     `└${"─".repeat(BOARD_WIDTH)}┘`,
-    "←/→ move  ↑ rotate  ↓ down  Space drop  Q quit",
+    "←/→ move  ↑ rotate  ↓ down  Space drop  Q/Ctrl-C quit",
     ...(gameOver ? ["GAME OVER — Q quit"] : [])
   ];
 
