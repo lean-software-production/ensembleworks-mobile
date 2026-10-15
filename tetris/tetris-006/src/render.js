@@ -15,8 +15,17 @@ function renderFrame(state = {}) {
   const score = Number.isFinite(state.score) ? state.score : 0;
   const rows = [`┌${'─'.repeat(BOARD_WIDTH * 2)}┐`];
 
-  for (const row of board) {
-    const cells = row.map((filled) => (filled ? '██' : '  ')).join('');
+  const activeCells = new Set(
+    (state.activePiece ? state.activePiece.cells : []).map(
+      ({ x, y }) => `${state.activePiece.x + x},${state.activePiece.y + y}`,
+    ),
+  );
+
+  for (let y = 0; y < BOARD_HEIGHT; y += 1) {
+    const cells = board[y].map((filled, x) => {
+      if (activeCells.has(`${x},${y}`)) return '░░';
+      return filled ? '██' : '  ';
+    }).join('');
     rows.push(`│${cells}│`);
   }
 
@@ -38,4 +47,4 @@ function validateBoard(board) {
   }
 }
 
-module.exports = { BOARD_WIDTH, BOARD_HEIGHT, emptyBoard, renderFrame };
+module.exports = { BOARD_WIDTH, BOARD_HEIGHT, emptyBoard, renderFrame, validateBoard };
