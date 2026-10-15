@@ -1,6 +1,6 @@
 {
   "role": "doer",
   "harness": "pi-rpc-acp",
-  "model": "openrouter/cohere/north-mini-code:free",
-  "provider": "openrouter"
+  "model": "openai-codex/gpt-6-luna",
+  "provider": "openai-codex"
 }
