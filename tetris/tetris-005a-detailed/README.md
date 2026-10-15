@@ -1,57 +1,51 @@
 # Terminal Tetris
 
-## Scoring
+A compact terminal Tetris game with a 10×20 board. The complete game display
+is at most 24 rows tall.
 
-Line-clear points are awarded once when a piece locks: 1 line = 100, 2 = 300,
-3 = 500, and 4 = 800. There are no level, speed, or drop-point bonuses.
+## Run
 
-## Project notes
-
-
-A fresh target using the same seed, careful assembly line, models, doer and
-validator as `tetris-005a`. Only the planner's instructions change: it creates
-small, independently verifiable tasks with acceptance checks and tests alongside
-each behavior. Distinct game rules become separate tasks rather than one broad
-implementation task.
-
-The original run used three broad tasks. Compare that plan with the new one at
-`factory/runs/tetris-005a-detailed/plan.md` after starting this run. Expect smaller
-commits and more implementation/validation cycles; this can mean more agent calls.
-The planner still preserves existing plans and marks work done only after commits.
-
-## Run from the repository root
-
-Check the assembly line without calling agents:
+This project has no third-party runtime dependencies. From the project root:
 
 ```sh
-bin/factory --check-line --target tetris/tetris-005a-detailed --line careful
+npm start
+npm test
 ```
 
-Start the new build (calls real agents):
+`npm start` opens the interactive game only when both standard input and output
+are TTYs. When run through a pipe, redirected output, or CI, it prints one
+empty readable frame and exits instead of waiting for input.
 
-```sh
-bin/factory --run tetris-005a-detailed --target tetris/tetris-005a-detailed --line careful --seed tetris/spec.md
-```
+## Play
 
-Resume with:
+Use a terminal of at least **53 columns by 24 rows**. Resize smaller than that
+and the game pauses with a one-line size warning; it resumes when the terminal
+fits again, without applying accumulated gravity time.
 
-```sh
-bin/factory --run tetris-005a-detailed
-```
+| Key | Action |
+| --- | --- |
+| Left / Right arrows | Move one column |
+| Up arrow | Rotate clockwise |
+| Down arrow | Move down one row |
+| Space | Hard drop and lock |
+| Q or Ctrl-C | Quit |
 
-Each machine uses its own configuration folder. Available login files were
-copied locally from the corresponding original machines and remain ignored by
-Git. If needed, refresh each machine's Pi login:
+The game redraws in place in an alternate screen and restores the cursor and
+terminal mode on quit, termination, or handled errors.
 
-```sh
-for machine in planner doer validator; do
-  cp "$HOME/.pi/agent/auth.json" \
-    "tetris/tetris-005a-detailed/.assembly-lines/.machines/$machine/auth.json"
-done
-```
+## Rules
 
-Once the game has been generated:
-
-```sh
-npm --prefix tetris/tetris-005a-detailed start
-```
+- The seven standard tetrominoes spawn centered at the visible top of the
+  board. Gravity moves once per second.
+- Rotation is clockwise with **no wall kicks**. A rotation that would leave the
+  board or collide with settled cells is rejected; the square footprint does
+  not change.
+- A piece locks immediately when it cannot move down. A hard drop uses the
+  same lock path and has no drop-point bonus.
+- Completed rows clear simultaneously after a lock, before the next piece
+  spawns. If that next piece cannot fit, the game ends and the final board and
+  score remain visible.
+- Scores are awarded once per lock: 1 line = 100, 2 = 300, 3 = 500, and 4 =
+  800. There are no levels, speed changes, or drop points.
+- Time updates process at most ten gravity steps; excess delayed time is
+  discarded. Locking or resuming after a resize resets timing debt.

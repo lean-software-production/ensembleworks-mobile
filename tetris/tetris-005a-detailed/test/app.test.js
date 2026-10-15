@@ -60,6 +60,37 @@ test("live adapter maps every documented gameplay key and redraws complete frame
   assert.match(output.writes.at(-1), /Score: 0/);
 });
 
+test("scripted adapter session moves, rotates, descends, clears, scores, and reaches game over", () => {
+  const pieces = ["I", ...Array(10).fill("O")];
+  const source = () => pieces.shift() ?? "O";
+  const game = createGame({ pieceSource: source });
+  game.board[19].fill("X", 0, 6);
+  const { app, input, output, timers } = live({ pieceSource: source, game });
+
+  // Four rotations restore the I footprint; the moves place it over the four
+  // missing cells in a prepared bottom row. The clock supplies one real game
+  // descent before the drop completes the first lock and clears that row.
+  for (let count = 0; count < 4; count += 1) input.emit("data", "\x1b[A");
+  input.emit("data", "\x1b[D\x1b[C\x1b[C\x1b[C\x1b[C");
+  timers.tick();
+  input.emit("data", " ");
+  assert.equal(app.game.score, 100, "the scripted line clear awards its fixed score");
+  assert.equal(app.game.lastClearCount, 1);
+  assert.equal(app.game.active.type, "O");
+
+  // Repeated O drops build a deterministic central stack. The tenth locks at
+  // the spawn rows, so its successor cannot spawn and play ends.
+  input.emit("data", " ".repeat(10));
+  assert.equal(app.game.gameOver, true);
+  assert.equal(app.game.score, 100);
+  assert.equal(app.game.board.flat().filter(Boolean).length, 40);
+  assert.match(output.writes.at(-1), /GAME OVER — Q quit/);
+
+  input.emit("data", "q");
+  assert.equal(app.exited, true);
+  assert.deepEqual(timers.cleared, [41]);
+});
+
 test("repeated input and idle gravity use the engine while unsupported input is safe", () => {
   const { app, input, timers } = live({ game: createGame({ pieceSource: () => "T" }) });
   input.emit("data", Buffer.from("\x1b[D\x1b[D?"));
