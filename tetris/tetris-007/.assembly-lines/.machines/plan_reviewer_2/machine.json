@@ -1,6 +1,0 @@
-{
-  "harness": "pi-rpc-acp",
-  "role": "plan_reviewer",
-  "model": "openrouter/anthropic/claude-opus-5.5",
-  "lensFile": "../plan-lens.md"
-}

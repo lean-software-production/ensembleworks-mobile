@@ -1,6 +1,5 @@
 {
-  "harness": "pi-rpc-acp",
   "role": "planner",
-  "model": "openai-codex/gpt-6.1-sol",
-  "prompt": "You track progress on an already accepted comprehensive plan. Preserve its decisions, responsibilities, contracts, task identities and acceptance examples. Only mark the committed task and its completed subtasks done. Do not shorten, redesign or add tasks. Completion requires every planned task and subtask to be done."
+  "harness": "pi-rpc-acp",
+  "model": "openai-codex/gpt-6.1-sol"
 }

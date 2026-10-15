@@ -1,6 +1,6 @@
 {
+  "role": "validator",
   "harness": "pi-rpc-acp",
-  "role": "plan_reviewer",
   "model": "openai-codex/gpt-6.1-sol",
-  "lensFile": "../plan-lens.md"
+  "lensFile": "lens.md"
 }

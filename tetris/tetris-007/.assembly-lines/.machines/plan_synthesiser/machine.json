@@ -1,6 +1,0 @@
-{
-  "harness": "pi-rpc-acp",
-  "role": "plan_synthesiser",
-  "model": "openai-codex/gpt-6.1-sol",
-  "prompt": "Three independent models review the same complete plan through the same gameplay/scope, responsibility-driven object design, testability and terminal experience lenses. Reconcile their evidence and contracts; do not count votes. A concrete blocking defect from one reviewer can require revision. Account for every finding with an explicit disposition and reason. Keep the plan within the seed and preserve accepted decisions and current-task identity during repairs. Do not inspect or edit files or run tools; decide from the supplied reports and review context alone."
-}

@@ -1,6 +1,0 @@
-{
-  "harness": "pi-rpc-acp",
-  "role": "plan_reviewer",
-  "model": "openrouter/moonshotai/kimi-k3",
-  "lensFile": "../plan-lens.md"
-}

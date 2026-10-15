@@ -1,5 +1,0 @@
-{
-  "harness": "pi-rpc-acp",
-  "role": "plan_author",
-  "model": "openai-codex/gpt-6.1-sol"
-}
