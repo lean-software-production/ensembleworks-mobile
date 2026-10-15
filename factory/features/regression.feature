@@ -113,3 +113,12 @@ Feature: Public entrypoint and commit-boundary regression checks
     And the doer was pointed at the plan and at the seed
     And there are three new work commits
     And the target has no uncommitted changes
+
+  Scenario: A watcher displays partial text before a machine finishes its line
+    Given a plan with one task, not done
+    And the doer streams its first text without a newline
+    And the doer says "naïve 🧩", then "second line"
+    And the "tetris" run is running, with the doer part-way through an attempt, having said "naïve 🧩"
+    When I watch the "tetris" run
+    Then I see "naïve 🧩" from the doer
+    And I do not see "second line"

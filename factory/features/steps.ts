@@ -8,7 +8,7 @@ import { basename, delimiter, dirname, join, relative, resolve } from "node:path
 import { spawnSync } from "node:child_process";
 import { FactoryWorld } from "./world";
 
-const identity = {
+export const identity = {
   GIT_AUTHOR_NAME: "Factory test", GIT_AUTHOR_EMAIL: "factory@example.test",
   GIT_COMMITTER_NAME: "Factory test", GIT_COMMITTER_EMAIL: "factory@example.test"
 };
@@ -22,6 +22,7 @@ const source = resolve(__dirname, "..");
 const planReviewers = ["plan_gameplay", "plan_objects", "plan_testability", "plan_terminal"];
 
 interface MachineCall {
+  pid: number;
   harness: string;
   machine: string;
   prompt: string;
@@ -30,13 +31,13 @@ interface MachineCall {
   commits: number;
   plan: string;
 }
-function calls(world: FactoryWorld, machine?: string): MachineCall[] {
+export function calls(world: FactoryWorld, machine?: string): MachineCall[] {
   if (!existsSync(world.callLog)) return [];
   const entries = readFileSync(world.callLog, "utf8").trim().split("\n")
     .filter(Boolean).map((line) => JSON.parse(line) as MachineCall);
   return machine ? entries.filter((call) => call.machine === machine) : entries;
 }
-function machineConfig(world: FactoryWorld, name: string, changes: Record<string, unknown>): void {
+export function machineConfig(world: FactoryWorld, name: string, changes: Record<string, unknown>): void {
   const path = join(world.codebase, ".assembly-lines", ".machines", name, "machine.json");
   const config = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : { role: name };
   for (const [key, value] of Object.entries(changes)) {
@@ -56,7 +57,7 @@ function moveTarget(world: FactoryWorld, path: string): void {
   world.targets = world.targets.map(target => target === from ? path : target);
   world.codebase = path;
 }
-function saveAgentConfig(world: FactoryWorld, planPath = ""): void {
+export function saveAgentConfig(world: FactoryWorld, planPath = ""): void {
   writeFileSync(world.configPath, JSON.stringify({
     ...world.agentConfig, callLog: world.callLog, planPath,
     promptsDir: join(world.workspace, "prompts")
@@ -91,7 +92,7 @@ Given("a copy of the factory", function (this: FactoryWorld) {
   chmodSync(join(this.factoryDir, "factory"), 0o755);
   symlinkSync(join(source, "node_modules"), join(this.factoryDir, "node_modules"));
   symlinkSync("../factory/factory", join(this.repoRoot, "bin", "factory"));
-  for (const path of [this.chosenAgent, join(this.fakeBin, "pi")]) {
+  for (const path of [this.chosenAgent, join(this.fakeBin, "pi-rpc-acp")]) {
     copyFileSync(join(source, "features", "machine-double.cjs"), path);
     chmodSync(path, 0o755);
   }
@@ -255,7 +256,11 @@ Given("the other reviewers keep working until stopped", function (this: FactoryW
   this.agentConfig.holdOtherReviewers = true;
 });
 Then("the other reviewers have been stopped", function (this: FactoryWorld) {
-  assert.deepEqual(readFileSync(join(this.workspace, "reviewers-stopped.txt"), "utf8").trim().split("\n").sort(), ["reviewer_1", "reviewer_3"]);
+  for (const name of ["reviewer_1", "reviewer_3"]) {
+    const records = calls(this, name);
+    assert.equal(records.length, 1);
+    assert.throws(() => process.kill(records[0].pid, 0), { code: "ESRCH" }, `${name} is still running`);
+  }
 });
 Given("each reviewer has its own instructions", function (this: FactoryWorld) {
   reviewers.forEach((name, index) => machineConfig(this, name, { prompt: `Check aspect ${index + 1}.` }));
@@ -303,7 +308,7 @@ Given("a run named {string}, on the {string} line, with that seed and target", f
   this.runs[name] = { target: this.codebase, seed: this.seedPath, line, plan: join(this.factoryDir, "runs", name, "plan.md") };
   this.planPath = this.runs[name].plan;
 });
-function invoke(world: FactoryWorld, args: string[]): void {
+export function invoke(world: FactoryWorld, args: string[]): void {
   const result = spawnSync(relative(world.callerCwd, join(world.repoRoot, "bin", "factory")), args, {
     cwd: world.callerCwd, encoding: "utf8",
     env: { ...process.env, ...identity, FACTORY_TEST_CONFIG: world.configPath,
@@ -317,7 +322,7 @@ function invoke(world: FactoryWorld, args: string[]): void {
   world.output = `${result.stdout}${result.stderr}`;
 }
 // A run is given its settings, its name alone, or its name and whichever target is current.
-function runFactory(world: FactoryWorld, name: string, given: "settings" | "name" | "target" = "settings"): void {
+export function runFactory(world: FactoryWorld, name: string, given: "settings" | "name" | "target" = "settings"): void {
   const fixture = world.runs[name];
   const path = (to: string): string => relative(world.callerCwd, to) || ".";
   const args = ["--run", name, "--attempts", String(world.attempts)];
@@ -335,6 +340,11 @@ function runFactory(world: FactoryWorld, name: string, given: "settings" | "name
   const earlierCalls = calls(world).length;
   saveAgentConfig(world, fixture.plan);
   invoke(world, args);
+  if (world.exitCode === 0) {
+    const started = world.output;
+    invoke(world, ["watch", name]);
+    world.output = started + world.output;
+  }
   const made = calls(world).slice(earlierCalls);
   world.lastCalls = made.length;
   world.runCalls[name] = [...(world.runCalls[name] ?? []), ...made];
@@ -392,7 +402,7 @@ Then("it reports that the result of validator has no field {string}", function (
   assert.ok(this.output.includes(`The result of validator has no field "${field}"`), this.output);
 });
 
-function successful(world: FactoryWorld): void {
+export function successful(world: FactoryWorld): void {
   assert.equal(world.exitCode, 0, world.output);
 }
 function writePlan(world: FactoryWorld, completed: number, tasks = ["alpha", "beta", "gamma"]): void {
@@ -750,6 +760,14 @@ Then("the factory's own files and unrelated uncommitted changes are as they were
   assert.deepEqual(factorySnapshot(this), this.unrelatedSnapshot);
 });
 
+for (const machine of ["doer", "validator"]) {
+  Then(`it shows tokens in and tokens out for the ${machine}`, function (this: FactoryWorld) {
+    assert.match(this.watched, new RegExp(`tokens\\s+${machine} (\\d+) in / (\\d+) out`));
+    const values = [...this.watched.matchAll(new RegExp(`tokens\\s+${machine} (\\d+) in / (\\d+) out`, "g"))];
+    assert.ok(values.some(match => Number(match[1]) > 0 && Number(match[2]) > 0));
+  });
+}
+
 Given("Git rejects the commit", function (this: FactoryWorld) {
   const hook = join(this.repoRoot, ".git", "hooks", "pre-commit");
   writeFileSync(hook, '#!/bin/sh\necho "simulated commit failure" >&2\nexit 1\n');
@@ -809,7 +827,7 @@ Then("the validator receives the entire lockfile diff through stdin", function (
   assert.equal(validators.length, 1);
   const addedLines = this.agentConfig.largeLockfile!.trimEnd().split("\n").map(line => `+${line}`).join("\n");
   assert.ok(validators[0].prompt.includes(addedLines), "Validator input must contain the full lockfile diff");
-  for (const call of calls(this)) assert.deepEqual(call.args, ["-p"], "Prompts must not travel in command arguments");
+  for (const call of calls(this)) assert.deepEqual(call.args, [], "ACP prompts must travel over stdio, not in command arguments");
 });
 Then("it reports that there is no committable work", function (this: FactoryWorld) {
   assert.equal(this.exitCode, 1, this.output);
@@ -1013,4 +1031,18 @@ Then("switching tasks during repair stopped the run without a commit", function 
   assert.equal(commitCount(this), this.initialCommitCount);
   assert.equal(calls(this, "plan_validator").length, 1);
   assert.equal(planReviewState(this).task.task, "alpha");
+});
+
+Given("the reviewers run on Anthropic, Google and OpenAI models", function (this: FactoryWorld) {
+  for (const [index, name] of reviewers.entries()) machineConfig(this, name, {
+    provider: ["openai", "anthropic", "google"][index]
+  });
+});
+Then("it shows a total for each of Anthropic, Google and OpenAI", function (this: FactoryWorld) {
+  const totals = this.watched.split("\n").filter(line => line.startsWith("tokens")).at(-1)!;
+  for (const provider of ["anthropic", "google", "openai"]) assert.match(totals, new RegExp(`${provider} 124(?:\\s|$)`));
+});
+Then("it shows a total for the whole run", function (this: FactoryWorld) {
+  const total = this.watched.match(/run (\d+)\n/g)?.at(-1);
+  assert.equal(total?.trim(), `run ${calls(this).length * 124}`);
 });

@@ -1,12 +1,19 @@
 #!/usr/bin/env node
-// This executable and all observation state live outside the copied factory and target.
+// An external ACP agent double; all controlled behavior lives beside the tests.
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { createInterface } = require("node:readline");
+const send = message => process.stdout.write(JSON.stringify({ jsonrpc: "2.0", ...message }) + "\n");
+const text = value => send({ method: "session/update", params: { sessionId: "double", update: {
+  sessionUpdate: "agent_message_chunk", content: { type: "text", text: value }
+} } });
+async function execute(prompt) {
+  const console = { log: value => text(String(value) + "\n") };
 const config = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
-const harness = path.basename(process.argv[1]) === "pi" ? "pi" : "chosen";
+const harness = path.basename(process.argv[1]) === "pi-rpc-acp" ? "pi" : "chosen";
 const args = process.argv.slice(2);
-const prompt = fs.readFileSync(0, "utf8");
+
 let machine = prompt.match(/You are the (\w+)\./)?.[1];
 if (machine === "reviewer") machine = `reviewer_${["openai/model", "anthropic/model", "google/model"].indexOf(args[args.indexOf("--model") + 1]) + 1}`;
 const cwd = process.cwd();
@@ -19,7 +26,7 @@ const planExists = fs.existsSync(planPath);
 const plan = planExists ? fs.readFileSync(planPath, "utf8") : "";
 const count = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd, encoding: "utf8" });
 const commits = count.status === 0 ? Number(count.stdout) : 0;
-fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan }) + "\n");
+fs.appendFileSync(config.callLog, JSON.stringify({ pid: process.pid, harness, machine, prompt, args, cwd, commits, plan }) + "\n");
 fs.mkdirSync(config.promptsDir, { recursive: true });
 fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.filter(call => call.machine === machine).length + 1}-${machine}.txt`), prompt);
 
@@ -106,7 +113,7 @@ if (machine === "plan_author") {
 } else if (machine === "validator") {
   if (config.validatorInProse) {
     console.log("The work seems fine, but here is no JSON result.");
-    process.exit(0);
+    return;
   }
   const validationCount = priorCalls.filter(call => call.machine === "validator" && call.cwd === cwd).length;
   const satisfied = config.validation !== "never" && !(config.validation === "reject-first" && validationCount === 0);
@@ -120,7 +127,7 @@ if (machine === "plan_author") {
   const review = config.reviewers[machine];
   if (review.prose && !config.reviewerBarrier) {
     console.log("A report with no JSON result");
-    process.exit(0);
+    return;
   }
   result = { satisfied: review.satisfied, findings: review.findings };
 } else if (machine === "synthesiser" || machine === "arbiter") {
@@ -131,16 +138,24 @@ if (machine === "plan_author") {
   throw new Error("No machine role in prompt");
 }
 
+if (config.holdMachines?.includes(machine)) {
+  if (config.partialText) text(config.doerLines?.[0] ?? "started");
+  else console.log(config.doerLines?.[0] ?? "started");
+  fs.writeFileSync(path.join(config.promptsDir, `${machine}.waiting`), String(process.pid));
+  await new Promise(resolve => {
+    const timer = setInterval(() => {
+      if (fs.existsSync(path.join(config.promptsDir, `${machine}.release`))) {
+        clearInterval(timer); resolve();
+      }
+    }, 15);
+  });
+  if (config.doerLines?.[1]) console.log(config.doerLines[1]);
+}
+
 if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
   // An event-driven barrier: no reviewer answers until all three started.
+  await new Promise(resolve => {
   const watcher = fs.watch(config.callLog, checkStarted);
-  if (config.holdOtherReviewers && machine !== "reviewer_2") {
-    process.on("SIGTERM", () => {
-      fs.appendFileSync(path.join(path.dirname(config.callLog), "reviewers-stopped.txt"), machine + "\n");
-      watcher.close();
-      process.exit(0);
-    });
-  }
   function checkStarted() {
     const started = fs.readFileSync(config.callLog, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse)
       .filter(call => call.machine?.startsWith("reviewer_") && call.commits === commits);
@@ -148,8 +163,31 @@ if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
       if (config.holdOtherReviewers && machine !== "reviewer_2") return;
       watcher.close();
       console.log(config.reviewers[machine].prose ? "A report with no JSON result" : JSON.stringify(result));
+      resolve();
     }
   }
   checkStarted();
+  });
 } else console.log(JSON.stringify(result));
 if (machine === "validator" && config.invalidLastVerdict) console.log('{"note":"not a verdict"}');
+
+}
+let initialized = false;
+let session = false;
+createInterface({ input: process.stdin }).on("line", async line => {
+  const message = JSON.parse(line);
+  const { id, method, params } = message;
+  if (method === "initialize") {
+    initialized = params.protocolVersion === 1;
+    send({ id, result: { protocolVersion: 1, agentCapabilities: {} } });
+  } else if (method === "session/new") {
+    if (!initialized || params.cwd !== process.cwd()) throw new Error("Invalid ACP session");
+    session = true;
+    send({ id, result: { sessionId: "double" } });
+  } else if (method === "session/prompt") {
+    if (!session || params.sessionId !== "double") throw new Error("Invalid ACP prompt");
+    await execute(params.prompt.map(block => block.text).join("\n"));
+    send({ id, result: { stopReason: "end_turn", usage: { inputTokens: 101, outputTokens: 23 } } });
+  }
+});
+process.stdin.on("end", () => process.exit(0));

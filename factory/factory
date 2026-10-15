@@ -12,4 +12,5 @@ while [ -L "$script" ]; do
 done
 
 factory_dir=$(CDPATH= cd -- "$(dirname -- "$script")" && pwd)
+export PATH="$PATH:$factory_dir/../tools/pi-rpc-acp"
 exec "$factory_dir/node_modules/.bin/ts-node" "$factory_dir/src/cli.ts" "$@"

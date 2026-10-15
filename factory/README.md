@@ -1,12 +1,35 @@
-# Factory — iteration 005
+# Factory — iteration 006: Watching
 
 Start a named run from the repository root, giving it a target, one of that
 target's assembly lines, and a seed:
 
 ```sh
 bin/factory --run tetris --target tetris/tetris-003 --line careful --seed tetris/spec.md
+bin/factory watch tetris
 npm --prefix tetris/tetris-003 start
 ```
+
+Starting returns `started run tetris` while the factory continues in a daemon.
+`watch` replays the run's record, then follows live machine text, running-machine
+status, and cumulative input/output token counts. Totals are grouped by provider
+and for the whole run. A completed run's output can be watched again tomorrow.
+
+```sh
+bin/factory stop tetris   # interrupt the current attempt, leave the daemon up
+bin/factory --run tetris  # resume using its remembered settings and plan
+bin/factory stop          # stop the run and the daemon
+bin/factory status        # report whether the daemon and a run are active
+```
+
+The daemon accepts one run at a time; a second start is refused while one is
+active. Stopping interrupts every active machine, leaves its generated files in
+the target, and abandons the unvalidated attempt without committing or advancing
+the plan. A stopped run starts again at the planner. Attempts reset on restart.
+
+Each run keeps an append-only `factory/runs/<name>/events.jsonl`: streamed text,
+machine start/finish events, token usage, and run lifecycle events. Resuming adds
+to the record, so token totals include earlier attempts. The daemon communicates
+through a local Unix socket; `factory/runs/daemon.log` holds daemon diagnostics.
 
 The run remembers all three in `factory/runs/tetris/run.json`. After that its
 name is enough, and it carries on from its plan:
@@ -90,14 +113,29 @@ bin/factory --check-line --target tetris/tetris-003 --line careful
 Each named node has `.assembly-lines/.machines/<name>/machine.json` in the
 target. A machine's name is unique in its target: every line there that names
 the doer runs the same doer. Set `harness` to a command or executable path;
-omitting it selects `pi`. The command receives `-p` and runs in the target, with
-the full UTF-8 prompt supplied on stdin and stdin closed when input is complete.
-Custom harnesses must support this input contract. Prompts, including the
-validator's complete changed-work diff, do not consume command-line argument space.
-Git and machine output buffers are limited to 10 MiB per invocation.
+omitting it selects the bundled `pi-rpc-acp` bridge, which runs Pi in RPC mode.
+Existing `"harness": "pi"` settings also select that bridge. Pi must be installed
+and authenticated. An explicitly named harness must now be an ACP agent, such as
+`pi-rpc-acp`, `claude-agent-acp`, `codex-acp`, or an executable you provide.
+
+The factory is an [ACP v1 client](https://agentclientprotocol.com/protocol/v1/initialization):
+it initializes the agent, opens a session in the target, and supplies the full
+UTF-8 prompt in `session/prompt` over JSON-RPC stdio. It records
+`agent_message_chunk` text and the response's draft `usage.inputTokens` and
+`usage.outputTokens`. Missing usage is left unreported, rather than invented.
+The last generated line that parses as JSON is the routing result. Custom
+code machines use ACP too; the plan checkpoint fixture shows a zero-token agent.
+
 `role` selects the machine's responsibility; optional `prompt` adds instructions.
-An optional `model` adds `--model <provider/model>` to the harness invocation.
-Custom harnesses using this setting must accept that flag as well as `-p`.
+An optional `model` adds `--model <provider/model>` to the harness invocation;
+choose an adapter accepting that flag. Set `provider` explicitly when the model
+identifier does not start with its billing provider (for example, OpenRouter
+models). Otherwise the first part of `model` before `/` is used, or `unknown`.
+Tokens are counts, not currency estimates. The client advertises no filesystem
+or terminal services; the adapter performs its own tools. Permission requests
+are cancelled, so configure an appropriate unattended adapter mode beforehand.
+Prompts, including complete changed-work diffs, travel on stdin rather than in
+command-line arguments. Git buffers retain their 10 MiB limit.
 
 The validator's `lensFile` is relative to its configuration file. In tetris-003
 it points to `lens.md` beside it, the OO-design lens influenced by Metz,
@@ -168,6 +206,19 @@ configured Pi models and generates the target. Automated tests use external
 doubles and exercise the real checkpoint gate, including rejection limits,
 overrides and safe plan repair.
 
+## Try the watching examples
+
+From `factory/`, these examples demonstrate live replay, concurrent reviewers,
+provider accounting and stop/resume with external ACP doubles:
+
+```sh
+npm test -- --name 'The doer is working|During fan out|Three reviewers on three providers|Starting the "tetris" run again'
+```
+
+The course examples tagged `@real-agent` are available separately with
+`npm run test:real-agent`. They contact real Pi models and still require the
+manual observations described below.
+
 ## Checks
 
 From `factory/`:
@@ -182,7 +233,7 @@ The default suite excludes `@real-agent`, uses external machine doubles, and
 invokes the public launcher through a symlink in isolated workspaces. Passing it
 verifies routing and orchestration, not real generated code or OO-design verdicts.
 Real-agent course examples remain manual checks: the existing runner does not
-define all their observation steps. This iteration's reviewer example asks you
+define all their observation steps. The reviewer example asks you
 to check that the reports discuss testability. Use Pi with the configured
 providers to exercise a real line; `pi --offline --list-models` shows the models
 currently available locally.

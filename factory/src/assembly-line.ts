@@ -9,6 +9,7 @@ export interface MachineConfig {
   lens: string;
   prompt?: string;
   model?: string;
+  provider?: string;
 }
 
 interface Edge {
@@ -38,10 +39,11 @@ export class AssemblyLine {
       this.machines.set(name, {
         name,
         role: config.role ?? name,
-        harness: config.harness ?? "pi",
+        harness: !config.harness || config.harness === "pi" ? "pi-rpc-acp" : config.harness,
         lens: config.lens ?? (config.lensFile ? readFileSync(resolve(dirname(file), config.lensFile), "utf8") : ""),
         prompt: config.prompt,
-        model: config.model
+        model: config.model,
+        provider: config.provider ?? config.model?.split("/")[0] ?? "unknown"
       });
     }
     for (const edge of graph.edges()) {
