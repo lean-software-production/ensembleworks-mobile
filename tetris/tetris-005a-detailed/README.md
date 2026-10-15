@@ -1,4 +1,12 @@
-# Tetris 005a — Detailed planner experiment
+# Terminal Tetris
+
+## Scoring
+
+Line-clear points are awarded once when a piece locks: 1 line = 100, 2 = 300,
+3 = 500, and 4 = 800. There are no level, speed, or drop-point bonuses.
+
+## Project notes
+
 
 A fresh target using the same seed, careful assembly line, models, doer and
 validator as `tetris-005a`. Only the planner's instructions change: it creates

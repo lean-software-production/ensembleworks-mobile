@@ -7,6 +7,7 @@ const {
   PIECES,
   PIECE_NAMES,
   GRAVITY_INTERVAL_MS,
+  LINE_CLEAR_SCORES,
   MAX_GRAVITY_STEPS,
   advanceGravity,
   canPlace,
@@ -18,7 +19,8 @@ const {
   moveDown,
   moveLeft,
   moveRight,
-  rotateClockwise
+  rotateClockwise,
+  scoreForLineClear
 } = require("../src/game");
 
 const key = ({ x, y }) => `${x},${y}`;
@@ -36,6 +38,7 @@ test("every piece spawns centered at the visible top of an empty board", () => {
   for (const type of PIECE_NAMES) {
     const game = createGame({ pieceSource: () => type });
     assert.equal(game.active.type, type);
+    assert.equal(game.score, 0);
     assert.equal(game.active.cells.length, 4);
     for (const cell of game.active.cells) {
       assert.ok(cell.x >= 0 && cell.x < BOARD_WIDTH, `${type} x=${cell.x}`);
@@ -315,6 +318,46 @@ test("locking clears rows before spawning and exposes the lock clear count", () 
   assert.equal(locked.active.type, "O");
   assert.deepEqual(locked.board, createBoard());
   assert.equal(game.board[BOARD_HEIGHT - 1][0], "J", "source board is unchanged");
+});
+
+test("fixed line-clear score table awards the documented values", () => {
+  assert.deepEqual(LINE_CLEAR_SCORES, [0, 100, 300, 500, 800]);
+  for (const [count, score] of LINE_CLEAR_SCORES.entries()) {
+    assert.equal(scoreForLineClear(count), score, `${count} rows`);
+  }
+});
+
+function gameThatWillClear(score, rowsToClear) {
+  const game = at(createGame({ pieceSource: () => "O" }), 0, BOARD_HEIGHT - 2);
+  game.score = score;
+  for (let y = 14; y < 14 + rowsToClear; y += 1) game.board[y].fill("J");
+  return game;
+}
+
+test("locking awards each line-clear score once and awards nothing for no clear", () => {
+  for (const [count, points] of LINE_CLEAR_SCORES.entries()) {
+    let draws = 0;
+    const locked = moveDown(gameThatWillClear(0, count), () => {
+      draws += 1;
+      return "T";
+    });
+
+    assert.equal(draws, 1, `${count} rows draws one successor`);
+    assert.equal(locked.lastClearCount, count, `${count} rows cleared`);
+    assert.equal(locked.score, points, `${count} rows score`);
+  }
+});
+
+test("scores accumulate only across lock transitions, not rendering or movement", () => {
+  const first = moveDown(gameThatWillClear(0, 1), () => "O");
+  const second = moveDown(gameThatWillClear(first.score, 4), () => "I");
+
+  assert.equal(first.score, 100);
+  assert.equal(second.score, 900);
+  assert.equal(moveLeft(second).score, 900);
+  assert.equal(moveRight(second).score, 900);
+  assert.equal(rotateClockwise(second).score, 900);
+  assert.match(renderFrame({ board: second.board, activePiece: second.active, score: second.score }), /Score: 900/);
 });
 
 test("gravity waits for a complete fixed interval", () => {

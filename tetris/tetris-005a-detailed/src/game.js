@@ -22,6 +22,14 @@ const PIECE_NAMES = Object.freeze(Object.keys(PIECES));
 const GRAVITY_INTERVAL_MS = 1000;
 const MAX_GRAVITY_STEPS = 10;
 
+// Fixed line-clear scoring: singles 100, doubles 300, triples 500, and
+// tetrises (four simultaneous rows) 800. There are no level or drop points.
+const LINE_CLEAR_SCORES = Object.freeze([0, 100, 300, 500, 800]);
+
+function scoreForLineClear(count) {
+  return LINE_CLEAR_SCORES[count] ?? 0;
+}
+
 function createBoard() {
   return Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null));
 }
@@ -124,7 +132,7 @@ function clearCompletedRows(board) {
  * Settle the current legal active piece, clear completed rows, and create its
  * successor. The caller owns the injected source, so game state remains plain
  * data and a lock draws exactly one new piece. `lastClearCount` exposes this
- * transition's result to the later scoring rule.
+ * transition's result alongside the fixed score award for this lock.
  */
 function lockActivePiece(game, pieceSource) {
   if (typeof pieceSource !== "function") {
@@ -144,6 +152,7 @@ function lockActivePiece(game, pieceSource) {
     ...game,
     board: cleared.board,
     active: makeActivePiece(nextType),
+    score: game.score + scoreForLineClear(cleared.count),
     lastClearCount: cleared.count
   };
 }
@@ -231,6 +240,7 @@ module.exports = {
   PIECES,
   PIECE_NAMES,
   GRAVITY_INTERVAL_MS,
+  LINE_CLEAR_SCORES,
   MAX_GRAVITY_STEPS,
   advanceGravity,
   canPlace,
@@ -244,5 +254,6 @@ module.exports = {
   moveHorizontally,
   moveLeft,
   moveRight,
-  rotateClockwise
+  rotateClockwise,
+  scoreForLineClear
 };
