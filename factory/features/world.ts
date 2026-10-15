@@ -18,6 +18,16 @@ export interface AgentConfig {
   tasks?: string[];
   doerRename?: boolean;
   largeLockfile?: string;
+  reviewers?: Record<string, { satisfied: boolean; findings: { issue: string }[]; prose?: boolean }>;
+  synthesis?: "always" | "reject-first" | "never";
+  reviewerBarrier?: boolean;
+  holdOtherReviewers?: boolean;
+  planSynthesis?: "always" | "reject-first" | "never";
+  planObjection?: boolean;
+  planDefectFirst?: boolean;
+  malformedPlanReport?: boolean;
+  missingPlanDisposition?: boolean;
+  planAuthorSkipsTask?: boolean;
 }
 
 export interface RunFixture {
@@ -51,6 +61,7 @@ export class FactoryWorld extends World {
   initialCommitCount = 0;
   baselineHead = "";
   agentConfig: AgentConfig = {};
+  promptRecipients: string[] = [];
   unrelatedSnapshot: Record<string, string> = {};
 
   makeWorkspace(): void {

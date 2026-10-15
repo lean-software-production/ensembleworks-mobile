@@ -19,6 +19,8 @@ const run = (cwd: string, command: string, args: string[] = []): string => {
 };
 const source = resolve(__dirname, "..");
 
+const planReviewers = ["plan_gameplay", "plan_objects", "plan_testability", "plan_terminal"];
+
 interface MachineCall {
   harness: string;
   machine: string;
@@ -115,6 +117,18 @@ Given("a new target, with a seed describing a game of {word}", function (this: F
 Given("the target has the machines planner, doer and validator", function (this: FactoryWorld) {
   for (const name of ["planner", "doer", "validator"]) machineConfig(this, name, { harness: this.chosenAgent });
 });
+const reviewers = ["reviewer_1", "reviewer_2", "reviewer_3"];
+function bigBrains(world: FactoryWorld): void {
+  for (const [index, name] of reviewers.entries()) machineConfig(world, name, {
+    role: "reviewer", harness: world.chosenAgent, model: ["openai/model", "anthropic/model", "google/model"][index]
+  });
+  machineConfig(world, "synthesiser", { harness: world.chosenAgent });
+}
+Given("the target has the three big brains", function (this: FactoryWorld) { bigBrains(this); });
+Then("it reports that the branches from doer do not meet", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /branches from doer do not meet/i);
+});
 const validatedLine = `digraph assembly_line {
   start -> planner
   planner -> doer        [label="not complete"]
@@ -131,6 +145,139 @@ const uncheckedLine = `digraph assembly_line {
   doer -> planner
 }
 `;
+const fanLine = validatedLine.replace("doer -> validator", reviewers.map(name => `doer -> ${name}\n${name} -> synthesiser`).join("\n"))
+  .replaceAll("validator", "synthesiser");
+Given("the three big brains has replaced the validator on the {string} line", function (this: FactoryWorld, name: string) {
+  bigBrains(this);
+  writeLine(this, name, fanLine);
+});
+Given("every reviewer is always satisfied", function (this: FactoryWorld) {
+  this.agentConfig.reviewers = Object.fromEntries(reviewers.map(name => [name, { satisfied: true, findings: [] }]));
+});
+Given("the synthesiser is always satisfied", function (this: FactoryWorld) { this.agentConfig.synthesis = "always"; });
+Given("a plan with one task, not done", function (this: FactoryWorld) { writePlan(this, 0, ["alpha"]); });
+Then("every reviewer has been called once", function (this: FactoryWorld) {
+  successful(this);
+  for (const name of reviewers) assert.equal(calls(this, name).length, 1, this.output);
+});
+Then("the synthesiser has been called once", function (this: FactoryWorld) {
+  successful(this);
+  assert.equal(calls(this, "synthesiser").length, 1, this.output);
+  const order = calls(this).map(call => call.machine);
+  for (const name of reviewers) assert.ok(order.indexOf(name) < order.indexOf("synthesiser"));
+});
+Given("no reviewer finishes until all three have begun", function (this: FactoryWorld) { this.agentConfig.reviewerBarrier = true; });
+Then("every reviewer was asked for a result", function (this: FactoryWorld) {
+  successful(this);
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.match(call.prompt, /Finish with a result: a single line of JSON/);
+  }
+});
+Given("every reviewer is not satisfied, with a finding of its own: {string}, {string} or {string}", function (this: FactoryWorld, first: string, second: string, third: string) {
+  const reports = [first, second, third];
+  reviewers.forEach((name, index) => { this.agentConfig.reviewers![name] = { satisfied: false, findings: [{ issue: reports[index] }] }; });
+});
+Given("the second reviewer is not satisfied, with the finding {string}", function (this: FactoryWorld, report: string) {
+  this.agentConfig.reviewers!.reviewer_2 = { satisfied: false, findings: [{ issue: report }] };
+});
+function synthesisReports(world: FactoryWorld): Record<string, unknown> {
+  successful(world);
+  world.promptRecipients = ["synthesiser"];
+  const call = calls(world, "synthesiser")[0];
+  assert.ok(call);
+  return JSON.parse(call.prompt.match(/Branch results:\n([^\n]+)/)![1]);
+}
+Then("the synthesiser was given {string}, {string} and {string}", function (this: FactoryWorld, first: string, second: string, third: string) {
+  const reports = [first, second, third];
+  const received = synthesisReports(this);
+  assert.deepEqual(received, Object.fromEntries(reviewers.map((name, index) => [name, { satisfied: false, findings: [{ issue: reports[index] }] }])));
+  const prompt = calls(this, "synthesiser")[0].prompt;
+  for (const path of [this.seedPath, this.planPath, this.codebase]) assert.ok(!prompt.includes(path));
+});
+Then("the synthesiser was given {string}", function (this: FactoryWorld, report: string) {
+  assert.deepEqual(synthesisReports(this), Object.fromEntries(reviewers.map(name => [name, this.agentConfig.reviewers![name]])));
+  assert.ok(JSON.stringify(synthesisReports(this)).includes(report));
+});
+Given("the synthesiser is never satisfied", function (this: FactoryWorld) { this.agentConfig.synthesis = "never"; });
+Given("the synthesiser is not satisfied the first time", function (this: FactoryWorld) { this.agentConfig.synthesis = "reject-first"; });
+Then("the doer was given the synthesiser's findings", function (this: FactoryWorld) {
+  successful(this);
+  const retry = calls(this, "doer")[1];
+  assert.ok(retry);
+  assert.deepEqual(JSON.parse(retry.prompt.match(/Validator findings:\n([^\n]+)/)![1]), [{ issue: "Resolve the synthesiser's finding" }]);
+});
+Then("it was not given {string}", function (this: FactoryWorld, report: string) {
+  assert.ok(calls(this, "doer").length);
+  for (const call of calls(this, "doer")) assert.ok(!call.prompt.includes(report));
+});
+Given("the second reviewer answers in prose, with no result", function (this: FactoryWorld) { this.agentConfig.reviewers!.reviewer_2.prose = true; });
+Given("the second reviewer cannot be run", function (this: FactoryWorld) { machineConfig(this, "reviewer_2", { harness: join(this.workspace, "missing-reviewer") }); });
+Then("it reports that it could not read reviewer_2's result", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /could not read the reviewer_2's result/i);
+});
+Then("it reports that it could not run reviewer_2", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /could not run the reviewer_2/i);
+});
+Then("the synthesiser has not been called", function (this: FactoryWorld) {
+  assert.equal(calls(this, "synthesiser").length, 0);
+});
+Then("every reviewer was given the work for the second task", function (this: FactoryWorld) {
+  successful(this);
+  this.promptRecipients = reviewers;
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.match(call.prompt, /Changed work:[\s\S]*work-(beta|gamma)\.txt/);
+    assert.match(calls(this, name)[0].prompt, /\+beta/);
+  }
+});
+Then("every reviewer was given the same prompt", function (this: FactoryWorld) {
+  successful(this);
+  const records = reviewers.map(name => calls(this, name)[0]);
+  assert.ok(records.every(Boolean));
+  assert.equal(new Set(records.map(call => call.prompt)).size, 1);
+  assert.equal(new Set(records.map(call => call.args[call.args.indexOf("--model") + 1])).size, 3);
+});
+Given("the reviewers' lens is testability", function (this: FactoryWorld) {
+  for (const name of reviewers) machineConfig(this, name, { lens: "testability" });
+});
+Then("every reviewer was given {string}", function (this: FactoryWorld, lens: string) {
+  successful(this);
+  for (const name of reviewers) {
+    assert.ok(calls(this, name).length);
+    for (const call of calls(this, name)) assert.ok(call.prompt.includes(lens));
+  }
+});
+Given("the other reviewers keep working until stopped", function (this: FactoryWorld) {
+  this.agentConfig.reviewerBarrier = true;
+  this.agentConfig.holdOtherReviewers = true;
+});
+Then("the other reviewers have been stopped", function (this: FactoryWorld) {
+  assert.deepEqual(readFileSync(join(this.workspace, "reviewers-stopped.txt"), "utf8").trim().split("\n").sort(), ["reviewer_1", "reviewer_3"]);
+});
+Given("each reviewer has its own instructions", function (this: FactoryWorld) {
+  reviewers.forEach((name, index) => machineConfig(this, name, { prompt: `Check aspect ${index + 1}.` }));
+});
+Then("each reviewer received only its own instructions", function (this: FactoryWorld) {
+  successful(this);
+  reviewers.forEach((name, index) => {
+    const record = calls(this, name)[0];
+    assert.ok(record);
+    for (let aspect = 0; aspect < 3; aspect++) assert.equal(record.prompt.includes(`Check aspect ${aspect + 1}.`), aspect === index);
+  });
+});
+Given("the branches meet at a machine called arbiter", function (this: FactoryWorld) {
+  machineConfig(this, "arbiter", { role: "arbiter", harness: this.chosenAgent });
+  editLine(this, line => line.replaceAll("synthesiser", "arbiter"), "careful");
+});
+Then("the arbiter received all three reports", function (this: FactoryWorld) {
+  successful(this);
+  const record = calls(this, "arbiter")[0];
+  assert.ok(record);
+  assert.deepEqual(JSON.parse(record.prompt.match(/Branch results:\n([^\n]+)/)![1]), this.agentConfig.reviewers);
+});
 function linePath(target: string, name: string): string { return join(target, ".assembly-lines", `${name}.dot`); }
 function writeLine(world: FactoryWorld, name: string, line: string): void {
   mkdirSync(join(world.codebase, ".assembly-lines"), { recursive: true });
@@ -558,6 +705,7 @@ Then("the target has no uncommitted changes", function (this: FactoryWorld) {
 });
 Then("the validator was given the work for the second task", function (this: FactoryWorld) {
   successful(this);
+  this.promptRecipients = ["validator"];
   const validator = calls(this, "validator")[0];
   assert.ok(validator, this.output);
   assert.match(validator.prompt, /Changed work:/);
@@ -565,7 +713,9 @@ Then("the validator was given the work for the second task", function (this: Fac
   assert.match(validator.prompt, /\+beta/);
 });
 Then("it was not given the work for the first task", function (this: FactoryWorld) {
-  for (const call of calls(this, "validator")) assert.doesNotMatch(call.prompt.split("Changed work:")[1] ?? call.prompt, /work-alpha\.txt|\+alpha/);
+  const records = calls(this).filter(call => this.promptRecipients.includes(call.machine));
+  assert.ok(records.length);
+  for (const call of records) assert.doesNotMatch(call.prompt.split("Changed work:")[1] ?? call.prompt, /work-alpha\.txt|\+alpha/);
 });
 Then("the validator was given {string}", function (this: FactoryWorld, lens: string) {
   successful(this);
@@ -675,4 +825,192 @@ Then("the public entrypoint is the symlink to the separate factory", function (t
   assert.equal(readlinkSync(join(this.repoRoot, "bin", "factory")), "../factory/factory");
   assert.equal(existsSync(join(this.factoryDir, "features")), false);
   assert.equal(existsSync(join(this.factoryDir, "spec")), false);
+});
+
+Given("the target has the plan-first line with four review lenses", function (this: FactoryWorld) {
+  cpSync(resolve(source, "features", "fixtures", "plan-first", ".assembly-lines"),
+    join(this.codebase, ".assembly-lines"), { recursive: true });
+  for (const name of ["plan_author", ...planReviewers, "plan_synthesiser", "planner", "doer", "validator"]) {
+    machineConfig(this, name, { harness: this.chosenAgent });
+  }
+});
+Given("the plan synthesiser rejects the first round", function (this: FactoryWorld) { this.agentConfig.planSynthesis = "reject-first"; });
+Given("the plan synthesiser never accepts", function (this: FactoryWorld) { this.agentConfig.planSynthesis = "never"; });
+Given("a plan reviewer has a blocking objection", function (this: FactoryWorld) { this.agentConfig.planObjection = true; });
+Given("implementation exposes a plan defect on its first validation", function (this: FactoryWorld) { this.agentConfig.planDefectFirst = true; });
+Given("the factory allows at most one attempt at a task", function (this: FactoryWorld) { this.attempts = 1; });
+Given("a plan reviewer omits its findings array", function (this: FactoryWorld) { this.agentConfig.malformedPlanReport = true; });
+Given("the plan synthesiser omits that finding's disposition", function (this: FactoryWorld) { this.agentConfig.missingPlanDisposition = true; });
+Given("the repair author incorrectly marks the current task done", function (this: FactoryWorld) { this.agentConfig.planAuthorSkipsTask = true; });
+
+function planReviewState(world: FactoryWorld) {
+  return JSON.parse(readFileSync(join(dirname(world.planPath), "plan-review.json"), "utf8"));
+}
+function reviewContext(call: MachineCall) {
+  return JSON.parse(call.prompt.match(/Review context:\n([^\n]+)/)![1]);
+}
+Then("the plan-first run committed {int} tasks", function (this: FactoryWorld, count: number) {
+  successful(this);
+  assert.equal(workCommits(this).length, count, this.output);
+  const entries = calls(this);
+  const tracking = entries.filter(call => call.machine === "planner" && call.prompt.includes("The task's work has been committed"));
+  assert.equal(tracking.length, count);
+  for (const tracker of tracking) {
+    const earlier = entries.slice(0, entries.indexOf(tracker));
+    const validation = earlier.reverse().find(call => call.machine === "plan_validator")!;
+    assert.ok(validation, "Only implementation validation can permit a commit");
+    assert.equal(tracker.commits, validation.commits + 1, "Commit before marking a task complete");
+    const task = validation.plan.match(/^- \[ \] (.+)$/m)?.[1];
+    assert.ok(task && tracker.plan.includes(`- [ ] ${task}`), "Task remains unfinished until after its commit");
+  }
+  assert.equal(planReviewState(this).status, "accepted");
+});
+Then("the four plan reviewers were called {int} times each", function (this: FactoryWorld, count: number) {
+  for (const name of planReviewers) assert.equal(calls(this, name).length, count, this.output);
+});
+Then("planning and execution received distinct contracts", function (this: FactoryWorld) {
+  const entries = calls(this);
+  const author = calls(this, "plan_author")[0];
+  assert.match(author.prompt, /comprehensive plan/);
+  assert.doesNotMatch(author.prompt, /write a short plan/);
+  const doer = entries.find(call => call.machine === "doer")!;
+  for (const name of planReviewers) {
+    const reviewer = entries.find(call => call.machine === name)!;
+    assert.ok(entries.indexOf(reviewer) < entries.indexOf(doer));
+    assert.equal(reviewer.plan, author.plan || doer.plan);
+    assert.ok(reviewer.prompt.includes(this.planPath));
+    assert.doesNotMatch(reviewer.prompt, /Changed work:/);
+    assert.match(reviewer.prompt, /responsibilities|scope|Testability|Terminal/);
+    assert.equal(reviewContext(reviewer).revision, 1);
+  }
+  const synthesis = entries.find(call => call.machine === "plan_synthesiser")!;
+  assert.ok(entries.indexOf(synthesis) < entries.indexOf(doer));
+  assert.ok(!synthesis.prompt.includes(this.planPath), "Synthesis consumes the branch reports");
+  assert.ok(!synthesis.prompt.includes(this.codebase));
+});
+Then("every task was validated against the accepted plan", function (this: FactoryWorld) {
+  const validators = calls(this, "plan_validator");
+  assert.equal(validators.length, 2);
+  for (const validator of validators) {
+    assert.ok(validator.prompt.includes(this.planPath));
+    assert.ok(validator.prompt.includes(this.seedPath));
+    assert.match(validator.prompt, /Changed work:/);
+    assert.match(validator.prompt, /Run relevant tests and acceptance commands/);
+    assert.match(validator.prompt, /EXACTLY ONE/);
+  }
+});
+Then("the plan review decision and reports were saved outside the target", function (this: FactoryWorld) {
+  const state = planReviewState(this);
+  assert.equal(state.decision.satisfied, true);
+  assert.deepEqual(Object.keys(state.reports).sort(), [...planReviewers].sort());
+  assert.ok(existsSync(join(dirname(this.planPath), "plan-reviews", "episode-1-round-1.json")));
+  assert.equal(existsSync(join(this.codebase, "plan-review.json")), false);
+  for (const commit of workCommits(this)) assert.ok(commit.files.every(file => file.startsWith("work-")));
+});
+Then("the author received the synthesis findings before any implementation", function (this: FactoryWorld) {
+  const entries = calls(this);
+  const authors = entries.filter(call => call.machine === "plan_author");
+  assert.equal(authors.length, 2);
+  assert.match(authors[1].prompt, /Resolve the plan synthesis finding/);
+  assert.equal(authors[1].commits, authors[0].commits);
+  assert.ok(entries.indexOf(authors[1]) < entries.findIndex(call => call.machine === "doer"));
+  for (const doer of calls(this, "doer")) assert.doesNotMatch(doer.prompt, /Resolve the plan synthesis finding/);
+});
+Then("the second review focused on the revised plan", function (this: FactoryWorld) {
+  for (const name of planReviewers) {
+    const reviewer = calls(this, name)[1];
+    const context = reviewContext(reviewer);
+    assert.equal(context.round, 2);
+    assert.equal(context.revision, 2);
+    assert.equal(Object.keys(context.previousReports).length, 4);
+    assert.match(context.changes, /contracts and acceptance examples/);
+    assert.match(reviewer.prompt, /focus on the reported changes/);
+    assert.match(reviewer.plan, /Revised contracts/);
+  }
+});
+Then("the accepted decision explains the reviewer's unresolved objection", function (this: FactoryWorld) {
+  const state = planReviewState(this);
+  assert.equal(state.reports.plan_testability.findings.length, 1);
+  assert.deepEqual(state.decision.dispositions, [{ reviewer: "plan_testability", id: "test-boundary",
+    status: "accepted_limitation", reason: "This optional boundary does not prevent the planned behavior." }]);
+});
+Then("plan review stopped after {int} rounds without implementing or committing", function (this: FactoryWorld, count: number) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /Plan review hit its limit of 3 rounds/);
+  assert.equal(calls(this, "plan_author").length, count);
+  assert.equal(calls(this, "plan_synthesiser").length, count);
+  assert.equal(calls(this, "doer").length, 0);
+  assert.equal(commitCount(this), this.initialCommitCount);
+  assert.equal(planReviewState(this).round, count);
+  assert.equal(planReviewState(this).decision.satisfied, false);
+});
+Then("rejected work stayed uncommitted through plan repair", function (this: FactoryWorld) {
+  const entries = calls(this);
+  const authors = entries.filter(call => call.machine === "plan_author");
+  const doers = entries.filter(call => call.machine === "doer");
+  const firstValidation = entries.find(call => call.machine === "plan_validator")!;
+  assert.equal(authors.length, 2);
+  assert.equal(doers.length, 3);
+  assert.equal(authors[1].commits, firstValidation.commits);
+  assert.match(authors[1].plan, /- \[ \] alpha/);
+  assert.equal(doers[1].commits, firstValidation.commits, "Plan acceptance must not commit rejected work");
+  assert.match(doers[1].plan, /- \[ \] alpha/);
+  const between = entries.slice(entries.indexOf(firstValidation), entries.indexOf(doers[1]));
+  assert.ok(between.some(call => call.machine === "plan_synthesiser"));
+  assert.ok(between.every(call => call.commits === firstValidation.commits));
+  assert.equal(planReviewState(this).episode, 2);
+});
+Then("the repair author and reviewers received the affected contracts", function (this: FactoryWorld) {
+  const author = calls(this, "plan_author")[1];
+  assert.match(author.prompt, /input contract omits a split sequence/);
+  assert.equal(reviewContext(author).task.task, "alpha");
+  for (const name of planReviewers) {
+    const context = reviewContext(calls(this, name)[1]);
+    assert.equal(context.episode, 2);
+    assert.equal(context.round, 1);
+    assert.equal(context.revision, 2);
+    assert.equal(Object.keys(context.previousReports).length, 4);
+    assert.equal(context.findings[0].section, "Input contract");
+  }
+});
+Then("plan repair exhausted the implementation attempt limit without a commit", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /task hit its limit of 1 attempts/);
+  assert.equal(calls(this, "doer").length, 1);
+  assert.equal(calls(this, "plan_author").length, 2);
+  assert.equal(commitCount(this), this.initialCommitCount);
+  assert.match(readFileSync(this.planPath, "utf8"), /- \[ \] alpha/);
+});
+Then("implementation retried within the accepted plan", function (this: FactoryWorld) {
+  const doers = calls(this, "doer");
+  assert.equal(doers.length, 3);
+  assert.match(doers[1].prompt, /Implement the agreed acceptance example/);
+  assert.equal(doers[1].commits, doers[0].commits);
+  assert.equal(calls(this, "plan_author").length, 1);
+});
+Then("the accepted plan was authored only once", function (this: FactoryWorld) {
+  assert.equal(calls(this, "plan_author").length, 1);
+  assert.equal(calls(this, "plan_synthesiser").length, 1);
+  assert.equal(calls(this, "doer").length, 2);
+});
+Then("a malformed plan report stopped the run before synthesis or implementation", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /Could not read the plan_testability's plan findings/);
+  assert.equal(calls(this, "plan_synthesiser").length, 0);
+  assert.equal(calls(this, "doer").length, 0);
+  assert.equal(commitCount(this), this.initialCommitCount);
+});
+Then("an unexplained plan objection stopped implementation", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /must explain the disposition of every finding/);
+  assert.equal(calls(this, "doer").length, 0);
+  assert.equal(commitCount(this), this.initialCommitCount);
+  assert.notEqual(planReviewState(this).status, "accepted");
+});
+Then("switching tasks during repair stopped the run without a commit", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /stay on the current unfinished task/);
+  assert.equal(commitCount(this), this.initialCommitCount);
+  assert.equal(calls(this, "plan_validator").length, 1);
+  assert.equal(planReviewState(this).task.task, "alpha");
 });

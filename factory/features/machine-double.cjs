@@ -6,8 +6,9 @@ const { spawnSync } = require("node:child_process");
 const config = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
 const harness = path.basename(process.argv[1]) === "pi" ? "pi" : "chosen";
 const args = process.argv.slice(2);
-const prompt = args.slice(1).join(" ") || fs.readFileSync(0, "utf8");
-const machine = prompt.match(/You are the (planner|doer|validator)\./)?.[1];
+const prompt = fs.readFileSync(0, "utf8");
+let machine = prompt.match(/You are the (\w+)\./)?.[1];
+if (machine === "reviewer") machine = `reviewer_${["openai/model", "anthropic/model", "google/model"].indexOf(args[args.indexOf("--model") + 1]) + 1}`;
 const cwd = process.cwd();
 // The run being invoked keeps its plan with the factory; the test names it.
 const planPath = config.planPath;
@@ -20,7 +21,7 @@ const count = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd, encoding:
 const commits = count.status === 0 ? Number(count.stdout) : 0;
 fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan }) + "\n");
 fs.mkdirSync(config.promptsDir, { recursive: true });
-fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.length + 1}-${machine}.txt`), prompt);
+fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.filter(call => call.machine === machine).length + 1}-${machine}.txt`), prompt);
 
 const prose = config.plannerInProse || config.doerInProse;
 const tasks = config.tasks || ["alpha", "beta"];
@@ -29,7 +30,43 @@ const nextTask = prose
   : plan.match(/^- \[ \] (.+)$/m)?.[1];
 let result;
 
-if (machine === "planner") {
+if (machine === "plan_author") {
+  fs.mkdirSync(path.dirname(planPath), { recursive: true });
+  if (!planExists) fs.writeFileSync(planPath, `# Comprehensive plan\n\nResponsibilities, contracts and acceptance examples.\n\n${tasks.map(task => `- [ ] ${task}`).join("\n")}\n`);
+  else fs.appendFileSync(planPath, "\nRevised contracts and acceptance examples.\n");
+  if (config.planAuthorSkipsTask && planExists) {
+    fs.writeFileSync(planPath, fs.readFileSync(planPath, "utf8").replace("- [ ] alpha", "- [x] alpha"));
+  }
+  result = { changes: "Reviewed gameplay contracts and acceptance examples; preserve task identities." };
+} else if (["plan_gameplay", "plan_objects", "plan_testability", "plan_terminal"].includes(machine)) {
+  result = {
+    summary: `${machine} reviewed the plan's contracts and acceptance examples.`,
+    findings: config.planObjection && machine === "plan_testability"
+      ? [{ id: "test-boundary", issue: "Clarify an acceptance boundary", section: "Acceptance", severity: "blocking", recommendation: "Add a behavior example" }]
+      : []
+  };
+  if (config.malformedPlanReport && machine === "plan_testability") delete result.findings;
+} else if (machine === "plan_synthesiser") {
+  const count = priorCalls.filter(call => call.machine === machine).length;
+  const satisfied = config.planSynthesis !== "never" && !(config.planSynthesis === "reject-first" && count === 0);
+  const reports = JSON.parse(prompt.match(/Branch results:\n([^\n]+)/)[1]);
+  result = {
+    satisfied, summary: "Reconciled the plan review reports.",
+    findings: satisfied ? [] : [{ issue: "Resolve the plan synthesis finding" }],
+    dispositions: Object.entries(reports).flatMap(([reviewer, report]) => report.findings.map(finding => ({
+      reviewer, id: finding.id, status: satisfied ? "accepted_limitation" : "revise",
+      reason: satisfied ? "This optional boundary does not prevent the planned behavior." : "Add the missing acceptance example."
+    })))
+  };
+  if (config.missingPlanDisposition) result.dispositions = [];
+} else if (machine === "plan_validator") {
+  const count = priorCalls.filter(call => call.machine === machine).length;
+  const replan = config.planDefectFirst === true && count === 0;
+  const retry = !replan && (config.validation === "never" || (config.validation === "reject-first" && count === 0));
+  result = { satisfied: !replan && !retry, retry, replan, findings: replan
+    ? [{ issue: "The plan's input contract omits a split sequence", section: "Input contract" }]
+    : retry ? [{ issue: "Implement the agreed acceptance example" }] : [], checks: ["Checked the current task"] };
+} else if (machine === "planner") {
   fs.mkdirSync(path.dirname(planPath), { recursive: true });
   if (!planExists) {
     fs.writeFileSync(planPath, config.plannerInProse
@@ -79,9 +116,40 @@ if (machine === "planner") {
     findings: satisfied ? [] : [{ file: `work-${nextTask}.txt`, issue: "Give the behavior a focused collaborator" }]
   };
   if (config.validatorPrefix) console.log(config.validatorPrefix);
+} else if (machine?.startsWith("reviewer_")) {
+  const review = config.reviewers[machine];
+  if (review.prose && !config.reviewerBarrier) {
+    console.log("A report with no JSON result");
+    process.exit(0);
+  }
+  result = { satisfied: review.satisfied, findings: review.findings };
+} else if (machine === "synthesiser" || machine === "arbiter") {
+  const count = priorCalls.filter(call => call.machine === machine && call.cwd === cwd).length;
+  const satisfied = config.synthesis !== "never" && !(config.synthesis === "reject-first" && count === 0);
+  result = { satisfied, findings: satisfied ? [] : [{ issue: "Resolve the synthesiser's finding" }] };
 } else {
   throw new Error("No machine role in prompt");
 }
 
-console.log(JSON.stringify(result));
+if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
+  // An event-driven barrier: no reviewer answers until all three started.
+  const watcher = fs.watch(config.callLog, checkStarted);
+  if (config.holdOtherReviewers && machine !== "reviewer_2") {
+    process.on("SIGTERM", () => {
+      fs.appendFileSync(path.join(path.dirname(config.callLog), "reviewers-stopped.txt"), machine + "\n");
+      watcher.close();
+      process.exit(0);
+    });
+  }
+  function checkStarted() {
+    const started = fs.readFileSync(config.callLog, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse)
+      .filter(call => call.machine?.startsWith("reviewer_") && call.commits === commits);
+    if (new Set(started.map(call => call.machine)).size === 3) {
+      if (config.holdOtherReviewers && machine !== "reviewer_2") return;
+      watcher.close();
+      console.log(config.reviewers[machine].prose ? "A report with no JSON result" : JSON.stringify(result));
+    }
+  }
+  checkStarted();
+} else console.log(JSON.stringify(result));
 if (machine === "validator" && config.invalidLastVerdict) console.log('{"note":"not a verdict"}');
