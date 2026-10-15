@@ -9,6 +9,8 @@ setDefaultTimeout(20_000);
 export interface AgentConfig {
   plannerInProse?: boolean;
   doerInProse?: boolean;
+  doerProviderError?: string;
+  doerNoText?: boolean;
   validatorInProse?: boolean;
   invalidLastVerdict?: boolean;
   validatorPrefix?: string;

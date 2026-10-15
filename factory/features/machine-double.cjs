@@ -138,6 +138,8 @@ if (machine === "plan_author") {
   throw new Error("No machine role in prompt");
 }
 
+if (machine === "doer" && config.doerNoText) return;
+
 if (config.holdMachines?.includes(machine)) {
   if (config.partialText) text(config.doerLines?.[0] ?? "started");
   else console.log(config.doerLines?.[0] ?? "started");
@@ -187,7 +189,11 @@ createInterface({ input: process.stdin }).on("line", async line => {
   } else if (method === "session/prompt") {
     if (!session || params.sessionId !== "double") throw new Error("Invalid ACP prompt");
     await execute(params.prompt.map(block => block.text).join("\n"));
-    send({ id, result: { stopReason: "end_turn", usage: { inputTokens: 101, outputTokens: 23 } } });
+    const current = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
+    if (current.doerProviderError && params.prompt.some(block => block.text.includes("You are the doer."))) {
+      send({ id, error: { code: -32603, message: current.doerProviderError,
+        data: { usage: { inputTokens: 101, outputTokens: 23 } } } });
+    } else send({ id, result: { stopReason: "end_turn", usage: { inputTokens: 101, outputTokens: 23 } } });
   }
 });
 process.stdin.on("end", () => process.exit(0));

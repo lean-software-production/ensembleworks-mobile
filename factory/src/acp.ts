@@ -41,6 +41,10 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
     const id = nextId++;
     return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); send({ id, method, params }); });
   }
+  function recordUsage(usage: { inputTokens?: number; outputTokens?: number }): void {
+    record.append({ type: "usage", machine: machine.name, provider: machine.provider ?? "unknown",
+      inputTokens: usage.inputTokens ?? 0, outputTokens: usage.outputTokens ?? 0 });
+  }
   function kill(signal: NodeJS.Signals): void {
     if (!child.pid) return;
     try {
@@ -77,7 +81,10 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
         const waiter = pending.get(message.id);
         if (waiter) {
           pending.delete(message.id);
-          if (message.error) waiter.reject(new Error(`Could not run the ${machine.name}: ${message.error.message}`));
+          if (message.error) {
+            if (message.error.data?.usage) recordUsage(message.error.data.usage);
+            waiter.reject(new Error(`Could not run the ${machine.name}: ${message.error.message}`));
+          }
           else waiter.resolve(message.result);
         }
       }
@@ -95,10 +102,13 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
     const response = await request("session/prompt", { sessionId, prompt: [{ type: "text", text: prompt }] });
     signal.throwIfAborted();
     if (response.stopReason === "cancelled") throw new Error(`Could not run the ${machine.name}: prompt cancelled`);
-    if (response.usage) record.append({ type: "usage", machine: machine.name, provider: machine.provider ?? "unknown",
-      inputTokens: response.usage.inputTokens ?? 0, outputTokens: response.usage.outputTokens ?? 0 });
+    if (response.usage) recordUsage(response.usage);
     try { return readResult(output); }
-    catch { throw new Error(`Could not read the ${machine.name}'s result.`); }
+    catch {
+      throw new Error(`Could not read the ${machine.name}'s result: ${output.trim()
+        ? "expected a final single-line JSON object (see the run record)."
+        : "the agent returned no answer text."}`);
+    }
   } finally {
     signal.removeEventListener("abort", abort);
     child.stdin.end();

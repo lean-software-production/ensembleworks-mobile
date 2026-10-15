@@ -28,3 +28,22 @@ homework 8's `run_command` tool does not reach pi through this bridge.
 
 pi's RPC mode needs a Node with zstd support: 22.15 or later, or 23.8 or
 later. The devcontainer's Node 24 is fine.
+
+The bridge waits for Pi's `agent_settled` event before completing a prompt.
+`agent_end` can be followed by automatic retry or recovery. Use a Pi version
+that emits `agent_settled`; the installed version supports it. Completed
+assistant messages supply any text missing from streaming deltas. Separate
+assistant messages are separated by a newline so a final JSON result remains
+on its own line.
+
+If the final assistant message reports a provider error or output limit, the
+bridge returns that diagnostic as an ACP error, with accumulated usage in the
+error data. The factory records this usage before stopping the run.
+
+Run the bridge's protocol regression checks from the repository root:
+
+```sh
+node --test tools/pi-rpc-acp/bridge.test.mjs
+```
+
+These checks use an external Pi RPC double and do not contact a model.

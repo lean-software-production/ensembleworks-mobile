@@ -16,8 +16,12 @@ All three machines use Pi through the bundled `pi-rpc-acp` bridge, with fixed fr
 OpenRouter model IDs and no paid fallback configured:
 
 - Planner: `openrouter/nvidia/nemotron-3-super-120b-a12b:free`
-- Doer: `openrouter/cohere/north-mini-code:free`
+- Doer: `openrouter/nvidia/nemotron-3-super-120b-a12b:free`
 - Validator: `openrouter/nvidia/nemotron-3-super-120b-a12b:free`
+
+The doer was switched from Cohere North Mini Code after its free endpoint
+returned `Provider finish_reason: error` without a final answer on 2026-10-15.
+The original demo tag preserves the earlier configuration.
 
 The validator's review criteria are in `.machines/validator/lens.md`.
 
@@ -26,7 +30,6 @@ Verified against the OpenRouter models API and the local Pi catalog on
 availability and limits can change. Pi uses the existing OpenRouter login.
 
 - https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free
-- https://openrouter.ai/cohere/north-mini-code:free
 - https://openrouter.ai/docs/guides/routing/model-variants/free
 
 ## Run from the repository root
