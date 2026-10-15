@@ -31,7 +31,9 @@ function renderFrame(state = {}) {
 
   rows.push(`└${'─'.repeat(BOARD_WIDTH * 2)}┘`);
   rows.push(`Score: ${score}`);
-  rows.push('Controls: ← → move  ↑ rotate  ↓ drop  q quit');
+  rows.push(state.gameOver
+    ? 'GAME OVER — r restart  q quit'
+    : 'Controls: ← → move  ↑ rotate  ↓ drop  q quit');
   return rows.join('\n');
 }
 

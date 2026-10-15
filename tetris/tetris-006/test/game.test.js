@@ -19,6 +19,7 @@ const {
   pointsForLines,
   advanceGame,
   rotateClockwise,
+  restartGame,
   spawnPiece,
 } = require('../src/game');
 
@@ -201,6 +202,7 @@ test('a blocked next spawn leaves no overlapping active piece', () => {
     moved: false, locked: true, spawned: false, spawnBlocked: true, linesCleared: 0,
   });
   assert.equal(game.activePiece, null);
+  assert.equal(game.gameOver, true);
   assert.equal(game.board.flat().filter(Boolean).length, 5);
 });
 
@@ -342,6 +344,52 @@ test('rotation rejects wall, floor, and settled-cell collisions without changing
   const againstBlock = blockedGame.activePiece;
   assert.equal(rotateClockwise(blockedGame), false);
   assert.strictEqual(blockedGame.activePiece, againstBlock);
+});
+
+test('line clearing occurs before deciding whether the next piece can spawn', () => {
+  const board = emptyBoard();
+  // An O at x=4 completes both top rows. The block beneath it makes that O
+  // grounded, but compaction moves the blocker away before the next O spawns.
+  for (const y of [0, 1]) {
+    board[y].fill(true);
+    board[y][4] = false;
+    board[y][5] = false;
+  }
+  board[2][4] = true;
+  const game = createGame({ board, pieceSource: createPieceSource({ sequence: ['O'] }) });
+
+  assert.deepEqual(advanceGame(game), {
+    moved: false, locked: true, spawned: true, spawnBlocked: false, linesCleared: 2,
+  });
+  assert.equal(game.gameOver, false);
+  assert.equal(game.activePiece.type, 'O');
+  assert.ok(canPlace(game.board, game.activePiece));
+});
+
+test('game-over actions preserve settled cells and score, and restart makes a fresh game', () => {
+  const game = createGame({ pieceSource: createPieceSource({ sequence: ['O', 'T', 'L'] }) });
+  game.activePiece.y = BOARD_HEIGHT - 2;
+  game.board[0][game.activePiece.x] = true;
+  advanceGame(game);
+
+  const boardBefore = game.board.map((row) => [...row]);
+  const scoreBefore = game.score;
+  assert.equal(moveLeft(game), false);
+  assert.equal(moveRight(game), false);
+  assert.equal(moveDown(game), false);
+  assert.equal(rotateClockwise(game), false);
+  assert.deepEqual(advanceGame(game), {
+    moved: false, locked: false, spawned: false, spawnBlocked: false, linesCleared: 0, gameOver: true,
+  });
+  assert.deepEqual(game.board, boardBefore);
+  assert.equal(game.score, scoreBefore);
+
+  assert.strictEqual(restartGame(game), game);
+  assert.equal(game.gameOver, false);
+  assert.equal(game.score, 0);
+  assert.equal(game.activePiece.type, 'L');
+  assert.ok(game.board.every((row) => row.every((cell) => !cell)));
+  assert.ok(canPlace(game.board, game.activePiece));
 });
 
 test('active pieces render distinctly from empty and settled cells within 24 rows', () => {

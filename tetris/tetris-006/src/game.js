@@ -53,9 +53,10 @@ function canPlace(board, piece) {
 
 /** Move the active piece one column when its proposed placement is valid. */
 function moveHorizontally(game, columns) {
-  if (!game || !game.activePiece) {
+  if (!game || (!game.activePiece && !game.gameOver)) {
     throw new TypeError('game must have an activePiece');
   }
+  if (game.gameOver) return false;
   if (columns !== -1 && columns !== 1) {
     throw new RangeError('horizontal movement must be one column left or right');
   }
@@ -81,9 +82,10 @@ function moveRight(game) {
  * unchanged; locking and piece progression are separate actions.
  */
 function moveDown(game) {
-  if (!game || !game.activePiece) {
+  if (!game || (!game.activePiece && !game.gameOver)) {
     throw new TypeError('game must have an activePiece');
   }
+  if (game.gameOver) return false;
 
   const candidate = { ...game.activePiece, y: game.activePiece.y + 1 };
   if (!canPlace(game.board, candidate)) return false;
@@ -133,12 +135,18 @@ function lockPiece(game) {
  * Advance a game by one gravity/soft-drop step. A successful step moves only;
  * a blocked step locks, clears completed lines, then consumes one source
  * piece. The result reports the cleared-line count for later scoring. If that
- * piece cannot spawn, no overlapping active piece is installed. Game-over
- * state is added by the later game-over task.
+ * piece cannot spawn after clearing, no overlapping active piece is installed
+ * and the game enters its terminal game-over state.
  */
 function advanceGame(game) {
-  if (!game || !game.activePiece || !game.pieceSource || typeof game.pieceSource.nextType !== 'function') {
+  if (!game || !game.pieceSource || typeof game.pieceSource.nextType !== 'function'
+    || (!game.activePiece && !game.gameOver)) {
     throw new TypeError('game must have an activePiece and pieceSource');
+  }
+  if (game.gameOver) {
+    return {
+      moved: false, locked: false, spawned: false, spawnBlocked: false, linesCleared: 0, gameOver: true,
+    };
   }
 
   if (moveDown(game)) {
@@ -153,6 +161,7 @@ function advanceGame(game) {
   const nextPiece = spawnPiece(game.pieceSource.nextType());
   if (!canPlace(game.board, nextPiece)) {
     game.activePiece = null;
+    game.gameOver = true;
     return {
       moved: false, locked: true, spawned: false, spawnBlocked: true, linesCleared,
     };
@@ -170,9 +179,10 @@ function advanceGame(game) {
  * settled-cell collision rejects the rotation and leaves the piece intact.
  */
 function rotateClockwise(game) {
-  if (!game || !game.activePiece) {
+  if (!game || (!game.activePiece && !game.gameOver)) {
     throw new TypeError('game must have an activePiece');
   }
+  if (game.gameOver) return false;
 
   const cells = game.activePiece.cells;
   const height = Math.max(...cells.map((cell) => cell.y)) + 1;
@@ -226,6 +236,22 @@ function createPieceSource({ seed = 1, sequence, random } = {}) {
   };
 }
 
+/**
+ * Reset a game in place, retaining its configured piece source while replacing
+ * the board, score, active piece, and terminal status with a fresh game.
+ */
+function restartGame(game) {
+  if (!game || !game.pieceSource || typeof game.pieceSource.nextType !== 'function') {
+    throw new TypeError('game must have a pieceSource');
+  }
+
+  game.board = emptyBoard();
+  game.score = 0;
+  game.activePiece = spawnPiece(game.pieceSource.nextType());
+  game.gameOver = false;
+  return game;
+}
+
 /** Create a fresh game state with a valid, centered active tetromino. */
 function createGame({ board = emptyBoard(), pieceSource = createPieceSource() } = {}) {
   validateBoard(board);
@@ -238,7 +264,9 @@ function createGame({ board = emptyBoard(), pieceSource = createPieceSource() } 
     throw new RangeError('Initial piece cannot be placed on the board');
   }
 
-  return { board, score: 0, activePiece, pieceSource };
+  return {
+    board, score: 0, activePiece, pieceSource, gameOver: false,
+  };
 }
 
 module.exports = {
@@ -258,5 +286,6 @@ module.exports = {
   pointsForLines,
   advanceGame,
   rotateClockwise,
+  restartGame,
   spawnPiece,
 };

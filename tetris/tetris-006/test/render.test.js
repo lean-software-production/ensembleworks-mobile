@@ -33,6 +33,17 @@ test('renderer remains within the 24-row budget for populated boards and large s
   assert.match(frame, /Score: 1234567890/);
 });
 
+test('game-over frame uses the existing controls row and remains within budget', () => {
+  const frame = renderFrame({ board: emptyBoard(), score: 700, gameOver: true });
+  const rows = visibleRows(frame);
+
+  assert.equal(rows.length, 24);
+  assert.equal(rows[BOARD_HEIGHT + 2], 'Score: 700');
+  assert.match(rows[BOARD_HEIGHT + 3], /GAME OVER/);
+  assert.match(rows[BOARD_HEIGHT + 3], /r restart/);
+  assert.match(rows[BOARD_HEIGHT + 3], /q quit/);
+});
+
 test('npm start output is capturable without an interactive terminal', () => {
   const output = execFileSync(process.execPath, ['src/index.js'], { encoding: 'utf8' });
   const rows = visibleRows(output);
