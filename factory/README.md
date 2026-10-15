@@ -1,10 +1,11 @@
-# Factory — iteration 005a
+# Factory — iteration 006
 
 Start a named run from the repository root, giving it a target, one of that
 target's assembly lines, and a seed:
 
 ```sh
 bin/factory --run tetris --target tetris/tetris-003 --line careful --seed tetris/spec.md
+bin/factory watch tetris
 npm --prefix tetris/tetris-003 start
 ```
 
@@ -101,11 +102,20 @@ Tetris machines and the plan-first fixture have been migrated. Edit their
 `AGENTS.md` to change behavior; `lens`, `lensFile` and `prompt` in `machine.json`
 are no longer used.
 
+The factory speaks [ACP v1](https://agentclientprotocol.com/protocol/v1/initialization)
+over each machine's stdin/stdout. `pi`, `claude`, and `codex` harness names
+resolve to `pi-rpc-acp`, `claude-agent-acp`, and `codex-acp`; the ACP executable
+names can also be used directly. Install the adapters on PATH. The Pi bridge
+is included in `tools/pi-rpc-acp/` and is on the devcontainer's PATH.
+
 Pi runs with `PI_CODING_AGENT_DIR` set to the machine folder,
 `--no-context-files`, and `--append-system-prompt <folder>/AGENTS.md`.
-Claude Code uses `CLAUDE_CONFIG_DIR`, `--setting-sources user`, and a generated
-`CLAUDE.md` importing `AGENTS.md`. Codex uses `CODEX_HOME`, `exec`, and
-`project_doc_max_bytes = 0` in its local `config.toml`. Each runs in the target,
+Claude Code uses `CLAUDE_CONFIG_DIR`, `settingSources: ["user"]` in ACP
+`session/new`, and a generated `CLAUDE.md` importing `AGENTS.md`.
+Codex uses `CODEX_HOME` and `project_doc_max_bytes = 0` in its local
+`config.toml`. Models come from `machine.json`: Pi receives `--model`, Claude
+receives the model through session options, and Codex's local config gets it.
+Use each adapter's native model identifier. Each runs in the target,
 which is its work rather than its configuration. Antigravity is unsupported.
 
 Copy the harness's login into each machine folder: `auth.json` for Pi/Codex,
@@ -118,12 +128,36 @@ a missing login and API key stops the run. A copied login takes precedence.
 The factory adds local ignore rules for credentials and harness runtime files.
 Existing tracked credentials must be removed from Git before using a machine.
 
-Ordinary executable machines still receive `-p`, an optional `--model`, and
-the prompt on stdin, with no agent authentication required. A custom executable
-wrapping an agent can select `"adapter": "pi"`, `"claude"`, or `"codex"`
-to receive that harness's configuration environment, flags and credential checks.
-Prompts travel on stdin, so changed-work diffs do not consume argument space.
-Git and machine output buffers are limited to 10 MiB per invocation.
+Ordinary executable machines speak ACP too, without agent authentication.
+A custom executable wrapping an agent can select `"adapter": "pi"`, `"claude"`,
+or `"codex"` for its configuration environment and credential checks.
+Prompts travel as ACP text blocks on stdin, so changed-work diffs do not consume
+argument space. Git and generated machine text are limited to 10 MiB per call.
+
+## Watching and stopping
+
+Starting a run returns immediately. One daemon per factory stays up between runs
+and allows one run at a time; a second start is refused while a run is active.
+`bin/factory status` reports whether the daemon is up and the active run's name.
+
+```sh
+bin/factory watch tetris   # replay the record, then follow until the run ends
+bin/factory stop tetris    # interrupt active machines; keep the daemon up
+bin/factory --run tetris   # resume using the remembered settings and plan
+bin/factory stop          # interrupt the active run and shut down the daemon
+```
+
+`factory/runs/<name>/record.jsonl` keeps generated text, machine states, usage,
+and run outcomes. Watching works after the run and daemon finish too. Lines
+identify their machine; token totals accumulate per machine, provider, and run.
+Providers come from `machine.json`'s `provider` or Pi's `provider/model` name;
+Claude and Codex default to Anthropic and OpenAI. Usage comes from the ACP
+prompt response. Totals are tokens, not currency estimates.
+
+Stop waits for the active process groups to exit. It leaves unfinished work in
+the target, commits no interrupted attempt, and leaves its task unfinished.
+The daemon uses a private Unix socket in the system temp folder; the socket's
+name is derived from the factory path. Run state remains in the factory's runs.
 
 The factory supplies run data after the machine's instructions. Optional
 `{{seed}}`, `{{plan}}`, `{{target}}`, `{{work}}`, `{{findings}}`, `{{reports}}`,

@@ -33,14 +33,15 @@ interface MachineCall {
   ownLogin: boolean;
   apiKey: boolean;
   configDirs: Record<string, string>;
+  sessionMeta?: { claudeCode: { options: { settingSources: string[]; model?: string } } };
 }
-function calls(world: FactoryWorld, machine?: string): MachineCall[] {
+export function calls(world: FactoryWorld, machine?: string): MachineCall[] {
   if (!existsSync(world.callLog)) return [];
   const entries = readFileSync(world.callLog, "utf8").trim().split("\n")
     .filter(Boolean).map((line) => JSON.parse(line) as MachineCall);
   return machine ? entries.filter((call) => call.machine === machine) : entries;
 }
-function machineConfig(world: FactoryWorld, name: string, changes: Record<string, unknown>): void {
+export function machineConfig(world: FactoryWorld, name: string, changes: Record<string, unknown>): void {
   const path = join(world.codebase, ".assembly-lines", ".machines", name, "machine.json");
   const config = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : { role: name };
   for (const [key, value] of Object.entries(changes)) {
@@ -74,7 +75,7 @@ function moveTarget(world: FactoryWorld, path: string): void {
   world.targets = world.targets.map(target => target === from ? path : target);
   world.codebase = path;
 }
-function saveAgentConfig(world: FactoryWorld, planPath = ""): void {
+export function saveAgentConfig(world: FactoryWorld, planPath = ""): void {
   writeFileSync(world.configPath, JSON.stringify({
     ...world.agentConfig, callLog: world.callLog, planPath,
     promptsDir: join(world.workspace, "prompts")
@@ -109,7 +110,7 @@ Given("a copy of the factory", function (this: FactoryWorld) {
   chmodSync(join(this.factoryDir, "factory"), 0o755);
   symlinkSync(join(source, "node_modules"), join(this.factoryDir, "node_modules"));
   symlinkSync("../factory/factory", join(this.repoRoot, "bin", "factory"));
-  for (const path of [this.chosenAgent, join(this.fakeBin, "pi")]) {
+  for (const path of [this.chosenAgent, join(this.fakeBin, "pi-rpc-acp")]) {
     copyFileSync(join(source, "features", "machine-double.cjs"), path);
     chmodSync(path, 0o755);
   }
@@ -322,7 +323,7 @@ Given("a run named {string}, on the {string} line, with that seed and target", f
   this.runs[name] = { target: this.codebase, seed: this.seedPath, line, plan: join(this.factoryDir, "runs", name, "plan.md") };
   this.planPath = this.runs[name].plan;
 });
-function invoke(world: FactoryWorld, args: string[]): void {
+export function invoke(world: FactoryWorld, args: string[]): void {
   const result = spawnSync(relative(world.callerCwd, join(world.repoRoot, "bin", "factory")), args, {
     cwd: world.callerCwd, encoding: "utf8",
     env: { ...process.env, ...identity, ...world.agentEnv, FACTORY_TEST_CONFIG: world.configPath,
@@ -354,6 +355,7 @@ function runFactory(world: FactoryWorld, name: string, given: "settings" | "name
   const earlierCalls = calls(world).length;
   saveAgentConfig(world, fixture.plan);
   invoke(world, args);
+  if (world.exitCode === 0) invoke(world, ["watch", name]);
   const made = calls(world).slice(earlierCalls);
   world.lastCalls = made.length;
   world.runCalls[name] = [...(world.runCalls[name] ?? []), ...made];
@@ -1111,8 +1113,8 @@ Then("the doer's {word} configuration is isolated", function (this: FactoryWorld
     assert.deepEqual(call.configDirs, { [variable[harness]]: folder });
     assert.equal(call.cwd, this.codebase);
     if (harness === "pi") assert.ok(call.args.includes("--no-context-files"));
-    if (harness === "claude") assert.equal(call.args[call.args.indexOf("--setting-sources") + 1], "user");
-    if (harness === "codex") { assert.equal(call.args[0], "exec"); assert.equal(call.args.at(-1), "-"); }
+    if (harness === "claude") assert.deepEqual(call.sessionMeta, { claudeCode: { options: { settingSources: ["user"] } } });
+    if (harness === "codex") { assert.ok(!call.args.includes("exec")); assert.ok(!call.args.includes("-")); }
   }
   if (harness === "claude") assert.equal(readFileSync(join(folder, "CLAUDE.md"), "utf8"), "@AGENTS.md\n");
   if (harness === "codex") assert.match(readFileSync(join(folder, "config.toml"), "utf8"), /^project_doc_max_bytes = 0/m);

@@ -1,11 +1,15 @@
 import { After, setWorldConstructor, setDefaultTimeout, World } from "@cucumber/cucumber";
 import { mkdtempSync, realpathSync, rmSync } from "node:fs";
+import { ChildProcess, spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 setDefaultTimeout(20_000);
 
 export interface AgentConfig {
+  fragmentOutput?: boolean;
+  holdMachine?: string;
+  doerLines?: string[];
   plannerInProse?: boolean;
   doerInProse?: boolean;
   validatorInProse?: boolean;
@@ -38,6 +42,9 @@ export interface RunFixture {
 }
 
 export class FactoryWorld extends World {
+  watcher?: ChildProcess;
+  watched = "";
+  watchDone?: Promise<number | null>;
   workspace = "";
   repoRoot = "";
   codebase = ""; // The selected target, never the factory source.
@@ -73,5 +80,7 @@ export class FactoryWorld extends World {
 
 setWorldConstructor(FactoryWorld);
 After(function (this: FactoryWorld) {
+  this.watcher?.kill();
+  if (this.factoryDir) spawnSync(join(this.repoRoot, "bin", "factory"), ["stop"], { env: { ...process.env, TS_NODE_TRANSPILE_ONLY: "true" }, timeout: 5000 });
   if (this.workspace) rmSync(this.workspace, { recursive: true, force: true });
 });

@@ -4,9 +4,34 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const config = JSON.parse(fs.readFileSync(process.env.FACTORY_TEST_CONFIG, "utf8"));
-const harness = path.basename(process.argv[1]) === "pi" ? "pi" : "chosen";
+const harness = path.basename(process.argv[1]) === "pi-rpc-acp" ? "pi" : "chosen";
 const args = process.argv.slice(2);
-const prompt = fs.readFileSync(0, "utf8");
+const { createInterface } = require("node:readline");
+const send = message => process.stdout.write(JSON.stringify({ jsonrpc: "2.0", ...message }) + "\n");
+let sessionMeta;
+let promptId;
+const emit = text => {
+  const content = String(text) + "\n";
+  const chunks = config.fragmentOutput ? [content.slice(0, 3), content.slice(3)] : [content];
+  for (const chunk of chunks) send({ method: "session/update", params: { sessionId: "fixture", update: {
+    sessionUpdate: "agent_message_chunk", content: { type: "text", text: chunk }
+  } } });
+};
+const finish = () => send({ id: promptId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 30 } } });
+createInterface({ input: process.stdin }).on("line", line => {
+  const request = JSON.parse(line);
+  if (request.method === "initialize") {
+    if (request.params.protocolVersion !== 1) throw new Error("Expected ACP v1");
+    send({ id: request.id, result: { protocolVersion: 1, agentCapabilities: {}, authMethods: [] } });
+  } else if (request.method === "session/new") {
+    sessionMeta = request.params._meta;
+    send({ id: request.id, result: { sessionId: "fixture" } });
+  } else if (request.method === "session/prompt") {
+    promptId = request.id;
+    runPrompt(request.params.prompt.map(block => block.text).join("\n"));
+  }
+});
+function runPrompt(prompt) {
 let machine = prompt.match(/You are the (\w+)\./)?.[1];
 if (machine === "reviewer") machine = `reviewer_${["openai/model", "anthropic/model", "google/model"].indexOf(args[args.indexOf("--model") + 1]) + 1}`;
 const cwd = process.cwd();
@@ -24,7 +49,7 @@ const planExists = fs.existsSync(planPath);
 const plan = planExists ? fs.readFileSync(planPath, "utf8") : "";
 const count = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd, encoding: "utf8" });
 const commits = count.status === 0 ? Number(count.stdout) : 0;
-fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan, configDir, ownLogin, apiKey, configDirs }) + "\n");
+fs.appendFileSync(config.callLog, JSON.stringify({ harness, machine, prompt, args, cwd, commits, plan, configDir, ownLogin, apiKey, configDirs, sessionMeta }) + "\n");
 fs.mkdirSync(config.promptsDir, { recursive: true });
 fs.writeFileSync(path.join(config.promptsDir, `${priorCalls.filter(call => call.machine === machine).length + 1}-${machine}.txt`), prompt);
 
@@ -110,8 +135,8 @@ if (machine === "plan_author") {
   result = { task: nextTask };
 } else if (machine === "validator") {
   if (config.validatorInProse) {
-    console.log("The work seems fine, but here is no JSON result.");
-    process.exit(0);
+    emit("The work seems fine, but here is no JSON result.");
+    return finish();
   }
   const validationCount = priorCalls.filter(call => call.machine === "validator" && call.cwd === cwd).length;
   const satisfied = config.validation !== "never" && !(config.validation === "reject-first" && validationCount === 0);
@@ -120,12 +145,12 @@ if (machine === "plan_author") {
     [config.validatorField || "satisfied"]: satisfied,
     findings: satisfied ? [] : [{ file: `work-${nextTask}.txt`, issue: "Give the behavior a focused collaborator" }]
   };
-  if (config.validatorPrefix) console.log(config.validatorPrefix);
+  if (config.validatorPrefix) emit(config.validatorPrefix);
 } else if (machine?.startsWith("reviewer_")) {
   const review = config.reviewers[machine];
   if (review.prose && !config.reviewerBarrier) {
-    console.log("A report with no JSON result");
-    process.exit(0);
+    emit("A report with no JSON result");
+    return finish();
   }
   result = { satisfied: review.satisfied, findings: review.findings };
 } else if (machine === "synthesiser" || machine === "arbiter") {
@@ -152,9 +177,25 @@ if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
     if (new Set(started.map(call => call.machine)).size === 3) {
       if (config.holdOtherReviewers && machine !== "reviewer_2") return;
       watcher.close();
-      console.log(config.reviewers[machine].prose ? "A report with no JSON result" : JSON.stringify(result));
+      emit(config.reviewers[machine].prose ? "A report with no JSON result" : JSON.stringify(result));
+      finish();
     }
   }
   checkStarted();
-} else console.log(JSON.stringify(result));
-if (machine === "validator" && config.invalidLastVerdict) console.log('{"note":"not a verdict"}');
+} else {
+  const finishTurn = () => {
+    if (machine === "doer" && config.doerLines?.[1]) emit(config.doerLines[1]);
+    emit(JSON.stringify(result));
+    if (machine === "validator" && config.invalidLastVerdict) emit('{"note":"not a verdict"}');
+    finish();
+  };
+  const held = config.holdMachine === machine || (config.holdMachine === "reviewers" && machine?.startsWith("reviewer_"));
+  if (machine === "doer" && (config.doerLines || held)) emit(config.doerLines?.[0] ?? "started");
+  if (held) {
+    fs.writeFileSync(path.join(path.dirname(config.callLog), `held-${machine}`), String(process.pid));
+    const interval = setInterval(() => {
+      if (fs.existsSync(path.join(path.dirname(config.callLog), "release-machines"))) { clearInterval(interval); finishTurn(); }
+    }, 20);
+  } else finishTurn();
+}
+}

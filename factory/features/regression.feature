@@ -133,3 +133,34 @@ Feature: Public entrypoint and commit-boundary regression checks
       | pi      |
       | claude  |
       | codex   |
+
+  Scenario: ACP chunks preserve Unicode commentary and JSON results
+    Given a plan with one pending task
+    And the ACP agents split their text into chunks
+    And the doer says "café starts", then "café finishes"
+    When the factory runs the "tetris" run
+    And I watch the "tetris" run
+    Then I see "café starts" from the doer
+    And I see "café finishes" from the doer
+    And there is one new work commit
+
+  Scenario: The record can be watched after the daemon shuts down
+    Given a plan with one pending task
+    When the factory runs the "tetris" run
+    And I stop the factory
+    And I watch the "tetris" run
+    Then I see what the planner generated
+    And it shows tokens in and tokens out for the doer
+    And the factory is not running
+
+  Scenario Outline: Native ACP adapters receive the configured model
+    Given a plan with one pending task
+    And the doer uses the <harness> harness
+    And the doer's model is "configured-model"
+    When the factory runs the "tetris" run
+    Then the <harness> ACP adapter received the configured model
+
+    Examples:
+      | harness |
+      | claude  |
+      | codex   |
