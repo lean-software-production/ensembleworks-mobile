@@ -74,6 +74,31 @@ function moveRight(game) {
 }
 
 /**
+ * Rotate clockwise in the active shape's bounding box: (x, y) becomes
+ * (height - 1 - y, x). No wall kicks are applied; an out-of-bounds or
+ * settled-cell collision rejects the rotation and leaves the piece intact.
+ */
+function rotateClockwise(game) {
+  if (!game || !game.activePiece) {
+    throw new TypeError('game must have an activePiece');
+  }
+
+  const cells = game.activePiece.cells;
+  const height = Math.max(...cells.map((cell) => cell.y)) + 1;
+  const rotated = cells.map(({ x, y }) => ({ x: height - 1 - y, y: x }));
+  const minX = Math.min(...rotated.map((cell) => cell.x));
+  const minY = Math.min(...rotated.map((cell) => cell.y));
+  const candidate = {
+    ...game.activePiece,
+    cells: rotated.map((cell) => ({ x: cell.x - minX, y: cell.y - minY })),
+  };
+  if (!canPlace(game.board, candidate)) return false;
+
+  game.activePiece = candidate;
+  return true;
+}
+
+/**
  * A deterministic pseudo-random source for reproducible games and tests.
  * Supplying a sequence makes it cycle forever; supplying random injects a
  * custom number generator returning values in [0, 1).
@@ -135,5 +160,6 @@ module.exports = {
   moveHorizontally,
   moveLeft,
   moveRight,
+  rotateClockwise,
   spawnPiece,
 };

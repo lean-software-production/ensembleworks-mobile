@@ -12,6 +12,7 @@ const {
   createPieceSource,
   moveLeft,
   moveRight,
+  rotateClockwise,
   spawnPiece,
 } = require('../src/game');
 
@@ -93,6 +94,44 @@ test('repeated horizontal movement stays within both walls and ignores the activ
   while (moveRight(game)) {}
   assert.equal(game.activePiece.x, BOARD_WIDTH - 4);
   assert.equal(moveRight(game), false);
+});
+
+test('clockwise rotation preserves four cells and four rotations restore every shape', () => {
+  for (const type of PIECE_TYPES) {
+    const game = createGame({ pieceSource: createPieceSource({ sequence: [type] }) });
+    game.activePiece.y = 3;
+    const originalCells = game.activePiece.cells.map(({ x, y }) => ({ x, y }));
+
+    for (let turn = 0; turn < 4; turn += 1) {
+      assert.equal(rotateClockwise(game), true, `${type} rotation ${turn + 1} should fit`);
+      assert.equal(game.activePiece.cells.length, 4);
+      assert.equal(new Set(game.activePiece.cells.map(({ x, y }) => `${x},${y}`)).size, 4);
+    }
+    assert.deepEqual(game.activePiece.cells, originalCells, `${type} should complete a rotation cycle`);
+  }
+});
+
+test('rotation rejects wall, floor, and settled-cell collisions without changing state', () => {
+  const wallGame = createGame({ pieceSource: createPieceSource({ sequence: ['I'] }) });
+  assert.equal(rotateClockwise(wallGame), true);
+  while (moveRight(wallGame)) {}
+  const againstWall = wallGame.activePiece;
+  assert.equal(rotateClockwise(wallGame), false);
+  assert.strictEqual(wallGame.activePiece, againstWall);
+
+  const floorGame = createGame({ pieceSource: createPieceSource({ sequence: ['I'] }) });
+  floorGame.activePiece.y = BOARD_HEIGHT - 1;
+  const onFloor = floorGame.activePiece;
+  assert.equal(rotateClockwise(floorGame), false);
+  assert.strictEqual(floorGame.activePiece, onFloor);
+
+  const board = emptyBoard();
+  const blockedGame = createGame({ board, pieceSource: createPieceSource({ sequence: ['T'] }) });
+  const { x, y } = blockedGame.activePiece;
+  board[y + 2][x + 1] = true;
+  const againstBlock = blockedGame.activePiece;
+  assert.equal(rotateClockwise(blockedGame), false);
+  assert.strictEqual(blockedGame.activePiece, againstBlock);
 });
 
 test('active pieces render distinctly from empty and settled cells within 24 rows', () => {
