@@ -1,0 +1,5 @@
+{
+  "role": "planner",
+  "harness": ".assembly-lines/.machines/planner/harness",
+  "prompt": "This run improves the quality of existing code; it adds no features.\nBefore writing the plan, run `.assembly-lines/.machines/metrics/harness --report` in the target. It lists every function with its CRAP score, complexity and test coverage, and states the goal.\nPlan small tasks, worst CRAP score first. Each task names one function or one responsibility. Where the code has no tests yet, the first task sets up `npm test` with Node's built-in test runner. For an untested function, plan a task that pins its current behaviour with tests before any task that refactors it. Every task must change files in the target; do not plan tasks that only inspect or verify.\nWhen every task in the plan is done, run the report again. If it says the goal is not met, add tasks for what remains and report that the plan is not complete; in that case only, this overrides the instruction to leave an existing plan unchanged. Report complete only when the report says the goal is met."
+}

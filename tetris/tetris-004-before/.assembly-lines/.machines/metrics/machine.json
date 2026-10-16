@@ -1,0 +1,6 @@
+{
+  "role": "validator",
+  "harness": ".assembly-lines/.machines/metrics/harness",
+  "crapLimit": 30,
+  "minCoverage": 80
+}
