@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { AssemblyLine, MachineConfig } from "./assembly-line";
 import { machinePrompt, resultPrompt } from "./prompts";
 import { prepareMachines } from "./harness";
-import { callMachine } from "./acp";
+import { ActiveMachines, callMachine } from "./acp";
 import { RunRecord } from "./record";
 import { PlanReview } from "./plan-review";
 import { Run } from "./runs";
@@ -58,7 +58,7 @@ export function prepareRun(options: Options, env: NodeJS.ProcessEnv = process.en
   return { run, line };
 }
 
-export async function runFactory(options: Options, prepared: { run: Run; line: AssemblyLine }, record: RunRecord, signal: AbortSignal, env: NodeJS.ProcessEnv): Promise<void> {
+export async function runFactory(options: Options, prepared: { run: Run; line: AssemblyLine }, record: RunRecord, signal: AbortSignal, env: NodeJS.ProcessEnv, active: ActiveMachines): Promise<void> {
   const { run, line } = prepared;
   const { target, seed } = run.settings;
   const plan = run.plan;
@@ -103,7 +103,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
       if (attempts >= options.attempts) throw new Error(`A task hit its limit of ${options.attempts} attempts.`);
       attempts += 1;
     }
-    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`, record, signal, env);
+    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`, record, signal, env, active);
     signal.throwIfAborted();
     const fan = line.fanOut(node);
     const next = fan ? fan.join : line.next(node, result);
@@ -140,7 +140,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
         const branchPrompt = promptFor(branch, work);
         try {
           let report = await callMachine(branch, target,
-            `${branchPrompt}\n${resultPrompt(line.fields(name))}`, record, AbortSignal.any([signal, controller.signal]), env);
+            `${branchPrompt}\n${resultPrompt(line.fields(name))}`, record, AbortSignal.any([signal, controller.signal]), env, active);
           if (branch.role === "plan_reviewer") report = { ...report, review: review!.reportContext() };
           return [name, report] as const;
         } catch (error) {

@@ -40,7 +40,7 @@ async function attach(world: FactoryWorld, name: string): Promise<void> {
   child.stderr.on("data", chunk => { world.watched += chunk.toString(); });
   await until(() => world.watched.includes("run running"), "watch attaches");
 }
-function record(world: FactoryWorld, name = "tetris"): any[] {
+export function record(world: FactoryWorld, name = "tetris"): any[] {
   return readFileSync(join(world.factoryDir, "runs", name, "record.jsonl"), "utf8").trim().split("\n").map(line => JSON.parse(line));
 }
 
@@ -85,6 +85,7 @@ Given('I am watching the {string} run as it runs', async function (this: Factory
   await attach(this, name);
 });
 When('the {string} run has run to the end', async function (this: FactoryWorld, name: string) {
+  if (!this.watcher) await attach(this, name);
   writeFileSync(join(this.workspace, "release-machines"), "release\n");
   assert.equal(await this.watchDone, 0, this.watched);
   this.output = this.watched;

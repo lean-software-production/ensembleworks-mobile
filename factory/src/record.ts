@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 export const runsFolder = join(__dirname, "..", "runs");
 export type RunEvent = {
-  type: "run" | "machine" | "text" | "usage";
+  type: "run" | "machine" | "text" | "usage" | "steering";
   time?: string;
   status?: string;
   machine?: string;
@@ -47,6 +47,8 @@ export class RecordDisplay {
       const lines = ((this.partial.get(name) ?? "") + event.text).split(/\r?\n/);
       this.partial.set(name, lines.pop()!);
       for (const line of lines) this.print(`${name.padEnd(12)} | ${line}`);
+    } else if (event.type === "steering") {
+      this.print(`${name.padEnd(12)} told ${JSON.stringify(event.text)}`);
     } else if (event.type === "machine") {
       if (event.status !== "running" && this.partial.get(name)) {
         this.print(`${name.padEnd(12)} | ${this.partial.get(name)}`);

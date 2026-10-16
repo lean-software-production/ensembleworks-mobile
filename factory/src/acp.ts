@@ -5,7 +5,9 @@ import { MachineConfig } from "./assembly-line";
 import { adapter, harnessInvocation, machineProvider } from "./harness";
 import { RunRecord } from "./record";
 
-export async function callMachine(machine: MachineConfig, target: string, prompt: string, record: RunRecord, signal: AbortSignal, env: NodeJS.ProcessEnv): Promise<Record<string, unknown>> {
+export type ActiveMachines = Map<string, (text: string) => Promise<void>>;
+
+export async function callMachine(machine: MachineConfig, target: string, prompt: string, record: RunRecord, signal: AbortSignal, env: NodeJS.ProcessEnv, active: ActiveMachines): Promise<Record<string, unknown>> {
   signal.throwIfAborted();
   const invocation = harnessInvocation(machine, env);
   const child = spawn(invocation.command, invocation.args, { cwd: target, env: invocation.env, detached: true });
@@ -73,7 +75,6 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
     pending.set(id, { resolve, reject });
     send({ id, method, params });
   });
-  record.write({ type: "machine", machine: machine.name, status: "running" });
   let status = "failed";
   try {
     const initialized = await request("initialize", { protocolVersion: 1, clientCapabilities: {}, clientInfo: { name: "factory", version: "0.1.0" } });
@@ -83,7 +84,15 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
       ...(adapter(machine) === "claude" ? { _meta: { claudeCode: { options: { settingSources: ["user"], ...(machine.model ? { model: machine.model } : {}) } } } } : {})
     });
     sessionId = session.sessionId;
-    const response = await request("session/prompt", { sessionId, prompt: [{ type: "text", text: prompt }] });
+    record.write({ type: "machine", machine: machine.name, status: "running" });
+    const turn = request("session/prompt", { sessionId, prompt: [{ type: "text", text: prompt }] });
+    active.set(machine.name, async text => {
+      signal.throwIfAborted();
+      const response = await request("_session/steering", { sessionId, prompt: [{ type: "text", text }] });
+      if (response?.outcome !== "injected") throw new Error(`refused: ${machine.name} did not accept the message`);
+      record.write({ type: "steering", machine: machine.name, text });
+    });
+    const response = await turn.finally(() => active.delete(machine.name));
     signal.throwIfAborted();
     if (response.usage) {
       const { inputTokens, outputTokens } = response.usage;
@@ -102,6 +111,7 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
     if (error instanceof Error && error.message.startsWith("Could not read")) throw error;
     throw new Error(`Could not run the ${machine.name}: ${error instanceof Error ? error.message : error}`);
   } finally {
+    active.delete(machine.name);
     signal.removeEventListener("abort", abort);
     child.stdin.end();
     kill();

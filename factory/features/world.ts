@@ -7,6 +7,7 @@ import { join } from "node:path";
 setDefaultTimeout(20_000);
 
 export interface AgentConfig {
+  steeringRefusal?: "inactive" | "unsupported";
   fragmentOutput?: boolean;
   holdMachine?: string;
   doerLines?: string[];

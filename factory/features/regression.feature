@@ -9,6 +9,41 @@ Feature: Public entrypoint and commit-boundary regression checks
     And the doer does the next task in the plan
     And the validator is always satisfied
 
+  Scenario Outline: Steering refuses an adapter that cannot inject the message
+    Given a plan with one task, not done
+    And the adapter refuses steering as <reason>
+    And the "tetris" run is running, with the doer part-way through an attempt
+    When I say "check the rotation boundary" to the doer
+    Then the factory refuses
+    And no steering delivery is recorded
+    When the "tetris" run has run to the end
+    Then the doer did not hear "check the rotation boundary"
+    And there is one new work commit
+
+    Examples:
+      | reason      |
+      | inactive    |
+      | unsupported |
+
+  Scenario: Steering cannot reach the same machine in a different run
+    Given a plan with one task, not done
+    And the "tetris" run is running, with the doer part-way through an attempt
+    When I say "check the rotation boundary" to doer in the "another" run
+    Then the factory refuses
+    And it says that nothing is running
+    When the "tetris" run has run to the end
+    Then the doer did not hear "check the rotation boundary"
+    And there is one new work commit
+
+  Scenario: Steering after shutdown does not restart the factory
+    Given a plan with one task, not done
+    And the "tetris" run is running, with the doer part-way through an attempt
+    When I stop the factory
+    And I say "check the rotation boundary" to the doer
+    Then the factory refuses
+    And it says that nothing is running
+    And the factory is not running
+
   Scenario: A lens file beside the validator's configuration goes to the validator
     Given a plan with three tasks, none of them done
     And the validator's lens is kept in a file beside its configuration, saying "object-oriented design"

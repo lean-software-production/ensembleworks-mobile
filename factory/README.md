@@ -134,7 +134,7 @@ or `"codex"` for its configuration environment and credential checks.
 Prompts travel as ACP text blocks on stdin, so changed-work diffs do not consume
 argument space. Git and generated machine text are limited to 10 MiB per call.
 
-## Watching and stopping
+## Watching, steering, and stopping
 
 Starting a run returns immediately. One daemon per factory stays up between runs
 and allows one run at a time; a second start is refused while a run is active.
@@ -142,14 +142,23 @@ and allows one run at a time; a second start is refused while a run is active.
 
 ```sh
 bin/factory watch tetris   # replay the record, then follow until the run ends
+bin/factory say tetris doer "use curses, not print"
 bin/factory stop tetris    # interrupt active machines; keep the daemon up
 bin/factory --run tetris   # resume using the remembered settings and plan
 bin/factory stop          # interrupt the active run and shut down the daemon
 ```
 
+`say <run> <machine> <message>` sends guidance to that machine's current attempt
+through ACP's `_session/steering`. During parallel work, name the specific
+reviewer, such as `reviewer_2`. Delivery requires the adapter to acknowledge
+injection; an inactive machine or an adapter that cannot steer is refused.
+Messages are not carried into retries or other machines. Put lasting guidance
+in the seed, plan, or machine instructions.
+
 `factory/runs/<name>/record.jsonl` keeps generated text, machine states, usage,
-and run outcomes. Watching works after the run and daemon finish too. Lines
-identify their machine; token totals accumulate per machine, provider, and run.
+delivered steering messages, and run outcomes. Watching works after the run and
+daemon finish too. Lines identify their machine; token totals accumulate per
+machine, provider, and run.
 Providers come from `machine.json`'s `provider` or Pi's `provider/model` name;
 Claude and Codex default to Anthropic and OpenAI. Usage comes from the ACP
 prompt response. Totals are tokens, not currency estimates.

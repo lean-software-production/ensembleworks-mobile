@@ -6,6 +6,16 @@ import { readRecord, RecordDisplay } from "./record";
 
 async function main(argv: string[]): Promise<void> {
   if (argv[0] === "--daemon") return serve();
+  if (argv[0] === "say") {
+    if (argv.length !== 4 || !argv[1] || !argv[2] || !argv[3].trim()) throw new Error("Usage: factory say <run> <machine> <message>");
+    const reply = await request({ command: "say", name: argv[1], machine: argv[2], text: argv[3] }).catch((error: NodeJS.ErrnoException) => {
+      if (!["ENOENT", "ECONNREFUSED"].includes(error.code ?? "")) throw error;
+      throw new Error("refused: nothing is running");
+    });
+    if (!reply.ok) throw new Error(reply.message);
+    console.log(reply.message);
+    return;
+  }
   if (argv[0] === "watch") {
     if (argv.length !== 2) throw new Error("Usage: factory watch <run>");
     const display = new RecordDisplay(line => console.log(line));

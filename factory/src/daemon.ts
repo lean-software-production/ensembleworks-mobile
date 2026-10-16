@@ -7,9 +7,10 @@ import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { Options, prepareRun, runFactory } from "./engine";
 import { RunRecord, runsFolder } from "./record";
+import { ActiveMachines } from "./acp";
 
 const socketPath = join(tmpdir(), `factory-${createHash("sha256").update(runsFolder).digest("hex").slice(0, 24)}.sock`);
-interface Command { command: "start" | "stop" | "status"; name?: string; options?: Options; env?: NodeJS.ProcessEnv }
+interface Command { command: "start" | "stop" | "status" | "say"; name?: string; machine?: string; text?: string; options?: Options; env?: NodeJS.ProcessEnv }
 interface Reply { ok: boolean; message?: string; running?: boolean; run?: string }
 
 export function request(command: Command): Promise<Reply> {
@@ -46,7 +47,7 @@ export async function startDaemon(): Promise<void> {
 
 export async function serve(): Promise<void> {
   mkdirSync(runsFolder, { recursive: true });
-  let active: { name: string; controller: AbortController; done: Promise<void> } | undefined;
+  let active: { name: string; controller: AbortController; done: Promise<void>; machines: ActiveMachines } | undefined;
   let shuttingDown = false;
   const stopRun = async () => {
     const current = active;
@@ -63,7 +64,17 @@ export async function serve(): Promise<void> {
       try {
         const command: Command = JSON.parse(input);
         if (command.command === "status") reply = { ok: true, running: !shuttingDown, run: active?.name };
-        else if (command.command === "stop") {
+        else if (command.command === "say") {
+          if (!command.machine || typeof command.text !== "string" || !command.text.trim()) throw new Error("Usage: factory say <run> <machine> <message>");
+          if (!active || active.name !== command.name || active.controller.signal.aborted) throw new Error("refused: nothing is running for this run");
+          const steer = active.machines.get(command.machine);
+          if (!steer) {
+            const names = [...active.machines.keys()];
+            throw new Error(names.length ? `refused: ${names.join(", ")} ${names.length === 1 ? "is" : "are"} what is running` : "refused: nothing is running");
+          }
+          await steer(command.text);
+          reply = { ok: true, message: `delivered to ${command.machine}` };
+        } else if (command.command === "stop") {
           if (command.name && active?.name !== command.name) {
             reply = { ok: true, message: `run ${command.name} is not running` };
           } else {
@@ -82,9 +93,9 @@ export async function serve(): Promise<void> {
           const controller = new AbortController();
           record.write({ type: "run", status: "running" });
           // Reserve the one run slot before allowing another client request.
-          const current = { name: options.run, controller, done: Promise.resolve() };
+          const current = { name: options.run, controller, done: Promise.resolve(), machines: new Map<string, (text: string) => Promise<void>>() };
           active = current;
-          current.done = Promise.resolve().then(() => runFactory(options, prepared, record, controller.signal, env))
+          current.done = Promise.resolve().then(() => runFactory(options, prepared, record, controller.signal, env, current.machines))
             .then(() => record.write({ type: "run", status: "finished" }))
             .catch(error => record.write({ type: "run", status: controller.signal.aborted ? "stopped" : "failed", text: String(error.message ?? error) }))
             .finally(() => { if (active === current) active = undefined; });

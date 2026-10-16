@@ -10,6 +10,7 @@ const { createInterface } = require("node:readline");
 const send = message => process.stdout.write(JSON.stringify({ jsonrpc: "2.0", ...message }) + "\n");
 let sessionMeta;
 let promptId;
+const steering = [];
 const emit = text => {
   const content = String(text) + "\n";
   const chunks = config.fragmentOutput ? [content.slice(0, 3), content.slice(3)] : [content];
@@ -17,7 +18,10 @@ const emit = text => {
     sessionUpdate: "agent_message_chunk", content: { type: "text", text: chunk }
   } } });
 };
-const finish = () => send({ id: promptId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 30 } } });
+const finish = () => {
+  send({ id: promptId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 30 } } });
+  promptId = undefined;
+};
 createInterface({ input: process.stdin }).on("line", line => {
   const request = JSON.parse(line);
   if (request.method === "initialize") {
@@ -29,6 +33,16 @@ createInterface({ input: process.stdin }).on("line", line => {
   } else if (request.method === "session/prompt") {
     promptId = request.id;
     runPrompt(request.params.prompt.map(block => block.text).join("\n"));
+  } else if (request.method === "_session/steering") {
+    if (request.params.sessionId !== "fixture") throw new Error("Wrong steering session");
+    if (config.steeringRefusal === "unsupported") return send({ id: request.id, error: { code: -32601, message: "Steering is not supported" } });
+    if (config.steeringRefusal === "inactive") return send({ id: request.id, result: { outcome: "promptRequired", reason: "noRunningTurn" } });
+    if (promptId === undefined) return send({ id: request.id, result: { outcome: "promptRequired", reason: "noRunningTurn" } });
+    steering.push(request.params.prompt.map(block => {
+      if (block.type !== "text" || typeof block.text !== "string") throw new Error("Expected steering text");
+      return block.text;
+    }).join("\n"));
+    send({ id: request.id, result: { outcome: "injected" } });
   }
 });
 function runPrompt(prompt) {
@@ -184,6 +198,7 @@ if (machine?.startsWith("reviewer_") && config.reviewerBarrier) {
   checkStarted();
 } else {
   const finishTurn = () => {
+    for (const message of steering.splice(0)) emit(`heard: ${JSON.stringify(message)}`);
     if (machine === "doer" && config.doerLines?.[1]) emit(config.doerLines[1]);
     emit(JSON.stringify(result));
     if (machine === "validator" && config.invalidLastVerdict) emit('{"note":"not a verdict"}');

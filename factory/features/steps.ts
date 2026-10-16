@@ -541,6 +541,7 @@ Given("the {string} run has been started", function (this: FactoryWorld, name: s
 });
 
 When("the factory runs the {string} run", function (this: FactoryWorld, name: string) { runFactory(this, name); });
+Given("the factory has run the {string} run", function (this: FactoryWorld, name: string) { runFactory(this, name); successful(this); });
 When("the factory runs the {string} run, given only its name", function (this: FactoryWorld, name: string) { runFactory(this, name, "name"); });
 When("the factory runs the {string} run with that target", function (this: FactoryWorld, name: string) { runFactory(this, name, "target"); });
 Then("the factory refuses", function (this: FactoryWorld) {
