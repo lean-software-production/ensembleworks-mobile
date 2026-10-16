@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "cucumber-js --profile default",
+    "test": "npm run test:bridge && cucumber-js --profile default",
     "test:real-agent": "cucumber-js --profile real-agent",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:bridge": "node --test ../tools/pi-rpc-acp/test.cjs"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.2.1",

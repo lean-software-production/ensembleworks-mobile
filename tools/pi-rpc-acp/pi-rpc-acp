@@ -49,7 +49,21 @@ function onPiEvent(session, e) {
   if (!turn) return;
   if (e.type === 'response' && e.success === false) return turn.fail(e.error ?? 'pi refused the prompt');
   if (e.type === 'message_update' && e.assistantMessageEvent?.type === 'text_delta') {
-    update(sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: e.assistantMessageEvent.delta } });
+    const text = e.assistantMessageEvent.delta;
+    if (text) {
+      turn.hasText = true;
+      turn.endsWithNewline = text.endsWith('\n');
+      update(sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text } });
+    }
+  } else if (e.type === 'message_end' && e.message?.role === 'assistant') {
+    // ACP exposes one text stream for a prompt, while pi emits several
+    // assistant messages around tool calls. Keep their lines separate so a
+    // final JSON result cannot be glued to an earlier progress message.
+    if (turn.hasText && !turn.endsWithNewline) {
+      update(sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: '\n' } });
+    }
+    turn.hasText = false;
+    turn.endsWithNewline = false;
   } else if (e.type === 'tool_execution_start') {
     const args = e.args ?? {};
     const file = args.path ? path.resolve(session.cwd, args.path) : null;

@@ -28,3 +28,7 @@ homework 8's `run_command` tool does not reach pi through this bridge.
 
 pi's RPC mode needs a Node with zstd support: 22.15 or later, or 23.8 or
 later. The devcontainer's Node 24 is fine.
+
+The bridge preserves assistant message boundaries as newlines, so progress
+updates and the final JSON result remain separate lines. Run its isolated
+regression checks with `npm run test:bridge` from `factory/` (no model calls).
