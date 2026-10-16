@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factory evolution — Homework 003 &amp; 004</title>
+  <style>
+    :root { color-scheme:light; --ink:#172d36; --muted:#52676e; --accent:#007b73; --rule:#d9e5e4; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:28px 18px; background:#eaf0ef; color:var(--ink); font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:950px; margin:auto; padding:32px 40px; background:white; border-top:6px solid var(--accent); box-shadow:0 8px 35px #172d3610; }
+    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:.14em; font-size:11px; font-weight:750; }
+    h1 { margin:8px 0 12px; font-size:34px; line-height:1.12; letter-spacing:-.035em; }
+    .lead { margin:0 0 20px; font-size:17px; color:var(--muted); }
+    h2 { margin:0 0 8px; font-size:16px; }
+    p { margin:0 0 9px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .card { padding:16px 18px; background:#f0f7f5; border-radius:8px; }
+    .number { color:var(--accent); }
+    .card p:last-child { margin-bottom:0; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; font-size:13px; }
+    th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--rule); }
+    th { color:var(--accent); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+    th:first-child,td:first-child { padding-left:0; width:20%; font-weight:650; }
+    th:nth-child(2),td:nth-child(2) { width:39%; }
+    code { font: .9em ui-monospace,SFMono-Regular,Consolas,monospace; }
+    pre { padding:12px 14px; margin:0; background:#1e1e1e; color:#d4d4d4; border-radius:6px; font:11px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; overflow-wrap:anywhere; }
+    pre code { display:block; font:inherit; background:transparent; color:inherit; }
+    pre .syntax-keyword { color:#c586c0; }
+    pre .syntax-name { color:#9cdcfe; }
+    pre .syntax-string { color:#ce9178; }
+    pre .syntax-operator { color:#d4d4d4; }
+    pre .syntax-command { color:#dcdcaa; }
+    pre .syntax-option { color:#9cdcfe; }
+    pre .syntax-value { color:#ce9178; }
+    .caption { color:var(--muted); font-size:12px; margin:7px 0 0; }
+    .assembly { margin:18px 0; }
+    .assembly svg { display:block; width:100%; height:auto; background:#f0f7f5; border-radius:6px; }
+    .assembly .edge { fill:none; stroke:var(--accent); stroke-width:2; marker-end:url(#arrow); }
+    .assembly .node { fill:white; stroke:#a7c9c3; stroke-width:1.5; }
+    .assembly text { fill:var(--ink); font:12px system-ui,sans-serif; }
+    .assembly .label { fill:var(--accent); font-size:10px; }
+    .migration { margin-top:18px; }
+    ol { margin:0; padding-left:20px; font-size:13px; }
+    li { margin-bottom:5px; padding-left:2px; }
+    aside { margin-top:16px; padding:11px 14px; border-left:3px solid var(--accent); background:#f0f7f5; font-size:12px; }
+    aside p { margin:0; }
+    footer { margin-top:14px; padding-top:9px; border-top:1px solid var(--rule); color:var(--muted); font-size:10px; }
+    a { color:var(--accent); }
+    @media(max-width:650px) { body { padding:0; } main { padding:24px 20px; } h1 { font-size:29px; } .grid { grid-template-columns:1fr; gap:14px; } table { font-size:12px; } th,td { padding:7px 5px; } }
+    @page { size:A4; margin:12mm; }
+    @media print {
+      body { padding:0; background:white; font-size:11px; }
+      main { max-width:none; padding:0; box-shadow:none; border-top-width:4px; }
+      h1 { font-size:28px; margin:7px 0 10px; }
+      .eyebrow { font-size:9px; margin-top:10px; }
+      .lead { font-size:13px; margin-bottom:14px; }
+      .grid { grid-template-columns:1fr 1fr; gap:16px; }
+      .card { padding:12px 14px; }
+      h2 { font-size:13px; }
+      table { font-size:10px; margin:13px 0; }
+      th { font-size:9px; } th,td { padding:6px 8px; }
+      pre { font-size:9px; padding:10px 12px; }
+      .caption,aside { font-size:10px; }
+      ol { font-size:10px; }
+      .migration { margin-top:13px; } aside { margin-top:12px; }
+      footer { font-size:8px; margin-top:10px; }
+      section,table,aside { break-inside:avoid; }
+      * { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Homework 003 + 004</div>
+    <h1>Configurable routes. Resumable runs.</h1>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2><span class="number">003</span> · Routing becomes data</h2>
+      <p>A graph replaces hardcoded ordering, retries and loops. Machine JSON results choose the next step.</p>
+      <p>Edit the line to skip validation. No <code>--all</code>: run until complete.</p>
+    </section>
+    <section class="card">
+      <h2><span class="number">004</span> · Runs gain identity</h2>
+      <p>Named runs remember <strong>target, line and seed</strong>. Resume by name.</p>
+      <p>Targets own multiple lines and their machines. Runs own plans.</p>
+    </section>
+  </div>
+
+  <table aria-label="Storage changes from homework 003 to 004">
+    <thead><tr><th>Location</th><th>003</th><th>004</th></tr></thead>
+    <tbody>
+      <tr><td>Lines / machines</td><td><code>factory/</code></td><td><code>&lt;target&gt;/.assembly-lines/</code><br>Machines: <code>.machines/</code> inside it</td></tr>
+      <tr><td>Plan</td><td><code>&lt;target&gt;/.factory/plan.md</code></td><td><code>factory/runs/&lt;name&gt;/plan.md</code><br>Ignore <code>/factory/runs/</code> in Git.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid assembly">
+    <section>
+      <h2>Assembly line · careful.dot</h2>
+      <pre><code class="language-dot"><span class="syntax-keyword">digraph</span> <span class="syntax-name">assembly_line</span> {
+  <span class="syntax-name">start</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">planner</span>
+  <span class="syntax-name">planner</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">doer</span>        [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;not complete&quot;</span>]
+  <span class="syntax-name">planner</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">finish</span>      [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;complete&quot;</span>]
+  <span class="syntax-name">doer</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">validator</span>
+  <span class="syntax-name">validator</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">doer</span>      [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;not satisfied&quot;</span>]
+  <span class="syntax-name">validator</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">planner</span>   [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;satisfied&quot;</span>]
+}</code></pre>
+    </section>
+    <section>
+      <h2>The same line, visualized</h2>
+      <svg viewBox="0 0 460 240" role="img" aria-labelledby="line-title line-description">
+        <title id="line-title">Careful assembly line</title>
+        <desc id="line-description">Start goes to planner. Planner goes to finish when complete, otherwise to doer. Doer goes to validator. Validator returns to doer when not satisfied, otherwise to planner.</desc>
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#007b73"/></marker></defs>
+        <path class="edge" d="M75 75 H150"/>
+        <path class="edge" d="M230 75 H310"/>
+        <path class="edge" d="M190 94 V155"/>
+        <path class="edge" d="M345 94 V155"/>
+        <path class="edge" d="M380 174 H405 V75 H380"/>
+        <path class="edge" d="M345 193 V215 H125 V94 H150"/>
+        <text class="label" x="270" y="62" text-anchor="middle">not complete</text>
+        <text class="label" x="181" y="130" text-anchor="end">complete</text>
+        <text class="label" transform="translate(423 126) rotate(-90)" text-anchor="middle">not satisfied</text>
+        <text class="label" x="260" y="232" text-anchor="middle">satisfied</text>
+        <rect class="node" x="15" y="56" width="60" height="38" rx="8"/>
+        <rect class="node" x="150" y="56" width="80" height="38" rx="8"/>
+        <rect class="node" x="310" y="56" width="70" height="38" rx="8"/>
+        <rect class="node" x="150" y="155" width="80" height="38" rx="8"/>
+        <rect class="node" x="310" y="155" width="70" height="38" rx="8"/>
+        <text x="45" y="80" text-anchor="middle">start</text>
+        <text x="190" y="80" text-anchor="middle">planner</text>
+        <text x="345" y="80" text-anchor="middle">doer</text>
+        <text x="190" y="179" text-anchor="middle">finish</text>
+        <text x="345" y="179" text-anchor="middle">validator</text>
+      </svg>
+    </section>
+  </div>
+
+  <section>
+    <h2>004 · Start → resume</h2>
+    <pre><code class="language-shell"><span class="syntax-command">bin/factory</span> <span class="syntax-option">--run</span> <span class="syntax-value">tetris</span> <span class="syntax-option">--target</span> <span class="syntax-value">tetris/tetris-003</span> \
+  <span class="syntax-option">--line</span> <span class="syntax-value">careful</span> <span class="syntax-option">--seed</span> <span class="syntax-value">tetris/spec.md</span>
+<span class="syntax-command">bin/factory</span> <span class="syntax-option">--run</span> <span class="syntax-value">tetris</span></code></pre>
+  </section>
+
+  <aside><p><strong>Still:</strong> planner plans → doer builds → validator checks. Factory routes and commits.</p></aside>
+  <section class="assembly" aria-labelledby="quality-heading">
+    <h2 id="quality-heading">Custom line · improve-code-quality.dot</h2>
+    <div class="grid">
+      <pre><code class="language-dot"><span class="syntax-keyword">digraph</span> <span class="syntax-name">improve_code_quality</span> {
+  <span class="syntax-name">start</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">quality_planner</span>
+  <span class="syntax-name">quality_planner</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">refactorer</span>   [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;not complete&quot;</span>]
+  <span class="syntax-name">quality_planner</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">finish</span>       [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;complete&quot;</span>]
+  <span class="syntax-name">refactorer</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">metrics</span>
+  <span class="syntax-name">metrics</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">refactorer</span>           [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;not satisfied&quot;</span>]
+  <span class="syntax-name">metrics</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">validator</span>            [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;satisfied&quot;</span>]
+  <span class="syntax-name">validator</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">refactorer</span>         [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;not satisfied&quot;</span>]
+  <span class="syntax-name">validator</span> <span class="syntax-operator">-&gt;</span> <span class="syntax-name">quality_planner</span>    [<span class="syntax-name">label</span>=<span class="syntax-string">&quot;satisfied&quot;</span>]
+}</code></pre>
+      <svg viewBox="0 0 460 350" role="img" aria-labelledby="quality-title quality-description">
+  <title id="quality-title">Improve code quality assembly line</title>
+  <desc id="quality-description">Start goes to quality planner. When complete it finishes, otherwise it calls refactorer then metrics. Failed metrics or validation return to refactorer. Satisfied metrics go to validator. Satisfied validation returns to quality planner.</desc>
+  <defs><marker id="quality-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#007b73"/></marker></defs>
+  <g style="marker-end:url(#quality-arrow)">
+    <path class="edge" data-from="start" data-to="quality_planner" d="M90 60 H150" style="marker-end:inherit"/>
+    <path class="edge" data-from="quality_planner" data-to="refactorer" data-label="not complete" d="M215 79 V121" style="marker-end:inherit"/>
+    <path class="edge" data-from="quality_planner" data-to="finish" data-label="complete" d="M280 60 H370" style="marker-end:inherit"/>
+    <path class="edge" data-from="refactorer" data-to="metrics" d="M215 159 V201" style="marker-end:inherit"/>
+    <path class="edge" data-from="metrics" data-to="refactorer" data-label="not satisfied" d="M170 220 H125 V150 H170" style="marker-end:inherit"/>
+    <path class="edge" data-from="metrics" data-to="validator" data-label="satisfied" d="M215 239 V281" style="marker-end:inherit"/>
+    <path class="edge" data-from="validator" data-to="refactorer" data-label="not satisfied" d="M170 300 H75 V130 H170" style="marker-end:inherit"/>
+    <path class="edge" data-from="validator" data-to="quality_planner" data-label="satisfied" d="M260 300 H330 V75 H280" style="marker-end:inherit"/>
+  </g>
+  <text class="label" x="229" y="106">not complete</text>
+  <text class="label" x="324" y="48" text-anchor="middle">complete</text>
+  <text class="label" transform="translate(115 188) rotate(-90)" text-anchor="middle">not satisfied</text>
+  <text class="label" transform="translate(62 232) rotate(-90)" text-anchor="middle">not satisfied</text>
+  <text class="label" x="229" y="266">satisfied</text>
+  <text class="label" transform="translate(345 196) rotate(-90)" text-anchor="middle">satisfied</text>
+  <rect class="node" x="30" y="41" width="60" height="38" rx="8"/>
+  <rect class="node" x="150" y="41" width="130" height="38" rx="8"/>
+  <rect class="node" x="370" y="41" width="65" height="38" rx="8"/>
+  <rect class="node" x="170" y="121" width="90" height="38" rx="8"/>
+  <rect class="node" x="170" y="201" width="90" height="38" rx="8"/>
+  <rect class="node" x="170" y="281" width="90" height="38" rx="8"/>
+  <text x="60" y="65" text-anchor="middle">start</text>
+  <text x="215" y="65" text-anchor="middle">quality_planner</text>
+  <text x="402" y="65" text-anchor="middle">finish</text>
+  <text x="215" y="145" text-anchor="middle">refactorer</text>
+  <text x="215" y="225" text-anchor="middle">metrics</text>
+  <text x="215" y="305" text-anchor="middle">validator</text>
+</svg>
+    </div>
+  </section>
+
+  <footer>Sources: 003 at <code>b9d21f0</code> · <a href="../factory/spec/README.md">004 brief</a></footer>
+</main>
+</body>
+</html>
