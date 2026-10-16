@@ -122,3 +122,21 @@ Feature: Public entrypoint and commit-boundary regression checks
     When I watch the "tetris" run
     Then I see "naïve 🧩" from the doer
     And I do not see "second line"
+
+  Scenario: A provider failure keeps its diagnostic and token usage
+    Given a plan with one task, not done
+    And the doer's provider fails with "429 free-model quota exhausted"
+    When the factory runs the "tetris" run
+    Then it reports the provider error "429 free-model quota exhausted"
+    And I read the "tetris" run's record
+    And it shows what every machine spent
+    And there are no new commits
+    And the plan shows every task as not done
+
+  Scenario: An empty agent answer explains the missing result
+    Given a plan with one task, not done
+    And the doer returns no answer text
+    When the factory runs the "tetris" run
+    Then it reports that the doer returned no answer text
+    And there are no new commits
+    And the plan shows every task as not done

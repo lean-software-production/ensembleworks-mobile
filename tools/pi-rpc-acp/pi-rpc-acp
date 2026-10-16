@@ -44,12 +44,40 @@ const toPi = (session, cmd) => session.pi.stdin.write(JSON.stringify({ id: Strin
 
 const KINDS = { read: 'read', bash: 'execute', edit: 'edit', write: 'edit', grep: 'search', find: 'search', ls: 'read' };
 
+function emitText(session, text) {
+  if (!text) return;
+  const turn = session.turn;
+  if (turn.newMessage && turn.outputTail && turn.outputTail !== '\n') {
+    update(session.sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: '\n' } });
+  }
+  update(session.sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text } });
+  turn.newMessage = false;
+  turn.outputTail = text.at(-1);
+}
+
 function onPiEvent(session, e) {
   const { sessionId, turn } = session;
   if (!turn) return;
   if (e.type === 'response' && e.success === false) return turn.fail(e.error ?? 'pi refused the prompt');
-  if (e.type === 'message_update' && e.assistantMessageEvent?.type === 'text_delta') {
-    update(sessionId, { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: e.assistantMessageEvent.delta } });
+  if (e.type === 'message_start' && e.message?.role === 'assistant') {
+    turn.textBlocks.clear();
+    turn.newMessage = true;
+  } else if (e.type === 'message_update' && e.assistantMessageEvent?.type === 'text_delta') {
+    const { contentIndex = 0, delta } = e.assistantMessageEvent;
+    turn.textBlocks.set(contentIndex, (turn.textBlocks.get(contentIndex) ?? '') + delta);
+    emitText(session, delta);
+  } else if (e.type === 'message_end' && e.message?.role === 'assistant') {
+    turn.lastMessage = e.message;
+    // Completed messages are authoritative. Some providers omit deltas, or send
+    // only a prefix; forward the missing suffix without repeating streamed text.
+    for (const [index, block] of e.message.content.entries()) {
+      if (block.type !== 'text') continue;
+      const streamed = turn.textBlocks.get(index) ?? '';
+      if (block.text.startsWith(streamed) && block.text.length > streamed.length) {
+        emitText(session, block.text.slice(streamed.length));
+      }
+      turn.textBlocks.set(index, block.text);
+    }
   } else if (e.type === 'tool_execution_start') {
     const args = e.args ?? {};
     const file = args.path ? path.resolve(session.cwd, args.path) : null;
@@ -70,8 +98,16 @@ function onPiEvent(session, e) {
     turn.usage.outputTokens += u.output ?? 0;
     turn.usage.cachedReadTokens += u.cacheRead ?? 0;
     turn.usage.cachedWriteTokens += u.cacheWrite ?? 0;
-  } else if (e.type === 'agent_end') {
-    turn.done();
+  } else if (e.type === 'agent_settled') {
+    // agent_end closes only a low-level run: Pi may still retry or recover.
+    // Wait for the session-level boundary before accepting a result or error.
+    const last = turn.lastMessage;
+    if (e.aborted || last?.stopReason === 'aborted') turn.cancelled = true;
+    if (!turn.cancelled && last?.stopReason === 'error') {
+      turn.fail(last.errorMessage ?? 'pi provider request failed');
+    } else if (!turn.cancelled && last?.stopReason === 'length') {
+      turn.fail(last.errorMessage ?? 'pi reached its output token limit before finishing the answer');
+    } else turn.done();
   }
 }
 
@@ -82,13 +118,20 @@ function prompt(id, { sessionId, prompt: blocks }) {
   const usage = { inputTokens: 0, outputTokens: 0, cachedReadTokens: 0, cachedWriteTokens: 0 };
   session.turn = {
     usage,
+    textBlocks: new Map(),
+    newMessage: true,
+    outputTail: '',
+    lastMessage: null,
     cancelled: false,
+    finishUsage() {
+      usage.totalTokens = usage.inputTokens + usage.outputTokens + usage.cachedReadTokens + usage.cachedWriteTokens;
+      return usage;
+    },
     done() {
       session.turn = null;
-      usage.totalTokens = usage.inputTokens + usage.outputTokens + usage.cachedReadTokens + usage.cachedWriteTokens;
-      send({ id, result: { stopReason: this.cancelled ? 'cancelled' : 'end_turn', usage } });
+      send({ id, result: { stopReason: this.cancelled ? 'cancelled' : 'end_turn', usage: this.finishUsage() } });
     },
-    fail(message) { session.turn = null; send({ id, error: { code: -32603, message } }); },
+    fail(message) { session.turn = null; send({ id, error: { code: -32603, message, data: { usage: this.finishUsage() } } }); },
   };
   toPi(session, { type: 'prompt', message: text });
 }

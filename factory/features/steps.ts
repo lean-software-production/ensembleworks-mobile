@@ -1046,3 +1046,18 @@ Then("it shows a total for the whole run", function (this: FactoryWorld) {
   const total = this.watched.match(/run (\d+)\n/g)?.at(-1);
   assert.equal(total?.trim(), `run ${calls(this).length * 124}`);
 });
+
+Given("the doer's provider fails with {string}", function (this: FactoryWorld, message: string) {
+  this.agentConfig.doerProviderError = message;
+});
+Then("it reports the provider error {string}", function (this: FactoryWorld, message: string) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.ok(this.output.includes(message), this.output);
+});
+Given("the doer returns no answer text", function (this: FactoryWorld) {
+  this.agentConfig.doerNoText = true;
+});
+Then("it reports that the doer returned no answer text", function (this: FactoryWorld) {
+  assert.equal(this.exitCode, 1, this.output);
+  assert.match(this.output, /the agent returned no answer text/, this.output);
+});
