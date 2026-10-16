@@ -10,7 +10,7 @@ the plan. A machine has a name and a folder of its own, which is the
 configuration of the harness that runs it, `pi` by default or another
 named there. The folder holds the machine's `AGENTS.md`, its
 instructions, and the rest of its configuration, such as its model. It
-also holds the machine's own copy of your login, which the factory keeps
+also holds the machine's own copy of your login, which is kept
 out of Git; with no login, a machine uses its provider's API key. The
 harness runs on that folder's configuration and no other: not yours,
 and none found in or above the target, whose files are the machine's
@@ -42,12 +42,13 @@ it spends. It runs each machine as an ACP agent, speaking the Agent
 Client Protocol to it over stdio, and keeps what the machines generate
 and spend in the run's record.
 
+You can send a message to a machine while it works: the factory passes
+it on with ACP's `_session/steering`.
+
 A **run** is a named execution of one of the target's assembly lines on a
 seed, saying what to build, against a target, the codebase to build it in. The
 factory source is separate from the generated product. The run
 keeps its plan in `runs/<name>/plan.md` in the factory's folder, never in the target. A run can be stopped, and
 started again later.
 
-New since iteration 5a: `monitoring.feature` and `observability.feature`;
-machines run as ACP agents; the factory runs as a daemon, one run at a
-time, and runs can be stopped.
+New since iteration 6: `steering.feature`.

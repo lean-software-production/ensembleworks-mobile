@@ -98,7 +98,7 @@ Feature: Machines
 
     A harness keeps its login with the rest of its configuration, so each
     machine's folder holds its own copy of your login: copy it in
-    whenever you make a machine. The factory keeps it out of Git. A
+    whenever you make a machine. It is kept out of Git. A
     machine with no login signs in with the API key for its provider,
     from the environment. If a machine has neither, the factory says so
     before it calls any machine.
