@@ -54,6 +54,26 @@ export function activeCells(piece) {
   return piece ? piece.cells.map(([x, y]) => [piece.x + x, piece.y + y]) : [];
 }
 
+// Only settled cells participate: the active piece never collides with itself.
+export function canPlace(board, piece) {
+  return piece !== null && activeCells(piece).every(([x, y]) =>
+    x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT && board[y][x] === null);
+}
+
+function moveHorizontal(state, dx) {
+  if (state.status !== 'running' || !state.active) return { moved: false };
+  const candidate = { ...state.active, x: state.active.x + dx };
+  if (!canPlace(state.board, candidate)) return { moved: false };
+  state.active = candidate;
+  return { moved: true };
+}
+
+export const moveLeft = state => moveHorizontal(state, -1);
+export const moveRight = state => moveHorizontal(state, 1);
+
 export function createInitialState(typeSource = createRandomTypeSource()) {
-  return { ...createEmptyState(), active: createSpawnPiece(typeSource()) };
+  const state = createEmptyState();
+  const piece = createSpawnPiece(typeSource());
+  if (canPlace(state.board, piece)) state.active = piece;
+  return state;
 }
