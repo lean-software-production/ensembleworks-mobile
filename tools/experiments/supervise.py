@@ -11,6 +11,7 @@ RESULTS=ROOT/'docs/experiments/tetris-007/results'
 FIRST_TRIAL=1
 TRIALS=3
 COHORT=''
+RESUME=False
 HALT=__import__('threading').Event()
 MODEL_ERRORS=set()
 ERROR_LOCK=__import__('threading').Lock()
@@ -40,17 +41,33 @@ def configuration(code, worktree):
     config=RESULTS/f'{code}.json'; state={'experiment':code,'worktree':str(worktree),'status':'running','started':now(),'trials':[]};atomic(config,state)
     for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
         name=f'tetris-007-{code.lower()}-r{trial}'; target=worktree/'tetris'/name; run=worktree/'factory/runs'/name
-        record={'id':name,'experiment':code,'trial':trial,'started':now(),'status':'starting','worktree':str(worktree),'target':str(target),'branch':git(worktree,'branch','--show-current'),'pre_run_commit':git(worktree,'rev-parse','HEAD'),'pre_run_tag':f'{name}-before-run','cohort':COHORT,'planned_trials_per_configuration':TRIALS}
-        git(worktree,'tag','-a',record['pre_run_tag'],'-m',f'Frozen experiment {name} immediately before execution')
-        out=RESULTS/name;out.mkdir(parents=True,exist_ok=True)
-        shutil.copytree(worktree/'docs/experiments/tetris-007/inputs',out/'inputs',dirs_exist_ok=True)
-        record['input_hashes']={str(p.relative_to(out/'inputs')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'inputs').rglob('*') if p.is_file()}
+        out=RESULTS/name
+        if RESUME:
+            record=json.loads((out/'result.json').read_text())
+            if record['status'] in ['checks_passed_pending_review','acceptance_failed']:
+                state['trials'].append(record);atomic(config,state);continue
+            if record['status'] not in ['failed','stopped','orchestration_failed']:
+                raise RuntimeError(f'Refuse to resume trial in state {record["status"]}: {name}')
+            history=out/'resume-history';history.mkdir(exist_ok=True)
+            index=len(list(history.glob('result-*.json')))+1
+            shutil.copy2(out/'result.json',history/f'result-{index}.json')
+            if (run/'record.jsonl').exists():shutil.copy2(run/'record.jsonl',history/f'record-{index}.jsonl')
+            record.setdefault('resumes',[]).append({'time':now(),'reason':'User reported usage reset and requested continuation','previous_status':record['status'],'previous_failure':record.get('failure'),'commit':git(worktree,'rev-parse','HEAD')})
+            for field in ['failure','finished','factory_status','acceptance_passed']:record.pop(field,None)
+            record['status']='starting'
+        else:
+            record={'id':name,'experiment':code,'trial':trial,'started':now(),'status':'starting','worktree':str(worktree),'target':str(target),'branch':git(worktree,'branch','--show-current'),'pre_run_commit':git(worktree,'rev-parse','HEAD'),'pre_run_tag':f'{name}-before-run','cohort':COHORT,'planned_trials_per_configuration':TRIALS}
+            git(worktree,'tag','-a',record['pre_run_tag'],'-m',f'Frozen experiment {name} immediately before execution')
+            out.mkdir(parents=True,exist_ok=True)
+            shutil.copytree(worktree/'docs/experiments/tetris-007/inputs',out/'inputs',dirs_exist_ok=True)
+            record['input_hashes']={str(p.relative_to(out/'inputs')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'inputs').rglob('*') if p.is_file()}
+        segment_start=len(events(run))
         atomic(out/'result.json',record); state['trials'].append(record);atomic(config,state)
         env=dict(os.environ,TS_NODE_TRANSPILE_ONLY='true',PATH=str(worktree/'tools/pi-rpc-acp')+os.pathsep+os.environ['PATH'])
         try:
             command=[str(worktree/'bin/factory'),'--run',name,'--target',str(target),'--line','efficient','--seed',str(worktree/'docs/experiments/tetris-007/inputs/seed.md')]
             start=subprocess.run(command,cwd=worktree,env=env,text=True,capture_output=True,timeout=30)
-            (out/'start.log').write_text(start.stdout+start.stderr)
+            with (out/'start.log').open('a') as log: log.write(f'\n{now()} '+('resume' if RESUME else 'start')+'\n'+start.stdout+start.stderr)
             if start.returncode: raise RuntimeError(start.stderr.strip() or start.stdout.strip())
             record['status']='running';atomic(out/'result.json',record);atomic(config,state)
             deadline=time.monotonic()+10800
@@ -59,7 +76,7 @@ def configuration(code, worktree):
                 record['progress']={'last_event':es[-1].get('time') if es else None,'machine':next((e.get('machine') for e in reversed(es) if e['type']=='machine'),None),'events':len(es)}
                 atomic(out/'result.json',record);atomic(config,state)
                 if latest.get('status') in ['finished','failed','stopped']:
-                    if any(e['type']=='diagnostic' and 'error' in e.get('modelStopReasons',[]) for e in es):
+                    if any(e['type']=='diagnostic' and 'error' in e.get('modelStopReasons',[]) for e in es[segment_start:]):
                         with ERROR_LOCK:
                             MODEL_ERRORS.add(code)
                             if len(MODEL_ERRORS)>=2 and not HALT.is_set():
@@ -98,16 +115,23 @@ def configuration(code, worktree):
     return code
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Trial numbers/count must be positive.')
     if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
-    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort
+    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume
     if COHORT:RESULTS=ROOT/'docs/experiments/tetris-007/cohorts'/COHORT/'results'
     report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT,'--worktrees',str(Path(a.worktrees).resolve())]
     RESULTS.mkdir(parents=True,exist_ok=True)
     lock=(RESULTS/'supervisor.lock').open('w')
     fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
-    if list(RESULTS.glob('tetris-007-*/result.json')):raise RuntimeError('Existing trials detected; refusing to overwrite observations.')
+    if not RESUME and list(RESULTS.glob('tetris-007-*/result.json')):raise RuntimeError('Existing trials detected; refusing to overwrite observations.')
+    if RESUME:
+        for code in ['E00','E01','E02','E03']:
+            for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
+                if not (RESULTS/f'tetris-007-{code.lower()}-r{trial}'/'result.json').exists():raise RuntimeError('Resume requires existing result files for every trial.')
+        if (RESULTS/'incident.json').exists():
+            history=RESULTS/'incident-history';history.mkdir(exist_ok=True)
+            (RESULTS/'incident.json').rename(history/f'incident-{time.time_ns()}.json')
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         jobs=[pool.submit(configuration,c,Path(a.worktrees)/c) for c in ['E00','E01','E02','E03']]
         pending=set(jobs)

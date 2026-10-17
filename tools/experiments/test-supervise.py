@@ -31,11 +31,35 @@ class CohortTests(unittest.TestCase):
                     w=root/code;packet=w/'docs/experiments/tetris-007/inputs';packet.mkdir(parents=True);(packet/'plan.md').write_text('frozen')
                     run=w/'factory/runs'/f'tetris-007-{code.lower()}-r4';run.mkdir(parents=True)
                     events=[{'type':'diagnostic','modelStopReasons':['error']},{'type':'run','status':'failed'}]
-                    (run/'record.jsonl').write_text(''.join(json.dumps(e)+'\n' for e in events))
-                    s.configuration(code,w)
+                    def launch(*args,**kwargs):
+                        (run/'record.jsonl').write_text(''.join(json.dumps(e)+'\n' for e in events))
+                        return SimpleNamespace(returncode=0,stdout='',stderr='')
+                    with patch.object(s.subprocess,'run',side_effect=launch):s.configuration(code,w)
                     self.assertEqual(s.HALT.is_set(),code=='E01')
                 incident=json.loads((root/'results/incident.json').read_text())
                 self.assertEqual(incident['experiments'],['E00','E01'])
+
+    def test_resume_retains_usage_and_ignores_historical_errors_for_circuit_breaker(self):
+        import threading
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);w=root/'worktree';run=w/'factory/runs/tetris-007-e00-r5';run.mkdir(parents=True)
+            out=root/'results/tetris-007-e00-r5';out.mkdir(parents=True)
+            old={'id':'tetris-007-e00-r5','status':'failed','failure':'provider error','started':'original-time'}
+            (out/'result.json').write_text(json.dumps(old))
+            prior=[{'type':'usage','machine':'doer','inputTokens':10,'outputTokens':3},{'type':'diagnostic','modelStopReasons':['error']},{'type':'run','status':'failed'}]
+            record=run/'record.jsonl';record.write_text(''.join(json.dumps(e)+'\n' for e in prior))
+            def launch(*args,**kwargs):
+                with record.open('a') as f:f.write(json.dumps({'type':'run','status':'failed','text':'non-provider failure'})+'\n')
+                return SimpleNamespace(returncode=0,stdout='',stderr='')
+            with patch.object(s,'RESULTS',root/'results'),patch.object(s,'FIRST_TRIAL',5),patch.object(s,'TRIALS',1),patch.object(s,'RESUME',True),patch.object(s,'HALT',threading.Event()),patch.object(s,'MODEL_ERRORS',set()),patch.object(s,'git',return_value='checkpoint') as git,patch.object(s.subprocess,'run',side_effect=launch):
+                s.configuration('E00',w)
+                new=json.loads((out/'result.json').read_text())
+                self.assertEqual(new['started'],'original-time')
+                self.assertEqual(len(new['resumes']),1)
+                self.assertEqual(new['usage']['machines']['doer']['inputTokens'],10)
+                self.assertEqual(json.loads((out/'resume-history/result-1.json').read_text()),old)
+                self.assertFalse(s.MODEL_ERRORS)
+                self.assertTrue(all('tag' not in call.args for call in git.call_args_list))
 
     def test_unterminated_record_is_not_misread(self):
         with tempfile.TemporaryDirectory() as tmp:
