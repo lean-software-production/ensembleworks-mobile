@@ -65,7 +65,7 @@ def refresh():
                     if e['status']=='running':started=t
                     elif started:active+=(t-started).total_seconds();started=None
             if started:active+=(datetime.now(timezone.utc)-started).total_seconds()
-            s={'experiment':code,'trial':trial,'id':name,'status':state['status'],'tasks_complete':complete,'calls_started':sum(e['type']=='machine' and e.get('status')=='running' for e in es),'usage_reports':len(us),'input':measured('inputTokens'),'output':measured('outputTokens'),'cache_read_reported':measured('cachedReadTokens'),'cache_write_reported':measured('cachedWriteTokens'),'cache_read_reports':coverage('cachedReadTokens'),'cache_write_reports':coverage('cachedWriteTokens'),'active_seconds':round(active,1),'failure':state.get('failure'),'first_attempt_doer_input':sum(c.get('inputTokens') or 0 for c in cs if c['machine']=='doer' and c.get('attempt')==1),'diagnostics':sum(e['type']=='diagnostic' for e in es)}
+            s={'experiment':code,'trial':trial,'id':name,'status':state['status'],'resume_count':len(state.get('resumes',[])),'tasks_complete':complete,'calls_started':sum(e['type']=='machine' and e.get('status')=='running' for e in es),'usage_reports':len(us),'input':measured('inputTokens'),'output':measured('outputTokens'),'cache_read_reported':measured('cachedReadTokens'),'cache_write_reported':measured('cachedWriteTokens'),'cache_read_reports':coverage('cachedReadTokens'),'cache_write_reports':coverage('cachedWriteTokens'),'active_seconds':round(active,1),'failure':state.get('failure'),'first_attempt_doer_input':sum(c.get('inputTokens') or 0 for c in cs if c['machine']=='doer' and c.get('attempt')==1),'diagnostics':sum(e['type']=='diagnostic' for e in es)}
             s['recorded_io']=s['input']+s['output'];summary.append(s)
     onepager=ROOT/'docs/tetris-007-experiments-one-pager.html'
     page=onepager.read_text()
@@ -86,7 +86,7 @@ def refresh():
             writer=csv.DictWriter(f,fields,extrasaction='ignore',lineterminator='\n');writer.writeheader();writer.writerows(callrows)
     lines=['# Tetris 007 measured pilot',f"Updated {payload['updated']}",'','| Experiment / trial | Status | Tasks | Recorded I/O | Cache read / coverage | Calls | Active min |','| --- | --- | ---: | ---: | ---: | ---: | ---: |']
     if incident:lines.insert(2, '\n**Halted: '+incident['reason']+'**\n')
-    for s in summary:lines.append(f"| {s['experiment']} / {s['trial']} | {s['status']} | {s['tasks_complete']}/13 | {s['recorded_io']:,} | {s['cache_read_reported']:,} / {s['cache_read_reports']}/{s['usage_reports']} reports | {s['calls_started']} | {s['active_seconds']/60:.1f} |")
+    for s in summary:lines.append(f"| {s['experiment']} / {s['trial']} | {s['status']}{' (resumed)' if s.get('resume_count') else ''} | {s['tasks_complete']}/13 | {s['recorded_io']:,} | {s['cache_read_reported']:,} / {s['cache_read_reports']}/{s['usage_reports']} reports | {s['calls_started']} | {s['active_seconds']/60:.1f} |")
     lines+=['','Partial totals omit active calls. Cache totals include only reported fields; absent does not mean zero. Local machines also count as calls. All failures stay in the dataset.','', 'A lower total from a failed or incomplete game is not evidence of improved efficiency. Final quality verdict requires reviewing retained acceptance clauses and validator evidence.']
     for code in ['E00','E01','E02','E03']:
         done=[s for s in summary if s['experiment']==code and s['status'] not in ['queued','starting','running']]
@@ -94,7 +94,7 @@ def refresh():
             vals=[s['recorded_io'] for s in done];eligible=sum(s['status']=='checks_passed_pending_review' for s in done)
             lines+=['',f"{code}: median observed I/O {statistics.median(vals):,.0f}, range {min(vals):,}–{max(vals):,}; {eligible}/3 passed automated checks pending evidence review. Includes failed runs; do not interpret as equivalent completed work unless quality matches."]
     (BASE/'results.md').write_text('\n'.join(lines)+'\n')
-    rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(v))}</td>' for v in [s['experiment']+' / '+str(s['trial']),s['status'],str(s['tasks_complete'])+'/13',f"{s['recorded_io']:,}",f"{s['cache_read_reported']:,} ({s['cache_read_reports']}/{s['usage_reports']} reports)",s['calls_started'],f"{s['active_seconds']/60:.1f}"])+'</tr>' for s in summary)
+    rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(v))}</td>' for v in [s['experiment']+' / '+str(s['trial']),s['status']+(' (resumed)' if s.get('resume_count') else ''),str(s['tasks_complete'])+'/13',f"{s['recorded_io']:,}",f"{s['cache_read_reported']:,} ({s['cache_read_reports']}/{s['usage_reports']} reports)",s['calls_started'],f"{s['active_seconds']/60:.1f}"])+'</tr>' for s in summary)
     gate_path=BASE/'cohorts/contract-01/launch.json'
     gate=json.loads(gate_path.read_text()) if gate_path.exists() else None
     queue_note=('<p>Next cohort: contract-01 · '+html.escape(gate['status'])+' · <a href="cohorts/contract-01/launch.json">launch gate</a></p>') if gate and gate['status']!='launched' else ''
