@@ -2,7 +2,7 @@
 """Run three fresh trials per configuration, four isolated factory daemons.
 No automatic repair/resume: failures are retained as experimental observations.
 """
-import argparse, concurrent.futures, hashlib, json, os, shutil, subprocess, time
+import argparse, concurrent.futures, fcntl, hashlib, json, os, shutil, subprocess, time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -83,6 +83,14 @@ def configuration(code, worktree):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');a=p.parse_args()
     RESULTS.mkdir(parents=True,exist_ok=True)
+    lock=(RESULTS/'supervisor.lock').open('w')
+    fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
+    if list(RESULTS.glob('tetris-007-*/result.json')):raise RuntimeError('Existing trials detected; refusing to overwrite observations.')
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         jobs=[pool.submit(configuration,c,Path(a.worktrees)/c) for c in ['E00','E01','E02','E03']]
-        for j in concurrent.futures.as_completed(jobs): print(j.result(), 'complete',flush=True)
+        pending=set(jobs)
+        while pending:
+            done,pending=concurrent.futures.wait(pending,timeout=30,return_when=concurrent.futures.FIRST_COMPLETED)
+            for j in done: print(j.result(), 'complete',flush=True)
+            subprocess.run(['python3',str(ROOT/'tools/experiments/report.py')],check=True)
+    subprocess.run(['python3',str(ROOT/'tools/experiments/report.py')],check=True)
