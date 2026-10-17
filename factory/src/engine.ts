@@ -103,7 +103,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
       if (attempts >= options.attempts) throw new Error(`A task hit its limit of ${options.attempts} attempts.`);
       attempts += 1;
     }
-    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node))}`, record, signal, env, active);
+    const result = await callMachine(machine, target, `${prompt}\n${resultPrompt(line.fields(node), machine.role)}`, record, signal, env, active);
     signal.throwIfAborted();
     const fan = line.fanOut(node);
     const next = fan ? fan.join : line.next(node, result);
@@ -140,7 +140,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
         const branchPrompt = promptFor(branch, work);
         try {
           let report = await callMachine(branch, target,
-            `${branchPrompt}\n${resultPrompt(line.fields(name))}`, record, AbortSignal.any([signal, controller.signal]), env, active);
+            `${branchPrompt}\n${resultPrompt(line.fields(name), branch.role)}`, record, AbortSignal.any([signal, controller.signal]), env, active);
           if (branch.role === "plan_reviewer") report = { ...report, review: review!.reportContext() };
           return [name, report] as const;
         } catch (error) {

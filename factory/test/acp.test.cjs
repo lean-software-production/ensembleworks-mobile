@@ -67,3 +67,16 @@ test('malformed JSON stops the call and saves bounded output and stop diagnostic
   assert.equal(events.at(-1).status, 'failed');
   assert.ok(events.some(event => event.type === 'usage'));
 });
+
+
+test('a trailing metadata object is never silently replaced with earlier valid findings', async t => {
+  const { PlanReview } = require('../src/plan-review');
+  const output = '{"summary":"Reviewed","findings":[{"id":"S1","issue":"Boundary unclear"}]}\n{"result":"plan_review_complete","blocking":0}';
+  const { result, error } = await invoke(t, { inputTokens: 3, outputTokens: 4 }, output);
+  assert.equal(error, undefined);
+  assert.deepEqual(result, { result: 'plan_review_complete', blocking: 0 });
+  const folder = mkdtempSync(join(tmpdir(), 'factory-result-contract-'));
+  t.after(() => rmSync(folder, { recursive: true, force: true }));
+  const review = new PlanReview(join(folder, 'plan.md'), 3);
+  assert.throws(() => review.recordReports({ plan_reviewer_opus: result }), /Could not read the plan_reviewer_opus's plan findings/);
+});
