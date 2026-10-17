@@ -81,10 +81,23 @@ export function stepDown(state) {
   return { moved: true, blocked: false };
 }
 
-// Lock and spawn are one transaction. Until game-over handling is introduced,
+// Compact simultaneously: survivor order is stable, with fresh empty rows above.
+export function clearFullRows(board) {
+  const survivors = board.filter(row => row.some(cell => cell === null));
+  const clearedRows = BOARD_HEIGHT - survivors.length;
+  return {
+    board: [
+      ...Array.from({ length: clearedRows }, () => Array(BOARD_WIDTH).fill(null)),
+      ...survivors.map(row => [...row]),
+    ],
+    clearedRows,
+  };
+}
+
+// Lock, clear, and spawn are one transaction. Until game-over handling is introduced,
 // a blocked spawn is explicit in the result and leaves active null.
 export function lockPiece(state, typeSource = createRandomTypeSource()) {
-  const unchanged = { locked: false, spawned: false, spawnBlocked: false };
+  const unchanged = { locked: false, clearedRows: 0, spawned: false, spawnBlocked: false };
   if (state.status !== 'running' || !state.active ||
       !canPlace(state.board, state.active)) return unchanged;
   const piece = state.active;
@@ -93,15 +106,17 @@ export function lockPiece(state, typeSource = createRandomTypeSource()) {
   // Obtain the candidate before mutation so an invalid source cannot half-lock.
   const next = createSpawnPiece(typeSource());
   for (const [x, y] of activeCells(piece)) state.board[y][x] = piece.type;
+  const { board, clearedRows } = clearFullRows(state.board);
+  state.board = board;
   const spawned = canPlace(state.board, next);
   state.active = spawned ? next : null;
-  return { locked: true, spawned, spawnBlocked: !spawned };
+  return { locked: true, clearedRows, spawned, spawnBlocked: !spawned };
 }
 
 // Exactly one downward attempt: never step the piece created by a lock.
 export function descend(state, typeSource = createRandomTypeSource()) {
   const { moved } = stepDown(state);
-  if (moved) return { moved: true, locked: false, spawned: false, spawnBlocked: false };
+  if (moved) return { moved: true, locked: false, clearedRows: 0, spawned: false, spawnBlocked: false };
   return { moved: false, ...lockPiece(state, typeSource) };
 }
 

@@ -19,7 +19,7 @@ for (const type of PIECE_TYPES) {
     for (const [x, y] of activeCells(state.active)) expected[y][x] = type;
     let calls = 0;
     const result = descend(state, () => { calls++; return 'T'; });
-    assert.deepEqual(result, { moved: false, locked: true, spawned: true, spawnBlocked: false });
+    assert.deepEqual(result, { moved: false, locked: true, clearedRows: 0, spawned: true, spawnBlocked: false });
     assert.equal(calls, 1);
     assert.deepEqual(state.board, expected);
     assert.deepEqual(state.active, createSpawnPiece('T'));
@@ -36,7 +36,7 @@ test('successful downward action moves once without locking or consuming a type'
   const board = structuredClone(state.board);
   const y = state.active.y;
   assert.deepEqual(descend(state, () => { throw Error('unexpected source'); }),
-    { moved: true, locked: false, spawned: false, spawnBlocked: false });
+    { moved: true, locked: false, clearedRows: 0, spawned: false, spawnBlocked: false });
   assert.equal(state.active.y, y + 1);
   assert.deepEqual(state.board, board);
 });
@@ -58,7 +58,7 @@ test('blocked spawn consumes once, preserves board and score, and never retries'
   let calls = 0;
   const source = () => { calls++; return 'O'; };
   assert.deepEqual(descend(state, source),
-    { moved: false, locked: true, spawned: false, spawnBlocked: true });
+    { moved: false, locked: true, clearedRows: 0, spawned: false, spawnBlocked: true });
   assert.equal(state.active, null);
   assert.equal(state.board[0][4], 'J');
   assert.equal(state.score, 123);

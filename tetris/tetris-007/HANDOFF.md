@@ -1,15 +1,13 @@
 # Handoff
 
-`src/model.js` owns canonical shapes, centered spawning, shared `canPlace`, movement, no-kicks clockwise rotation, and `stepDown` (moves/blocks without locking). Canonical I spawn rotation rejects above-board cells; other non-O spawn rotations succeed; O is unchanged.
+`src/model.js` owns shapes, spawning, placement, movement, rotation, downward steps, and locking. Task 7 adds pure `clearFullRows(board)`, returning `{ board, clearedRows }`: full rows disappear simultaneously, survivors retain order, and independent empty rows pad the top. Input rows are not mutated or aliased.
 
-Task 6 adds `lockPiece(state, typeSource)` and `descend(state, typeSource)`. Pass the same injected source across initial creation and later actions. Lock requires a running, valid, grounded active piece. It copies four type-valued cells, preserves unrelated board cells and score, consumes one next type, and attempts spawn once. Results expose `locked`, `spawned`, and `spawnBlocked`; descend also exposes `moved`. Successful descent never locks or advances the new piece. Rejected locks consume nothing. Invalid source types throw before mutation.
+`lockPiece` validates a grounded running piece and obtains a valid next type before mutation, settles four cells, compacts, then checks next spawn. Lock/descend results now include `clearedRows` (zero for non-lock actions). Invalid lock requests do not clear rows. Score remains unchanged pending task 8. A blocked spawn still leaves active null with running status and explicit `spawnBlocked`; task 9 owns game over. Pass the same injected type source across actions.
 
-Blocked spawn currently leaves `active: null`, status running, and `spawnBlocked: true`; later actions do not retry. Task 9 owns the game-over transition. Tasks 7/8 must insert clearing/scoring between settling and next-spawn placement; neither is implemented here.
+`test/clearing.test.js` covers zero through four simultaneous clears, nonadjacent rows, ordering, padding, dimensions, input independence, lock-completes-row, no-op locks, and clearing top obstruction before spawn. `test/locking.test.js` retains locking and source atomicity checks with the extended event shape.
 
-Tests: `test/locking.test.js` covers all shapes, exact board writes, grounded obstructions, source consumption, no same-action next-piece movement, blocked spawn, absent/frozen/invalid/ungrounded locks, and invalid source atomicity. Existing downward/rotation/movement/model/render tests remain.
+Verified after final code/test edits:
+- `node --test test/clearing.test.js test/locking.test.js`: 26 passed.
+- `npm test`: 83 passed, including bounded renderer checks.
 
-Verification recipes after final code/test change:
-- `node --test test/locking.test.js`: 17 passed.
-- `npm test`: 74 passed, including bounded renderer checks.
-
-`src/main.js` still renders once and exits. Scheduling/input/terminal lifecycle belong to later tasks; no PTY gameplay check is claimed. Bounded capture: `node src/main.js` or `npm start --silent` (ordinary npm banners are not frame content).
+`src/main.js` still renders once and exits; scheduling, input, and terminal lifecycle remain later tasks. No PTY gameplay check is claimed. Bounded capture uses `node src/main.js` or `npm start --silent` to avoid npm banners.
