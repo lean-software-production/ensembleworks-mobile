@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "result": {
+    "complete": true
+  },
+  "completed_tasks": 13,
+  "record": "/workspaces/ensembleworks-mobile/factory/runs/tetris-007-e04-planner-handoff-smoke/record.jsonl",
+  "model": "openai-codex/gpt-6.1-sol:medium",
+  "case": "Historical validation-pending doer report with authoritative factory commit receipt"
+}

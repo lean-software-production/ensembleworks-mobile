@@ -1,0 +1,7 @@
+{
+  "cohort": "whole-plan-02",
+  "status": "awaiting_validation",
+  "trials_per_configuration": 1,
+  "first_trial": 2,
+  "worktrees": "/workspaces/tetris-007-experiments/whole-plan-receipt"
+}
