@@ -15,11 +15,12 @@ export function renderFrame(state) {
       : cell == null ? ' .' : colour('35', '[]')).join('') + colour('36', '|'));
   const score = String(state.score);
   const scoreLabel = score.length <= 16 ? score : `${score.slice(0, 12)}...`;
+  const gameOver = state.status === 'game-over';
   return [
     border,
     ...rows,
     border,
-    colour('33', `Score: ${scoreLabel}  Ready`),
-    colour('32', 'Arrows: move/rotate  P:pause Q:quit'),
+    colour('33', `Score: ${scoreLabel}  ${gameOver ? 'Game over' : 'Running'}`),
+    colour('32', gameOver ? 'R:restart Q:quit' : 'Arrows: move/rotate  P:pause Q:quit'),
   ].join('\n');
 }

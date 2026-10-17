@@ -97,8 +97,7 @@ export function clearFullRows(board) {
   };
 }
 
-// Lock, clear, and spawn are one transaction. Until game-over handling is introduced,
-// a blocked spawn is explicit in the result and leaves active null.
+// Lock, clear, score, and spawn/game over form one transaction.
 export function lockPiece(state, typeSource = createRandomTypeSource()) {
   const unchanged = { locked: false, clearedRows: 0, spawned: false, spawnBlocked: false };
   if (state.status !== 'running' || !state.active ||
@@ -114,6 +113,7 @@ export function lockPiece(state, typeSource = createRandomTypeSource()) {
   state.score += LINE_POINTS[clearedRows];
   const spawned = canPlace(state.board, next);
   state.active = spawned ? next : null;
+  state.status = spawned ? 'running' : 'game-over';
   return { locked: true, clearedRows, spawned, spawnBlocked: !spawned };
 }
 
@@ -139,6 +139,15 @@ export function rotateClockwise(state) {
   if (!canPlace(state.board, candidate)) return { rotated: false };
   state.active = candidate;
   return { rotated: true };
+}
+
+// Restart only a lost game, consuming one fresh type from the caller's source.
+// Build first so source failures leave the previous game intact.
+export function restart(state, typeSource = createRandomTypeSource()) {
+  if (state.status !== 'game-over') return { restarted: false };
+  const fresh = createInitialState(typeSource);
+  Object.assign(state, fresh);
+  return { restarted: true };
 }
 
 export function createInitialState(typeSource = createRandomTypeSource()) {

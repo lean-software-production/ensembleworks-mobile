@@ -62,7 +62,7 @@ test('blocked spawn consumes once, preserves board and score, and never retries'
   assert.equal(state.active, null);
   assert.equal(state.board[0][4], 'J');
   assert.equal(state.score, 123);
-  assert.equal(state.status, 'running');
+  assert.equal(state.status, 'game-over');
   const snapshot = structuredClone(state);
   assert.equal(descend(state, source).locked, false);
   assert.deepEqual(state, snapshot);
