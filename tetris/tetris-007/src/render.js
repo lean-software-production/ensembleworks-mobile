@@ -16,11 +16,12 @@ export function renderFrame(state) {
   const score = String(state.score);
   const scoreLabel = score.length <= 16 ? score : `${score.slice(0, 12)}...`;
   const gameOver = state.status === 'game-over';
+  const paused = state.status === 'paused';
   return [
     border,
     ...rows,
     border,
-    colour('33', `Score: ${scoreLabel}  ${gameOver ? 'Game over' : 'Running'}`),
-    colour('32', gameOver ? 'R:restart Q:quit' : 'Arrows: move/rotate  P:pause Q:quit'),
+    colour('33', `Score: ${scoreLabel}  ${gameOver ? 'Game over' : paused ? 'Paused' : 'Running'}`),
+    colour('32', gameOver ? 'R:restart Q:quit' : paused ? 'P:resume Q:quit' : 'Arrows: move/rotate  P:pause Q:quit'),
   ].join('\n');
 }

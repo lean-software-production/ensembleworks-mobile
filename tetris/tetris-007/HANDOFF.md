@@ -1,15 +1,13 @@
 # Handoff
 
-`src/model.js` owns gameplay through game over/restart (task 9). `lockPiece` locks, compacts rows, awards 0/100/300/500/800 points, then attempts one spawn. An obstructed spawn sets `status: 'game-over'` and `active: null`, preserving the settled board and earned score. Existing gameplay actions reject non-running states without consuming types.
+`src/model.js` owns collision-safe gameplay, lock → simultaneous clear → score → spawn/game over, restart, and now `togglePause`. All gameplay actions reject paused/game-over states; restart only accepts game over. Keep the same injected type source across restarts.
 
-`restart(state, typeSource)` only accepts game over, builds a fresh initial state before mutation, resets board/score/status/active, and consumes one fresh type. Callers must keep using the same injected source; restart does not rewind it. Running/paused restart is a no-op.
+`src/session.js` owns serialized intent dispatch and injectable `clock.setTimeout/clearTimeout`, with fixed 1000 ms gravity. Creation schedules one full interval; every tick performs exactly one `descend`. Lock, resume, and restart re-arm a full interval; ordinary movement/rotation/soft steps preserve deadlines. Generation tokens invalidate stale callbacks. Game over, pause, suspension and idempotent stop cancel timers. `setSuspended` preserves model status for future terminal sizing support. `onChange(state, result)` receives one action result; terminal adapters must not repeat its lock/scoring event. Session creation does not emit an initial frame.
 
-`src/render.js` shows Running or Game over in the score row, and replaces gameplay controls with R:restart Q:quit after loss. Score abbreviation keeps frames exactly 24 rows and at most 40 visible columns, without a trailing newline.
+`src/render.js` renders running, paused (P:resume), and game-over controls in the same 24 rows, at most 40 visible columns, without trailing newline.
 
-`test/game-over.test.js` covers blocked/unblocked spawns, clear-before-spawn ordering, earned-score preservation, frozen actions, restart and contextual frame bounds. `test/locking.test.js` now expects game-over status on blocked spawn.
+Verification after final code/test changes:
+- `node --test test/session.test.js`: 8 passed (fake-clock boundaries, stale callbacks, pause, restart, game over, suspension, stop, frame bounds).
+- `npm test`: 105 passed, including existing model/renderer and bounded entry-point capture tests.
 
-Verified after final code/test changes:
-- `node --test test/game-over.test.js test/locking.test.js test/render.test.js`: 26 passed.
-- `npm test`: 97 passed (includes actual bounded entry-point capture).
-
-`src/main.js` still renders once and exits; scheduling, keyboard dispatch, and terminal lifecycle remain later tasks. No interactive gameplay or PTY cleanup check is claimed. Bounded capture: `node src/main.js` or `npm start --silent` (npm banners otherwise add rows).
+`src/main.js` still renders once and exits. Keyboard decoding/dispatch and terminal lifecycle/composition remain tasks 11–13; actual playable PTY launch/restoration has not been checked. Bounded captures must use `node src/main.js` or `npm start --silent` to avoid npm banner rows. Test fixtures account for existing negative-zero spawn origins without changing geometry.

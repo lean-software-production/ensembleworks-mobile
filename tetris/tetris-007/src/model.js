@@ -150,6 +150,13 @@ export function restart(state, typeSource = createRandomTypeSource()) {
   return { restarted: true };
 }
 
+// Frozen gameplay actions already reject any status other than running.
+export function togglePause(state) {
+  if (state.status === 'game-over') return { pauseChanged: false };
+  state.status = state.status === 'paused' ? 'running' : 'paused';
+  return { pauseChanged: true };
+}
+
 export function createInitialState(typeSource = createRandomTypeSource()) {
   const state = createEmptyState();
   const piece = createSpawnPiece(typeSource());
