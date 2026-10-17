@@ -71,6 +71,23 @@ function moveHorizontal(state, dx) {
 export const moveLeft = state => moveHorizontal(state, -1);
 export const moveRight = state => moveHorizontal(state, 1);
 
+// Clockwise in screen coordinates, about the fixed frame center; no kicks.
+// O is an identity operation, including its cell ordering and piece identity.
+export function rotateClockwise(state) {
+  if (state.status !== 'running' || !state.active || state.active.type === 'O') {
+    return { rotated: false };
+  }
+  const piece = state.active;
+  const size = TETROMINOES[piece.type].size;
+  const candidate = {
+    ...piece,
+    cells: piece.cells.map(([x, y]) => [size - 1 - y, x]),
+  };
+  if (!canPlace(state.board, candidate)) return { rotated: false };
+  state.active = candidate;
+  return { rotated: true };
+}
+
 export function createInitialState(typeSource = createRandomTypeSource()) {
   const state = createEmptyState();
   const piece = createSpawnPiece(typeSource());
