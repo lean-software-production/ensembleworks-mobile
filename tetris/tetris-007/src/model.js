@@ -71,6 +71,16 @@ function moveHorizontal(state, dx) {
 export const moveLeft = state => moveHorizontal(state, -1);
 export const moveRight = state => moveHorizontal(state, 1);
 
+// One downward attempt only: rejection never locks, spawns, or changes state.
+// `blocked` also covers unavailable actions (no active piece or frozen status).
+export function stepDown(state) {
+  if (state.status !== 'running' || !state.active) return { moved: false, blocked: true };
+  const candidate = { ...state.active, y: state.active.y + 1 };
+  if (!canPlace(state.board, candidate)) return { moved: false, blocked: true };
+  state.active = candidate;
+  return { moved: true, blocked: false };
+}
+
 // Clockwise in screen coordinates, about the fixed frame center; no kicks.
 // O is an identity operation, including its cell ordering and piece identity.
 export function rotateClockwise(state) {
