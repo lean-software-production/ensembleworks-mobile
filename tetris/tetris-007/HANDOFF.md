@@ -1,13 +1,15 @@
 # Handoff
 
-`src/model.js` owns canonical shapes, centered spawning, separate active/settled cells, and `canPlace(board, piece)`, shared by movement, rotation and downward steps. Rotation is clockwise in fixed square frames, no kicks; O is unchanged. Canonical I spawn rotation rejects above-board cells; other non-O spawn rotations succeed. Geometry checks live in `test/rotation.test.js`.
+`src/model.js` owns canonical shapes, centered spawning, shared `canPlace`, movement, no-kicks clockwise rotation, and `stepDown` (moves/blocks without locking). Canonical I spawn rotation rejects above-board cells; other non-O spawn rotations succeed; O is unchanged.
 
-Task 5 adds `stepDown(state)`: a single one-row attempt returning `{ moved: true, blocked: false }` or `{ moved: false, blocked: true }`. Missing active pieces and non-running statuses also return blocked. Success replaces only the active piece with y increased by one. Rejection preserves state and active identity. This primitive never locks, merges, spawns, scores or consumes randomness. Later downward gameplay actions must distinguish frozen/absent states before deciding to lock.
+Task 6 adds `lockPiece(state, typeSource)` and `descend(state, typeSource)`. Pass the same injected source across initial creation and later actions. Lock requires a running, valid, grounded active piece. It copies four type-valued cells, preserves unrelated board cells and score, consumes one next type, and attempts spawn once. Results expose `locked`, `spawned`, and `spawnBlocked`; descend also exposes `moved`. Successful descent never locks or advances the new piece. Rejected locks consume nothing. Invalid source types throw before mutation.
 
-`test/downward.test.js` covers all seven pieces stepping to floor and settled-row obstructions, single-cell rejection, repeated blocked attempts, board identity/content, unchanged score/status, source calls, and absent/frozen states.
+Blocked spawn currently leaves `active: null`, status running, and `spawnBlocked: true`; later actions do not retry. Task 9 owns the game-over transition. Tasks 7/8 must insert clearing/scoring between settling and next-spawn placement; neither is implemented here.
 
-Verification after final code/test change:
-- `node --test test/downward.test.js`: 16 passed.
-- `npm test`: 57 passed, including existing model, horizontal movement, rotation and bounded renderer checks.
+Tests: `test/locking.test.js` covers all shapes, exact board writes, grounded obstructions, source consumption, no same-action next-piece movement, blocked spawn, absent/frozen/invalid/ungrounded locks, and invalid source atomicity. Existing downward/rotation/movement/model/render tests remain.
 
-`src/main.js` still renders an initial frame and exits. Locking, gameplay scheduling, input and terminal lifecycle remain later tasks. No actual npm-start PTY movement/quit check is claimed. For bounded captures use `node src/main.js` or `npm start --silent`; ordinary npm banners are not frame content.
+Verification recipes after final code/test change:
+- `node --test test/locking.test.js`: 17 passed.
+- `npm test`: 74 passed, including bounded renderer checks.
+
+`src/main.js` still renders once and exits. Scheduling/input/terminal lifecycle belong to later tasks; no PTY gameplay check is claimed. Bounded capture: `node src/main.js` or `npm start --silent` (ordinary npm banners are not frame content).

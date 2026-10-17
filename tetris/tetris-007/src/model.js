@@ -81,6 +81,30 @@ export function stepDown(state) {
   return { moved: true, blocked: false };
 }
 
+// Lock and spawn are one transaction. Until game-over handling is introduced,
+// a blocked spawn is explicit in the result and leaves active null.
+export function lockPiece(state, typeSource = createRandomTypeSource()) {
+  const unchanged = { locked: false, spawned: false, spawnBlocked: false };
+  if (state.status !== 'running' || !state.active ||
+      !canPlace(state.board, state.active)) return unchanged;
+  const piece = state.active;
+  if (canPlace(state.board, { ...piece, y: piece.y + 1 })) return unchanged;
+
+  // Obtain the candidate before mutation so an invalid source cannot half-lock.
+  const next = createSpawnPiece(typeSource());
+  for (const [x, y] of activeCells(piece)) state.board[y][x] = piece.type;
+  const spawned = canPlace(state.board, next);
+  state.active = spawned ? next : null;
+  return { locked: true, spawned, spawnBlocked: !spawned };
+}
+
+// Exactly one downward attempt: never step the piece created by a lock.
+export function descend(state, typeSource = createRandomTypeSource()) {
+  const { moved } = stepDown(state);
+  if (moved) return { moved: true, locked: false, spawned: false, spawnBlocked: false };
+  return { moved: false, ...lockPiece(state, typeSource) };
+}
+
 // Clockwise in screen coordinates, about the fixed frame center; no kicks.
 // O is an identity operation, including its cell ordering and piece identity.
 export function rotateClockwise(state) {
