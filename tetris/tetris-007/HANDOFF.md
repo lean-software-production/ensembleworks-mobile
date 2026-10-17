@@ -1,13 +1,27 @@
 # Handoff
 
-Task 12: `src/terminal.js` owns terminal capabilities, alternate screen, raw mode, cursor, redraw, resize, signals and idempotent cleanup. `src/main.js` calls `startTerminal`; `src/session.js` retains gameplay/timer ownership. Dependencies are injectable. Redraw erases owned rows and uses CRLF without a trailing newline. Resize clears the alternate screen before frame/warning; undersize suspends gameplay, recovery preserves state. Non-TTY emits one bounded frame without raw mode or timers.
+Task 13 adds `README.md` and `test/integration.test.js`. `src/main.js` now exports
+`startGame` (the production `startTerminal` composition) and invokes it only when
+launched directly. Tests import this same entry point without launching a second
+session. Fixtures remain dependency-injected only; no CLI/environment cheats.
 
-Resolved review subtask: asynchronous Writable destruction previously outlasted the deferred error-handler removal. `finish()` now waits while a destroyed stream is not closed; a close listener retries finalization. Pending writes still drain first. Finalization removes error/close listeners and reports exit once. `test/terminal.test.js` adds controlled destruction delayed at least 30 ms, verifying error-handler retention, deferred unsuccessful exit, one diagnostic and eventual listener removal. Existing pending-write/restoration-error regressions remain.
+Integration starts with a legal I above a bottom-row gap and a top obstruction.
+Two ticks produce fall -> lock -> one clear/100 points -> blocked O/game over;
+then input tests frozen gameplay, restart, pause/resume and quit. Frames in all
+states are bounded to 24 rows/40 visible columns. Actual non-TTY subprocess exits
+successfully. Model/input/session/terminal ownership remains unchanged.
 
-Fresh recovery rerun confirmed the following checks; `VERIFICATION.md` records the evidence. No code/test changes followed verification:
-- `node --test test/terminal.test.js`: 14 passed.
-- `npm test`: 124 passed.
-- `node src/main.js > /tmp/tetris-frame`: success; ANSI-stripped output exactly 24 rows, no trailing newline.
-- Python `pty.openpty()`, slave TIOCSWINSZ 24x40, `subprocess.Popen(['npm','start'], stdin=slave, stdout=slave, stderr=slave)`: wait for `Q:quit`, check ICANON disabled, send left arrow and observe redraw, send q; exit 0, original termios restored, alternate-screen enter/reset/cursor-show/leave verified.
+Verification recipes:
+- `node --test test/integration.test.js`: 2 passed.
+- `npm test`: 126 passed after final code/test change.
+- `node src/main.js > /tmp/tetris-007-frame`: strip ANSI; assert 24 rows,
+  <=40 columns and no trailing newline. Do not use npm banners for frame counts.
+- Actual `npm start` PTY: Python `pty.openpty`, set slave TIOCSWINSZ to 24×40,
+  save termios, launch subprocess with slave stdin/stdout/stderr; wait for
+  `Q:quit`, assert ICANON off, send left arrow and compare changed redraw, send q,
+  await exit 0, compare exact saved termios and assert reset/show/alternate-leave.
 
-Use actual entry point or silent npm for bounded captures: npm banners add rows. Task 13 documentation and deterministic composition gameplay integration remain deferred. No fixture CLI/environment controls exist.
+`VERIFICATION.md` records performed checks. Terminal asynchronous output cleanup
+waits for pending writes and destruction before removing error listeners; preserve
+those regressions in `test/terminal.test.js`. Real-terminal visual portability is
+not exhaustively tested. No unresolved requirement failures.
