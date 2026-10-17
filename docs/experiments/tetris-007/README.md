@@ -35,3 +35,17 @@ E02/r1 then failed at the first plan review: Opus emitted a valid findings objec
 All 12 trial slots have observations: two zero-call startup failures, two E02 plan-review output/schema failures, seven factory failures ending with model stop reason `error`, and one explicit operator stop (E02/r3). No game completed and no task was committed. Supporting Codex agents explicitly reported an account usage limit at the same time as the model errors. The bridge retained factory stop reasons but not the providers' detailed error messages, so the factory errors' exact cause remains unverified.
 
 The supervisor was terminated and the remaining active factory run stopped to avoid further model work. All original inputs, records, plans/reviews and partial products are archived under `results/<trial>/`; credentials are excluded. Experiment branches/worktrees remain intact. The ledger is an incident dataset, not an efficiency comparison. Resuming needs a newly identified cohort after service capacity is available, with daemon preflight and provider-error circuit breaking before new measurement. Do not overwrite or resume these observations as if they were fresh trials.
+
+## Restart-01: one fresh trial per configuration
+
+After the user reported the usage reset, four fresh `r4` targets were prepared on the existing isolated experiment branches/worktrees. Earlier target/run state and the halted pilot archives remain intact. Exactly one trial per configuration is scheduled; no automatic retries or extra trials. Model/thinking profiles and variant differences are unchanged. Shared pre-author plan, seed and acceptance input hashes are unchanged.
+
+All four daemons are started and confirmed idle before measurement, avoiding simultaneous cold-start timeouts. The CLI uses TypeScript transpilation without type checking; daemon execution already used that mode in the first pilot. Two configurations ending with provider error stop reasons trigger a supervisor circuit breaker, stopping remaining active runs and preserving observations. This shared operational safeguard does not repair model output or change machine instructions.
+
+Cohort manifest and observations live in `cohorts/restart-01/`. The main HTML ledger shows this cohort, while the previous pilot remains under `results/` and tag `tetris-007-experiments-halted`. One observation per configuration supports an exploratory comparison, not a reliable estimate of variance or median savings.
+
+```sh
+python3 tools/experiments/supervise.py --cohort restart-01 --first-trial 4 --trials 1
+```
+
+Do not invoke that command a second time over existing observations. The detached supervisor continues after the chat turn and updates the ledger every 30 seconds.

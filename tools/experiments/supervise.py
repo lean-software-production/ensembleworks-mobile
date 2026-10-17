@@ -8,6 +8,12 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 RESULTS=ROOT/'docs/experiments/tetris-007/results'
+FIRST_TRIAL=1
+TRIALS=3
+COHORT=''
+HALT=__import__('threading').Event()
+MODEL_ERRORS=set()
+ERROR_LOCK=__import__('threading').Lock()
 
 def now(): return datetime.now(timezone.utc).isoformat()
 def atomic(path, value):
@@ -32,15 +38,15 @@ def summarize(es):
 
 def configuration(code, worktree):
     config=RESULTS/f'{code}.json'; state={'experiment':code,'worktree':str(worktree),'status':'running','started':now(),'trials':[]};atomic(config,state)
-    for trial in range(1,4):
+    for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
         name=f'tetris-007-{code.lower()}-r{trial}'; target=worktree/'tetris'/name; run=worktree/'factory/runs'/name
-        record={'id':name,'experiment':code,'trial':trial,'started':now(),'status':'starting','worktree':str(worktree),'target':str(target),'branch':git(worktree,'branch','--show-current'),'pre_run_commit':git(worktree,'rev-parse','HEAD'),'pre_run_tag':f'{name}-before-run'}
+        record={'id':name,'experiment':code,'trial':trial,'started':now(),'status':'starting','worktree':str(worktree),'target':str(target),'branch':git(worktree,'branch','--show-current'),'pre_run_commit':git(worktree,'rev-parse','HEAD'),'pre_run_tag':f'{name}-before-run','cohort':COHORT,'planned_trials_per_configuration':TRIALS}
         git(worktree,'tag','-a',record['pre_run_tag'],'-m',f'Frozen experiment {name} immediately before execution')
         out=RESULTS/name;out.mkdir(parents=True,exist_ok=True)
         shutil.copytree(worktree/'docs/experiments/tetris-007/inputs',out/'inputs',dirs_exist_ok=True)
         record['input_hashes']={str(p.relative_to(out/'inputs')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'inputs').rglob('*') if p.is_file()}
         atomic(out/'result.json',record); state['trials'].append(record);atomic(config,state)
-        env=dict(os.environ,PATH=str(worktree/'tools/pi-rpc-acp')+os.pathsep+os.environ['PATH'])
+        env=dict(os.environ,TS_NODE_TRANSPILE_ONLY='true',PATH=str(worktree/'tools/pi-rpc-acp')+os.pathsep+os.environ['PATH'])
         try:
             command=[str(worktree/'bin/factory'),'--run',name,'--target',str(target),'--line','efficient','--seed',str(worktree/'docs/experiments/tetris-007/inputs/seed.md')]
             start=subprocess.run(command,cwd=worktree,env=env,text=True,capture_output=True,timeout=30)
@@ -52,7 +58,18 @@ def configuration(code, worktree):
                 es=events(run); latest=next((e for e in reversed(es) if e['type']=='run'),{})
                 record['progress']={'last_event':es[-1].get('time') if es else None,'machine':next((e.get('machine') for e in reversed(es) if e['type']=='machine'),None),'events':len(es)}
                 atomic(out/'result.json',record);atomic(config,state)
-                if latest.get('status') in ['finished','failed','stopped']:break
+                if latest.get('status') in ['finished','failed','stopped']:
+                    if any(e['type']=='diagnostic' and 'error' in e.get('modelStopReasons',[]) for e in es):
+                        with ERROR_LOCK:
+                            MODEL_ERRORS.add(code)
+                            if len(MODEL_ERRORS)>=2 and not HALT.is_set():
+                                HALT.set()
+                                atomic(RESULTS/'incident.json',{'status':'halted','reason':'Provider error endings in two configurations triggered the cohort circuit breaker.','experiments':sorted(MODEL_ERRORS)})
+                    break
+                if HALT.is_set():
+                    subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
+                    record['intervention']='Stopped after provider errors in two configurations; cohort circuit breaker.'
+                    continue
                 if time.monotonic()>deadline:
                     subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
                     raise RuntimeError('Three-hour trial ceiling reached; run stopped and retained.')
@@ -81,7 +98,12 @@ def configuration(code, worktree):
     return code
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');a=p.parse_args()
+    if a.first_trial<1 or a.trials<1:p.error('Trial numbers/count must be positive.')
+    if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
+    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort
+    if COHORT:RESULTS=ROOT/'docs/experiments/tetris-007/cohorts'/COHORT/'results'
+    report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT]
     RESULTS.mkdir(parents=True,exist_ok=True)
     lock=(RESULTS/'supervisor.lock').open('w')
     fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -92,5 +114,5 @@ if __name__=='__main__':
         while pending:
             done,pending=concurrent.futures.wait(pending,timeout=30,return_when=concurrent.futures.FIRST_COMPLETED)
             for j in done: print(j.result(), 'complete',flush=True)
-            subprocess.run(['python3',str(ROOT/'tools/experiments/report.py')],check=True)
-    subprocess.run(['python3',str(ROOT/'tools/experiments/report.py')],check=True)
+            subprocess.run(report_command,check=True)
+    subprocess.run(report_command,check=True)
