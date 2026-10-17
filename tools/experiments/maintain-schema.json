@@ -1,0 +1,20 @@
+{
+  "type":"object",
+  "additionalProperties":false,
+  "required":["summary","actions","blockers","next_action","hypotheses","stop_timer","stop_reason"],
+  "properties":{
+    "summary":{"type":"string"},
+    "actions":{"type":"array","items":{"type":"string"}},
+    "blockers":{"type":"array","items":{"type":"string"}},
+    "next_action":{"type":"string"},
+    "hypotheses":{"type":"object","additionalProperties":false,"required":["E00","E01","E02","E03","E04"],"properties":{
+      "E00":{"type":"string","enum":["pending","running","blocked","tested"]},
+      "E01":{"type":"string","enum":["pending","running","blocked","tested"]},
+      "E02":{"type":"string","enum":["pending","running","blocked","tested"]},
+      "E03":{"type":"string","enum":["pending","running","blocked","tested"]},
+      "E04":{"type":"string","enum":["pending","running","blocked","tested"]}
+    }},
+    "stop_timer":{"type":"boolean"},
+    "stop_reason":{"type":"string","enum":["continue","all_tested","needs_user_input"]}
+  }
+}

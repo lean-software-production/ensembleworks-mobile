@@ -1,0 +1,6 @@
+timer.pid
+timer.lock
+timer.log
+checkins/
+checkins.jsonl
+STOP
