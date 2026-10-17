@@ -1,0 +1,103 @@
+{
+  "passed": false,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@1.0.0 test\n> node --test\n\n\u2714 11 arrows decode at every split and unsupported fragmented escapes consume no keys (1.676284ms)\n\u2714 2/8/9 source consumption pause, zero points, initial spawn predicate, reset fields (0.976534ms)\n\u2714 12 settled types remain readable plain and retain distinct ANSI colours (0.401941ms)\n\u2714 12 partial setup after entering alternate screen restores prior raw state and listeners (0.578402ms)\n\u2714 1/2 definitions, centered initial generation, rendering and seven colours (3.976096ms)\n\u2714 3 horizontal collision is atomic; own cells do not obstruct (0.361415ms)\n\u2714 4 clockwise cycles, wall floor and settled rejection (1.760319ms)\n\u2714 5 step moves exactly once, stops without board change (0.277713ms)\n\u2714 6 lock copies four cells, blocked down consumes one next, successful down none (0.55439ms)\n\u2714 7 simultaneous 0..4 clears, nonadjacent stable compaction (0.345028ms)\n\u2714 7/8 lock clear score table accumulation and no action points (1.022523ms)\n\u2714 9 clear precedes spawn, game over immutable actions and restart source count (0.494372ms)\n\u2714 8/9/10 long scores bounded in all display states (0.406768ms)\n\u2714 10 fake time 499/500 pause fresh intervals, restart no duplicates (1.580964ms)\n\u2714 11 fragmented and multiple keys unknown escapes and interruption (0.759762ms)\n\u2714 11 unsupported escape payloads never dispatch gameplay; pending escapes allow Ctrl-C (22.90061ms)\n\u2714 12 size suspension 39x23 and zero, clipped warnings and fresh recovery (1.573595ms)\n\u2714 12 colour selection, ESC-free snapshots, cleanup every exit and failure (1.608739ms)\n\u2714 13 real entry-point composition falling -> lock -> clear/score -> over -> restart -> quit; every frame bounded (0.605447ms)\n\u2714 13 actual npm start PTY at 40x24 with preceding output and cleanup (1402.459204ms)\n\u2714 1/12 actual entry point non-TTY snapshot exits bounded and plain (33.907479ms)\n\u2139 tests 21\n\u2139 suites 0\n\u2139 pass 21\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1716.132976\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": false,
+      "distinct_colours": 0
+    },
+    "tasks_complete": {
+      "passed": true
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": " |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . O O . . . . |\r\n|. . . . O O . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPAUSED Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[H\u001b[2J+--------------------+\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . O O . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n|. . . . . . . . . . |\r\n+--------------------+\r\nPLAYING Score:0\r\nArrows move/rotate/drop P pause Q quit\u001b[0m\u001b[?25h\u001b[?1049l"
+    },
+    "documentation": {
+      "passed": true
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "label": "20261017 maintenance re-evaluation; original acceptance.json retained",
+  "seven_piece_render_palette": {
+    "styles": {
+      "I": "96",
+      "J": "94",
+      "L": "33",
+      "O": "93",
+      "S": "92",
+      "T": "95",
+      "Z": "91"
+    },
+    "passed": true
+  },
+  "clause_audit": {
+    "1": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "2": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "3": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "4": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "5": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "6": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "7": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "8": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "9": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "10": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "11": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "12": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "13": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    }
+  },
+  "interpretation": "Non-TTY palette failure conflicts with accepted plain non-TTY design; render palette and PTY evidence evaluated separately. Frozen acceptance explicitly requests non-TTY colours: this scope discrepancy remains recorded, not silently waived. Clause wording changes require semantic review. No final acceptance granted by this re-evaluation."
+}

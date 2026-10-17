@@ -8,6 +8,13 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(t['cachedReadTokens'],{'reported':0,'coverage':1,'calls':2})
         self.assertEqual(t['cachedWriteTokens']['coverage'],0)
         self.assertEqual(t['inputTokens']['reported'],4)
+    def test_validator_cost_has_independent_phase(self):
+        events=[{'type':'machine','machine':'validator','status':'running','time':'a'},
+                {'type':'usage','machine':'validator','inputTokens':12,'outputTokens':3},
+                {'type':'machine','machine':'validator','status':'finished','time':'b'}]
+        calls=m.report.calls(events)
+        self.assertEqual(calls[0]['phase'],'validation')
+        self.assertEqual(calls[0]['inputTokens'],12)
     def test_first_call_cost_excludes_completion_loop(self):
         calls=[{'machine':'doer','inputTokens':10},{'machine':'validator','inputTokens':20},{'machine':'doer','inputTokens':30}]
         first=m.totals([next(c for c in calls if c['machine']=='doer')])

@@ -12,30 +12,30 @@ contract-01,tetris-007-e00-r5,plan_reviewer_gemini,plan_review,,,2026-10-17T19:4
 contract-01,tetris-007-e00-r5,plan_synthesiser,plan_review,,,2026-10-17T19:45:26.587Z,2026-10-17T19:45:30.124Z,finished,2456,66,0,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,,,2026-10-17T19:45:30.165Z,2026-10-17T19:45:35.674Z,finished,2430,120,1792,0
 contract-01,tetris-007-e00-r5,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",1,2026-10-17T19:45:35.709Z,2026-10-17T19:46:21.486Z,finished,12839,2342,82048,0
-contract-01,tetris-007-e00-r5,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:21.556Z,2026-10-17T19:47:11.378Z,finished,18155,2910,78080,0
+contract-01,tetris-007-e00-r5,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:21.556Z,2026-10-17T19:47:11.378Z,finished,18155,2910,78080,0
 contract-01,tetris-007-e00-r5,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",2,2026-10-17T19:47:11.413Z,2026-10-17T19:47:53.891Z,finished,10687,2052,61440,0
-contract-01,tetris-007-e00-r5,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:47:53.984Z,2026-10-17T19:48:10.238Z,finished,16668,678,35712,0
+contract-01,tetris-007-e00-r5,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:47:53.984Z,2026-10-17T19:48:10.238Z,finished,16668,678,35712,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:48:10.630Z,2026-10-17T19:48:22.867Z,finished,5975,375,7168,0
 contract-01,tetris-007-e00-r5,doer,implementation,2. Introduce tetromino definitions and initial piece generation.,1,2026-10-17T19:48:22.923Z,2026-10-17T19:49:16.348Z,finished,27515,3142,114176,0
-contract-01,tetris-007-e00-r5,validator,implementation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:49:16.415Z,2026-10-17T19:49:32.962Z,finished,17991,623,36736,0
+contract-01,tetris-007-e00-r5,validator,validation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:49:16.415Z,2026-10-17T19:49:32.962Z,finished,17991,623,36736,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:49:33.404Z,2026-10-17T19:49:45.679Z,finished,3936,362,12416,0
 contract-01,tetris-007-e00-r5,doer,implementation,3. Implement collision-safe horizontal movement.,1,2026-10-17T19:49:45.716Z,2026-10-17T19:50:26.850Z,finished,18834,2479,102528,0
-contract-01,tetris-007-e00-r5,validator,implementation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:50:26.904Z,2026-10-17T19:50:42.258Z,finished,16661,564,47744,0
+contract-01,tetris-007-e00-r5,validator,validation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:50:26.904Z,2026-10-17T19:50:42.258Z,finished,16661,564,47744,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,3. Implement collision-safe horizontal movement.,,2026-10-17T19:50:42.621Z,2026-10-17T19:50:56.144Z,finished,6061,343,6400,0
 contract-01,tetris-007-e00-r5,doer,implementation,4. Implement deterministic rotation.,1,2026-10-17T19:50:56.186Z,2026-10-17T19:51:37.457Z,finished,16475,2311,108288,0
-contract-01,tetris-007-e00-r5,validator,implementation,4. Implement deterministic rotation.,,2026-10-17T19:51:37.523Z,2026-10-17T19:51:54.594Z,finished,16418,647,47232,0
+contract-01,tetris-007-e00-r5,validator,validation,4. Implement deterministic rotation.,,2026-10-17T19:51:37.523Z,2026-10-17T19:51:54.594Z,finished,16418,647,47232,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,4. Implement deterministic rotation.,,2026-10-17T19:51:55.106Z,2026-10-17T19:52:08.267Z,finished,5584,355,6912,0
 contract-01,tetris-007-e00-r5,doer,implementation,5. Implement downward movement without locking.,1,2026-10-17T19:52:08.309Z,2026-10-17T19:52:52.672Z,finished,27831,2062,87552,0
-contract-01,tetris-007-e00-r5,validator,implementation,5. Implement downward movement without locking.,,2026-10-17T19:52:52.727Z,2026-10-17T19:53:07.888Z,finished,16424,534,45824,0
+contract-01,tetris-007-e00-r5,validator,validation,5. Implement downward movement without locking.,,2026-10-17T19:52:52.727Z,2026-10-17T19:53:07.888Z,finished,16424,534,45824,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,5. Implement downward movement without locking.,,2026-10-17T19:53:08.317Z,2026-10-17T19:53:28.553Z,finished,3546,383,9344,0
 contract-01,tetris-007-e00-r5,doer,implementation,6. Implement piece locking and next-piece progression.,1,2026-10-17T19:53:28.598Z,2026-10-17T19:54:33.142Z,finished,17918,2552,88320,0
-contract-01,tetris-007-e00-r5,validator,implementation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:54:33.207Z,2026-10-17T19:55:02.165Z,finished,18237,1353,49280,0
+contract-01,tetris-007-e00-r5,validator,validation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:54:33.207Z,2026-10-17T19:55:02.165Z,finished,18237,1353,49280,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,6. Implement piece locking and next-piece progression.,,2026-10-17T19:55:02.575Z,2026-10-17T19:55:14.319Z,finished,3605,314,9216,0
 contract-01,tetris-007-e00-r5,doer,implementation,7. Implement completed-line clearing and board compaction.,1,2026-10-17T19:55:14.365Z,2026-10-17T19:56:50.377Z,finished,18236,2809,126464,0
-contract-01,tetris-007-e00-r5,validator,implementation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:56:50.432Z,2026-10-17T19:57:12.801Z,finished,18553,774,51072,0
+contract-01,tetris-007-e00-r5,validator,validation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:56:50.432Z,2026-10-17T19:57:12.801Z,finished,18553,774,51072,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:57:13.175Z,2026-10-17T19:57:44.616Z,finished,7874,440,12544,0
 contract-01,tetris-007-e00-r5,doer,implementation,8. Implement scoring and its display.,1,2026-10-17T19:57:44.658Z,2026-10-17T19:58:32.856Z,finished,18207,2606,136448,0
-contract-01,tetris-007-e00-r5,validator,implementation,8. Implement scoring and its display.,,2026-10-17T19:58:32.915Z,2026-10-17T19:58:55.466Z,finished,19813,646,70528,0
+contract-01,tetris-007-e00-r5,validator,validation,8. Implement scoring and its display.,,2026-10-17T19:58:32.915Z,2026-10-17T19:58:55.466Z,finished,19813,646,70528,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T19:58:55.858Z,2026-10-17T19:59:06.312Z,finished,3535,335,9088,0
 contract-01,tetris-007-e00-r5,doer,implementation,8. Implement scoring and its display.,2,2026-10-17T19:59:06.352Z,2026-10-17T19:59:14.996Z,failed,3115,318,2432,0
 contract-01,tetris-007-e00-r5,plan_gate,gate,8. Implement scoring and its display.,,2026-10-17T20:23:20.763Z,2026-10-17T20:23:20.773Z,finished,0,0,,
@@ -43,21 +43,21 @@ contract-01,tetris-007-e00-r5,planner,bookkeeping,8. Implement scoring and its d
 contract-01,tetris-007-e00-r5,plan_gate,gate,8. Implement scoring and its display.,,2026-10-17T21:14:29.637Z,2026-10-17T21:14:29.662Z,finished,0,0,,
 contract-01,tetris-007-e00-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T21:14:29.868Z,2026-10-17T21:14:35.091Z,finished,2438,120,1792,0
 contract-01,tetris-007-e00-r5,doer,implementation,9. Implement game-over detection and restart.,1,2026-10-17T21:14:35.177Z,2026-10-17T21:15:26.891Z,finished,20313,2780,161280,0
-contract-01,tetris-007-e00-r5,validator,implementation,9. Implement game-over detection and restart.,,2026-10-17T21:15:26.945Z,2026-10-17T21:15:44.012Z,finished,19929,645,35584,0
+contract-01,tetris-007-e00-r5,validator,validation,9. Implement game-over detection and restart.,,2026-10-17T21:15:26.945Z,2026-10-17T21:15:44.012Z,finished,19929,645,35584,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T21:15:44.475Z,2026-10-17T21:15:58.620Z,finished,3711,367,9088,0
 contract-01,tetris-007-e00-r5,doer,implementation,10. Add timed gravity and pause behavior.,1,2026-10-17T21:15:58.661Z,2026-10-17T21:16:58.487Z,finished,17881,3329,136576,0
-contract-01,tetris-007-e00-r5,validator,implementation,10. Add timed gravity and pause behavior.,,2026-10-17T21:16:58.547Z,2026-10-17T21:17:26.646Z,finished,20358,1164,74112,0
+contract-01,tetris-007-e00-r5,validator,validation,10. Add timed gravity and pause behavior.,,2026-10-17T21:16:58.547Z,2026-10-17T21:17:26.646Z,finished,20358,1164,74112,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,10. Add timed gravity and pause behavior.,,2026-10-17T21:17:27.109Z,2026-10-17T21:17:40.481Z,finished,3601,329,9344,0
 contract-01,tetris-007-e00-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session through testable adapters.,1,2026-10-17T21:17:40.520Z,2026-10-17T21:18:48.959Z,finished,19027,3872,157568,0
-contract-01,tetris-007-e00-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session through testable adapters.,,2026-10-17T21:18:49.020Z,2026-10-17T21:19:19.322Z,finished,21746,1223,60800,0
+contract-01,tetris-007-e00-r5,validator,validation,11. Connect keyboard controls to the playable terminal session through testable adapters.,,2026-10-17T21:18:49.020Z,2026-10-17T21:19:19.322Z,finished,21746,1223,60800,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,11. Connect keyboard controls to the playable terminal session through testable adapters.,,2026-10-17T21:19:19.881Z,2026-10-17T21:19:33.180Z,finished,3666,367,9216,0
 contract-01,tetris-007-e00-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,1,2026-10-17T21:19:33.223Z,2026-10-17T21:21:58.038Z,finished,26407,7381,423552,0
-contract-01,tetris-007-e00-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:21:58.106Z,2026-10-17T21:22:43.013Z,finished,23057,2110,88704,0
+contract-01,tetris-007-e00-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:21:58.106Z,2026-10-17T21:22:43.013Z,finished,23057,2110,88704,0
 contract-01,tetris-007-e00-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,2,2026-10-17T21:22:43.056Z,2026-10-17T21:23:29.314Z,finished,27967,2059,119936,0
-contract-01,tetris-007-e00-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:23:29.386Z,2026-10-17T21:23:58.230Z,finished,23997,1347,51072,0
+contract-01,tetris-007-e00-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:23:29.386Z,2026-10-17T21:23:58.230Z,finished,23997,1347,51072,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:23:58.656Z,2026-10-17T21:24:09.938Z,finished,3801,324,9472,0
 contract-01,tetris-007-e00-r5,doer,implementation,13. Verify and document the complete launch-to-exit experience.,1,2026-10-17T21:24:09.993Z,2026-10-17T21:25:29.719Z,finished,22489,3893,204544,0
-contract-01,tetris-007-e00-r5,validator,implementation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:25:29.788Z,2026-10-17T21:25:52.069Z,finished,20912,1043,37888,0
+contract-01,tetris-007-e00-r5,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:25:29.788Z,2026-10-17T21:25:52.069Z,finished,20912,1043,37888,0
 contract-01,tetris-007-e00-r5,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:25:52.487Z,2026-10-17T21:26:03.712Z,finished,6110,335,7296,0
 contract-01,tetris-007-e01-r5,plan_gate,gate,,,2026-10-17T19:42:31.741Z,2026-10-17T19:42:31.755Z,finished,0,0,,
 contract-01,tetris-007-e01-r5,plan_author,plan_review,,,2026-10-17T19:42:31.991Z,2026-10-17T19:43:37.225Z,finished,6605,2329,5888,0
@@ -72,31 +72,31 @@ contract-01,tetris-007-e01-r5,plan_reviewer_gemini,plan_review,,,2026-10-17T19:4
 contract-01,tetris-007-e01-r5,plan_synthesiser,plan_review,,,2026-10-17T19:45:38.079Z,2026-10-17T19:45:40.942Z,finished,2442,71,0,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,,,2026-10-17T19:45:40.985Z,2026-10-17T19:45:45.516Z,finished,2426,120,1792,0
 contract-01,tetris-007-e01-r5,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",1,2026-10-17T19:45:45.559Z,2026-10-17T19:46:40.889Z,finished,10841,2355,83456,0
-contract-01,tetris-007-e01-r5,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:40.966Z,2026-10-17T19:46:59.210Z,finished,14373,859,29952,0
+contract-01,tetris-007-e01-r5,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:40.966Z,2026-10-17T19:46:59.210Z,finished,14373,859,29952,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:59.634Z,2026-10-17T19:47:12.657Z,finished,3637,358,9344,0
 contract-01,tetris-007-e01-r5,doer,implementation,2. Introduce tetromino definitions and initial piece generation.,1,2026-10-17T19:47:12.705Z,2026-10-17T19:48:22.769Z,finished,14369,3837,113280,0
-contract-01,tetris-007-e01-r5,validator,implementation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:22.859Z,2026-10-17T19:48:43.045Z,finished,18215,957,38272,0
+contract-01,tetris-007-e01-r5,validator,validation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:22.859Z,2026-10-17T19:48:43.045Z,finished,18215,957,38272,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:43.422Z,2026-10-17T19:48:53.742Z,finished,5803,355,6912,0
 contract-01,tetris-007-e01-r5,doer,implementation,3. Implement collision-safe horizontal movement.,1,2026-10-17T19:48:53.786Z,2026-10-17T19:49:41.829Z,finished,13360,2573,84480,0
-contract-01,tetris-007-e01-r5,validator,implementation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:41.886Z,2026-10-17T19:49:53.353Z,finished,14996,491,17024,0
+contract-01,tetris-007-e01-r5,validator,validation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:41.886Z,2026-10-17T19:49:53.353Z,finished,14996,491,17024,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:53.749Z,2026-10-17T19:50:06.710Z,finished,3509,372,9088,0
 contract-01,tetris-007-e01-r5,doer,implementation,4. Implement deterministic rotation.,1,2026-10-17T19:50:06.750Z,2026-10-17T19:50:45.911Z,finished,13081,2236,92032,0
-contract-01,tetris-007-e01-r5,validator,implementation,4. Implement deterministic rotation.,,2026-10-17T19:50:45.973Z,2026-10-17T19:50:59.324Z,finished,14289,474,16640,0
+contract-01,tetris-007-e01-r5,validator,validation,4. Implement deterministic rotation.,,2026-10-17T19:50:45.973Z,2026-10-17T19:50:59.324Z,finished,14289,474,16640,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,4. Implement deterministic rotation.,,2026-10-17T19:50:59.805Z,2026-10-17T19:51:09.041Z,finished,3388,328,9088,0
 contract-01,tetris-007-e01-r5,doer,implementation,5. Implement downward movement without locking.,1,2026-10-17T19:51:09.095Z,2026-10-17T19:51:54.000Z,finished,14223,2319,98176,0
-contract-01,tetris-007-e01-r5,validator,implementation,5. Implement downward movement without locking.,,2026-10-17T19:51:54.060Z,2026-10-17T19:52:06.750Z,finished,14832,520,30336,0
+contract-01,tetris-007-e01-r5,validator,validation,5. Implement downward movement without locking.,,2026-10-17T19:51:54.060Z,2026-10-17T19:52:06.750Z,finished,14832,520,30336,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,5. Implement downward movement without locking.,,2026-10-17T19:52:07.148Z,2026-10-17T19:52:22.949Z,finished,3533,403,9088,0
 contract-01,tetris-007-e01-r5,doer,implementation,6. Implement piece locking and next-piece progression.,1,2026-10-17T19:52:22.994Z,2026-10-17T19:53:13.783Z,finished,14885,2902,81536,0
-contract-01,tetris-007-e01-r5,validator,implementation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:53:13.855Z,2026-10-17T19:53:34.743Z,finished,16349,821,48128,0
+contract-01,tetris-007-e01-r5,validator,validation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:53:13.855Z,2026-10-17T19:53:34.743Z,finished,16349,821,48128,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,6. Implement piece locking and next-piece progression.,,2026-10-17T19:53:35.153Z,2026-10-17T19:53:48.874Z,finished,4809,390,13696,0
 contract-01,tetris-007-e01-r5,doer,implementation,7. Implement completed-line clearing and board compaction.,1,2026-10-17T19:53:48.909Z,2026-10-17T19:54:44.173Z,finished,26828,2693,106112,0
-contract-01,tetris-007-e01-r5,validator,implementation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:54:44.228Z,2026-10-17T19:54:58.919Z,finished,22467,719,28288,0
+contract-01,tetris-007-e01-r5,validator,validation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:54:44.228Z,2026-10-17T19:54:58.919Z,finished,22467,719,28288,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:54:59.380Z,2026-10-17T19:55:11.874Z,finished,3565,308,9216,0
 contract-01,tetris-007-e01-r5,doer,implementation,8. Implement scoring and its display.,1,2026-10-17T19:55:11.914Z,2026-10-17T19:56:10.112Z,finished,19509,2766,128128,0
-contract-01,tetris-007-e01-r5,validator,implementation,8. Implement scoring and its display.,,2026-10-17T19:56:10.171Z,2026-10-17T19:56:26.837Z,finished,18256,689,52096,0
+contract-01,tetris-007-e01-r5,validator,validation,8. Implement scoring and its display.,,2026-10-17T19:56:10.171Z,2026-10-17T19:56:26.837Z,finished,18256,689,52096,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T19:56:27.237Z,2026-10-17T19:56:43.335Z,finished,4874,428,13184,0
 contract-01,tetris-007-e01-r5,doer,implementation,9. Implement game-over detection and restart.,1,2026-10-17T19:56:43.382Z,2026-10-17T19:57:36.169Z,finished,29275,2809,114048,0
-contract-01,tetris-007-e01-r5,validator,implementation,9. Implement game-over detection and restart.,,2026-10-17T19:57:36.222Z,2026-10-17T19:57:57.270Z,finished,18670,698,51456,0
+contract-01,tetris-007-e01-r5,validator,validation,9. Implement game-over detection and restart.,,2026-10-17T19:57:36.222Z,2026-10-17T19:57:57.270Z,finished,18670,698,51456,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T19:57:57.747Z,2026-10-17T19:58:15.890Z,finished,7306,402,12544,0
 contract-01,tetris-007-e01-r5,doer,implementation,9. Implement game-over detection and restart.,2,2026-10-17T19:58:15.929Z,2026-10-17T19:59:15.786Z,failed,16229,3268,83968,0
 contract-01,tetris-007-e01-r5,plan_gate,gate,9. Implement game-over detection and restart.,,2026-10-17T20:23:20.683Z,2026-10-17T20:23:20.700Z,finished,0,0,,
@@ -104,18 +104,18 @@ contract-01,tetris-007-e01-r5,planner,bookkeeping,9. Implement game-over detecti
 contract-01,tetris-007-e01-r5,plan_gate,gate,9. Implement game-over detection and restart.,,2026-10-17T21:14:29.770Z,2026-10-17T21:14:29.789Z,finished,0,0,,
 contract-01,tetris-007-e01-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T21:14:29.861Z,2026-10-17T21:14:36.709Z,finished,2437,130,1792,0
 contract-01,tetris-007-e01-r5,doer,implementation,10. Add timed gravity and pause behavior.,1,2026-10-17T21:14:36.747Z,2026-10-17T21:15:01.139Z,finished,14677,859,64768,0
-contract-01,tetris-007-e01-r5,validator,implementation,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:01.213Z,2026-10-17T21:15:24.399Z,finished,25710,1308,48128,0
+contract-01,tetris-007-e01-r5,validator,validation,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:01.213Z,2026-10-17T21:15:24.399Z,finished,25710,1308,48128,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:24.802Z,2026-10-17T21:15:37.904Z,finished,3500,350,9344,0
 contract-01,tetris-007-e01-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,1,2026-10-17T21:15:37.944Z,2026-10-17T21:17:09.368Z,finished,22400,4930,252672,0
-contract-01,tetris-007-e01-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:17:09.429Z,2026-10-17T21:17:56.903Z,finished,21018,2354,60544,0
+contract-01,tetris-007-e01-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:17:09.429Z,2026-10-17T21:17:56.903Z,finished,21018,2354,60544,0
 contract-01,tetris-007-e01-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,2,2026-10-17T21:17:56.969Z,2026-10-17T21:18:37.133Z,finished,16236,1993,99584,0
-contract-01,tetris-007-e01-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:18:37.228Z,2026-10-17T21:19:12.343Z,finished,21615,1730,44160,0
+contract-01,tetris-007-e01-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:18:37.228Z,2026-10-17T21:19:12.343Z,finished,21615,1730,44160,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:19:12.767Z,2026-10-17T21:19:26.008Z,finished,6283,398,6784,0
 contract-01,tetris-007-e01-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,1,2026-10-17T21:19:26.047Z,2026-10-17T21:20:53.149Z,finished,21753,4631,329344,0
-contract-01,tetris-007-e01-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:20:53.206Z,2026-10-17T21:21:24.870Z,finished,22146,1936,61184,0
+contract-01,tetris-007-e01-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:20:53.206Z,2026-10-17T21:21:24.870Z,finished,22146,1936,61184,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:21:25.295Z,2026-10-17T21:21:40.489Z,finished,3900,386,10240,0
 contract-01,tetris-007-e01-r5,doer,implementation,13. Verify and document the complete launch-to-exit experience.,1,2026-10-17T21:21:40.527Z,2026-10-17T21:22:54.449Z,finished,21238,3495,153472,0
-contract-01,tetris-007-e01-r5,validator,implementation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:22:54.513Z,2026-10-17T21:23:24.277Z,finished,18776,1531,36480,0
+contract-01,tetris-007-e01-r5,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:22:54.513Z,2026-10-17T21:23:24.277Z,finished,18776,1531,36480,0
 contract-01,tetris-007-e01-r5,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:23:24.786Z,2026-10-17T21:23:34.713Z,finished,3604,348,9472,0
 contract-01,tetris-007-e02-r5,plan_gate,gate,,,2026-10-17T19:42:32.407Z,2026-10-17T19:42:32.411Z,finished,0,0,,
 contract-01,tetris-007-e02-r5,plan_author,plan_review,,,2026-10-17T19:42:32.539Z,2026-10-17T19:43:32.430Z,finished,6292,2363,5248,0
@@ -130,58 +130,60 @@ contract-01,tetris-007-e02-r5,plan_reviewer_gemini,plan_review,,,2026-10-17T19:4
 contract-01,tetris-007-e02-r5,plan_synthesiser,plan_review,,,2026-10-17T19:45:13.983Z,2026-10-17T19:45:17.195Z,finished,2190,60,0,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,,,2026-10-17T19:45:17.387Z,2026-10-17T19:45:23.375Z,finished,2064,120,1536,0
 contract-01,tetris-007-e02-r5,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",1,2026-10-17T19:45:23.414Z,2026-10-17T19:46:22.198Z,finished,14468,2929,80640,0
-contract-01,tetris-007-e02-r5,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:22.272Z,2026-10-17T19:46:48.427Z,finished,14193,1498,28160,0
+contract-01,tetris-007-e02-r5,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:22.272Z,2026-10-17T19:46:48.427Z,finished,14193,1498,28160,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:46:48.797Z,2026-10-17T19:46:59.512Z,finished,3331,333,8320,0
 contract-01,tetris-007-e02-r5,doer,implementation,2. Introduce tetromino definitions and initial piece generation.,1,2026-10-17T19:46:59.559Z,2026-10-17T19:48:09.297Z,finished,14652,3624,108544,0
-contract-01,tetris-007-e02-r5,validator,implementation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:09.356Z,2026-10-17T19:48:32.237Z,finished,16960,1349,33280,0
+contract-01,tetris-007-e02-r5,validator,validation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:09.356Z,2026-10-17T19:48:32.237Z,finished,16960,1349,33280,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:48:32.737Z,2026-10-17T19:48:45.736Z,finished,3281,395,8448,0
 contract-01,tetris-007-e02-r5,doer,implementation,3. Implement collision-safe horizontal movement.,1,2026-10-17T19:48:45.789Z,2026-10-17T19:49:33.798Z,finished,24901,2681,75904,0
-contract-01,tetris-007-e02-r5,validator,implementation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:33.872Z,2026-10-17T19:49:49.939Z,finished,14772,1148,28800,0
+contract-01,tetris-007-e02-r5,validator,validation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:33.872Z,2026-10-17T19:49:49.939Z,finished,14772,1148,28800,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,3. Implement collision-safe horizontal movement.,,2026-10-17T19:49:50.372Z,2026-10-17T19:51:02.308Z,finished,1847,364,9472,0
 contract-01,tetris-007-e02-r5,doer,implementation,4. Implement deterministic rotation.,1,2026-10-17T19:51:02.347Z,2026-10-17T19:51:54.344Z,finished,15598,2903,124416,0
-contract-01,tetris-007-e02-r5,validator,implementation,4. Implement deterministic rotation.,,2026-10-17T19:51:54.528Z,2026-10-17T19:52:16.765Z,finished,15815,1280,30080,0
+contract-01,tetris-007-e02-r5,validator,validation,4. Implement deterministic rotation.,,2026-10-17T19:51:54.528Z,2026-10-17T19:52:16.765Z,finished,15815,1280,30080,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,4. Implement deterministic rotation.,,2026-10-17T19:52:17.255Z,2026-10-17T19:52:29.856Z,finished,4996,413,6400,0
 contract-01,tetris-007-e02-r5,doer,implementation,5. Implement downward movement without locking.,1,2026-10-17T19:52:29.913Z,2026-10-17T19:53:20.252Z,finished,15373,2385,100096,0
-contract-01,tetris-007-e02-r5,validator,implementation,5. Implement downward movement without locking.,,2026-10-17T19:53:20.344Z,2026-10-17T19:54:09.269Z,finished,15247,1165,39936,0
+contract-01,tetris-007-e02-r5,validator,validation,5. Implement downward movement without locking.,,2026-10-17T19:53:20.344Z,2026-10-17T19:54:09.269Z,finished,15247,1165,39936,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,5. Implement downward movement without locking.,,2026-10-17T19:54:09.813Z,2026-10-17T19:54:28.742Z,finished,4358,456,13952,0
 contract-01,tetris-007-e02-r5,doer,implementation,6. Implement piece locking and next-piece progression.,1,2026-10-17T19:54:28.789Z,2026-10-17T19:55:24.593Z,finished,14581,2918,92160,0
-contract-01,tetris-007-e02-r5,validator,implementation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:55:24.644Z,2026-10-17T19:55:51.087Z,finished,16803,1801,30848,0
+contract-01,tetris-007-e02-r5,validator,validation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:55:24.644Z,2026-10-17T19:55:51.087Z,finished,16803,1801,30848,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,6. Implement piece locking and next-piece progression.,,2026-10-17T19:55:51.478Z,2026-10-17T19:56:04.182Z,finished,3175,384,8064,0
 contract-01,tetris-007-e02-r5,doer,implementation,7. Implement completed-line clearing and board compaction.,1,2026-10-17T19:56:04.223Z,2026-10-17T19:57:02.592Z,finished,15196,3151,115840,0
-contract-01,tetris-007-e02-r5,validator,implementation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:57:02.643Z,2026-10-17T19:57:27.169Z,finished,21915,1565,27648,0
+contract-01,tetris-007-e02-r5,validator,validation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:57:02.643Z,2026-10-17T19:57:27.169Z,finished,21915,1565,27648,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:57:27.618Z,2026-10-17T19:57:57.257Z,finished,9811,408,2048,0
 contract-01,tetris-007-e02-r5,doer,implementation,8. Implement scoring and its display.,1,2026-10-17T19:57:57.321Z,2026-10-17T19:58:52.240Z,finished,17455,2677,147072,0
-contract-01,tetris-007-e02-r5,validator,implementation,8. Implement scoring and its display.,,2026-10-17T19:58:52.330Z,2026-10-17T19:59:11.695Z,failed,15606,1183,15488,0
+contract-01,tetris-007-e02-r5,validator,validation,8. Implement scoring and its display.,,2026-10-17T19:58:52.330Z,2026-10-17T19:59:11.695Z,failed,15606,1183,15488,0
 contract-01,tetris-007-e02-r5,plan_gate,gate,8. Implement scoring and its display.,,2026-10-17T20:23:20.719Z,2026-10-17T20:23:20.739Z,finished,0,0,,
 contract-01,tetris-007-e02-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T20:23:20.864Z,2026-10-17T20:23:23.585Z,failed,0,0,0,0
 contract-01,tetris-007-e02-r5,plan_gate,gate,8. Implement scoring and its display.,,2026-10-17T21:14:29.763Z,2026-10-17T21:14:29.770Z,finished,0,0,,
 contract-01,tetris-007-e02-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T21:14:29.910Z,2026-10-17T21:14:35.476Z,finished,2073,122,1536,0
 contract-01,tetris-007-e02-r5,doer,implementation,8. Implement scoring and its display.,2,2026-10-17T21:14:35.592Z,2026-10-17T21:15:14.097Z,finished,18751,1818,101760,0
-contract-01,tetris-007-e02-r5,validator,implementation,8. Implement scoring and its display.,,2026-10-17T21:15:14.154Z,2026-10-17T21:15:34.520Z,finished,17609,1135,32256,0
+contract-01,tetris-007-e02-r5,validator,validation,8. Implement scoring and its display.,,2026-10-17T21:15:14.154Z,2026-10-17T21:15:34.520Z,finished,17609,1135,32256,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T21:15:34.924Z,2026-10-17T21:15:56.285Z,finished,6602,453,12288,0
 contract-01,tetris-007-e02-r5,doer,implementation,9. Implement game-over detection and restart.,1,2026-10-17T21:15:56.346Z,2026-10-17T21:17:04.380Z,finished,18278,3256,150400,0
-contract-01,tetris-007-e02-r5,validator,implementation,9. Implement game-over detection and restart.,,2026-10-17T21:17:04.438Z,2026-10-17T21:17:38.537Z,finished,20739,1549,93696,0
+contract-01,tetris-007-e02-r5,validator,validation,9. Implement game-over detection and restart.,,2026-10-17T21:17:04.438Z,2026-10-17T21:17:38.537Z,finished,20739,1549,93696,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T21:17:38.974Z,2026-10-17T21:17:55.609Z,finished,5225,395,6016,0
 contract-01,tetris-007-e02-r5,doer,implementation,10. Add timed gravity and pause behavior.,1,2026-10-17T21:17:55.648Z,2026-10-17T21:42:25.191Z,finished,156335,131598,881664,0
-contract-01,tetris-007-e02-r5,validator,implementation,10. Add timed gravity and pause behavior.,,2026-10-17T21:42:25.244Z,2026-10-17T21:42:56.515Z,finished,17863,1623,53376,0
+contract-01,tetris-007-e02-r5,validator,validation,10. Add timed gravity and pause behavior.,,2026-10-17T21:42:25.244Z,2026-10-17T21:42:56.515Z,finished,17863,1623,53376,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,10. Add timed gravity and pause behavior.,,2026-10-17T21:42:56.951Z,2026-10-17T21:43:07.739Z,finished,3046,374,8448,0
 contract-01,tetris-007-e02-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,1,2026-10-17T21:43:07.786Z,2026-10-17T21:44:20.946Z,finished,17671,4287,168960,0
-contract-01,tetris-007-e02-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:44:21.008Z,2026-10-17T21:44:52.393Z,finished,18846,1676,35328,0
+contract-01,tetris-007-e02-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:44:21.008Z,2026-10-17T21:44:52.393Z,finished,18846,1676,35328,0
 contract-01,tetris-007-e02-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,2,2026-10-17T21:44:52.431Z,2026-10-17T21:45:31.129Z,finished,15073,1862,112384,0
-contract-01,tetris-007-e02-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:45:31.193Z,2026-10-17T21:46:09.469Z,finished,18429,1966,36096,0
+contract-01,tetris-007-e02-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:45:31.193Z,2026-10-17T21:46:09.469Z,finished,18429,1966,36096,0
 contract-01,tetris-007-e02-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,3,2026-10-17T21:46:09.510Z,2026-10-17T21:46:44.646Z,finished,15151,1837,92032,0
-contract-01,tetris-007-e02-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:46:44.717Z,2026-10-17T21:47:06.962Z,finished,18903,1321,37760,0
+contract-01,tetris-007-e02-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:46:44.717Z,2026-10-17T21:47:06.962Z,finished,18903,1321,37760,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:47:07.328Z,2026-10-17T21:47:21.750Z,finished,4547,439,16000,0
 contract-01,tetris-007-e02-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,1,2026-10-17T21:47:21.797Z,2026-10-17T21:48:52.464Z,finished,18264,4821,168064,0
-contract-01,tetris-007-e02-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:48:52.533Z,2026-10-17T21:49:30.466Z,finished,20230,1989,57216,0
+contract-01,tetris-007-e02-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:48:52.533Z,2026-10-17T21:49:30.466Z,finished,20230,1989,57216,0
 contract-01,tetris-007-e02-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,2,2026-10-17T21:49:30.503Z,2026-10-17T21:50:31.409Z,finished,12121,3096,122496,0
-contract-01,tetris-007-e02-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:50:31.466Z,2026-10-17T21:51:06.981Z,finished,19200,2209,63488,0
+contract-01,tetris-007-e02-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:50:31.466Z,2026-10-17T21:51:06.981Z,finished,19200,2209,63488,0
 contract-01,tetris-007-e02-r5,planner,bookkeeping,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:51:07.362Z,2026-10-17T21:51:19.380Z,finished,3325,378,8320,0
 contract-01,tetris-007-e02-r5,doer,implementation,13. Verify and document the complete launch-to-exit experience.,1,2026-10-17T21:51:19.417Z,2026-10-17T21:52:46.616Z,finished,20955,4299,188160,0
-contract-01,tetris-007-e02-r5,validator,implementation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:52:46.679Z,2026-10-17T21:53:48.289Z,failed,20914,3101,69632,0
+contract-01,tetris-007-e02-r5,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:52:46.679Z,2026-10-17T21:53:48.289Z,failed,20914,3101,69632,0
 contract-01,tetris-007-e02-r5,plan_gate,gate,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T22:56:51.376Z,2026-10-17T22:56:51.380Z,finished,0,0,,
 contract-01,tetris-007-e02-r5,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T22:56:51.424Z,2026-10-17T22:56:55.971Z,finished,2076,120,1536,0
-contract-01,tetris-007-e02-r5,doer,,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T22:56:56.030Z,,running,,,,
+contract-01,tetris-007-e02-r5,doer,implementation,13. Verify and document the complete launch-to-exit experience.,2,2026-10-17T22:56:56.030Z,2026-10-17T22:58:02.273Z,finished,34688,3556,124672,0
+contract-01,tetris-007-e02-r5,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T22:58:02.340Z,2026-10-17T22:58:40.975Z,finished,22859,2122,92800,0
+contract-01,tetris-007-e02-r5,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T22:58:41.430Z,2026-10-17T22:58:56.842Z,finished,5022,495,16000,0
 contract-01,tetris-007-e03-r5,plan_gate,gate,,,2026-10-17T19:42:32.356Z,2026-10-17T19:42:32.384Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,plan_author,plan_review,,,2026-10-17T19:42:32.500Z,2026-10-17T19:43:25.424Z,finished,6796,2505,5888,0
 contract-01,tetris-007-e03-r5,plan_reviewer_astra,plan_review,,,2026-10-17T19:43:25.558Z,2026-10-17T19:43:37.654Z,finished,6475,311,2176,0
@@ -190,31 +192,31 @@ contract-01,tetris-007-e03-r5,plan_reviewer_opus,plan_review,,,2026-10-17T19:43:
 contract-01,tetris-007-e03-r5,plan_synthesiser,plan_review,,,2026-10-17T19:44:14.091Z,2026-10-17T19:44:20.999Z,finished,2742,279,0,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,,,2026-10-17T19:44:21.040Z,2026-10-17T19:44:21.042Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",1,2026-10-17T19:44:21.083Z,2026-10-17T19:45:06.340Z,finished,22603,2165,77056,0
-contract-01,tetris-007-e03-r5,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:45:06.412Z,2026-10-17T19:45:27.620Z,finished,12752,1054,25984,0
+contract-01,tetris-007-e03-r5,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:45:06.412Z,2026-10-17T19:45:27.620Z,finished,12752,1054,25984,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:45:28.082Z,2026-10-17T19:45:28.101Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,2. Introduce tetromino definitions and initial piece generation.,1,2026-10-17T19:45:28.139Z,2026-10-17T19:46:30.634Z,finished,15143,3570,123008,0
-contract-01,tetris-007-e03-r5,validator,implementation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:46:30.695Z,2026-10-17T19:46:50.124Z,finished,15742,1062,32384,0
+contract-01,tetris-007-e03-r5,validator,validation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:46:30.695Z,2026-10-17T19:46:50.124Z,finished,15742,1062,32384,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:46:50.547Z,2026-10-17T19:46:50.562Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,3. Implement collision-safe horizontal movement.,1,2026-10-17T19:46:50.600Z,2026-10-17T19:47:29.645Z,finished,13743,2174,78592,0
-contract-01,tetris-007-e03-r5,validator,implementation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:47:29.702Z,2026-10-17T19:47:43.791Z,finished,12917,482,15104,0
+contract-01,tetris-007-e03-r5,validator,validation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:47:29.702Z,2026-10-17T19:47:43.791Z,finished,12917,482,15104,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,3. Implement collision-safe horizontal movement.,,2026-10-17T19:47:44.198Z,2026-10-17T19:47:44.213Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,4. Implement deterministic rotation.,1,2026-10-17T19:47:44.254Z,2026-10-17T19:48:40.244Z,finished,16615,3042,135168,0
-contract-01,tetris-007-e03-r5,validator,implementation,4. Implement deterministic rotation.,,2026-10-17T19:48:40.301Z,2026-10-17T19:49:04.838Z,finished,15230,1326,30208,0
+contract-01,tetris-007-e03-r5,validator,validation,4. Implement deterministic rotation.,,2026-10-17T19:48:40.301Z,2026-10-17T19:49:04.838Z,finished,15230,1326,30208,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,4. Implement deterministic rotation.,,2026-10-17T19:49:05.273Z,2026-10-17T19:49:05.289Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,5. Implement downward movement without locking.,1,2026-10-17T19:49:05.326Z,2026-10-17T19:49:40.480Z,finished,14275,2117,81280,0
-contract-01,tetris-007-e03-r5,validator,implementation,5. Implement downward movement without locking.,,2026-10-17T19:49:40.534Z,2026-10-17T19:49:53.184Z,finished,12953,579,15104,0
+contract-01,tetris-007-e03-r5,validator,validation,5. Implement downward movement without locking.,,2026-10-17T19:49:40.534Z,2026-10-17T19:49:53.184Z,finished,12953,579,15104,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,5. Implement downward movement without locking.,,2026-10-17T19:49:53.614Z,2026-10-17T19:49:53.630Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,6. Implement piece locking and next-piece progression.,1,2026-10-17T19:49:53.673Z,2026-10-17T19:50:40.914Z,finished,15646,2704,123136,0
-contract-01,tetris-007-e03-r5,validator,implementation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:50:40.970Z,2026-10-17T19:51:02.150Z,finished,14721,1043,29312,0
+contract-01,tetris-007-e03-r5,validator,validation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:50:40.970Z,2026-10-17T19:51:02.150Z,finished,14721,1043,29312,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,6. Implement piece locking and next-piece progression.,,2026-10-17T19:51:02.603Z,2026-10-17T19:51:02.653Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,7. Implement completed-line clearing and board compaction.,1,2026-10-17T19:51:02.709Z,2026-10-17T19:51:41.458Z,finished,14336,2158,71168,0
-contract-01,tetris-007-e03-r5,validator,implementation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:51:41.511Z,2026-10-17T19:52:05.185Z,finished,29593,1160,15104,0
+contract-01,tetris-007-e03-r5,validator,validation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:51:41.511Z,2026-10-17T19:52:05.185Z,finished,29593,1160,15104,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:52:05.750Z,2026-10-17T19:52:05.768Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,8. Implement scoring and its display.,1,2026-10-17T19:52:05.816Z,2026-10-17T19:53:03.135Z,finished,17678,2746,158592,0
-contract-01,tetris-007-e03-r5,validator,implementation,8. Implement scoring and its display.,,2026-10-17T19:53:03.253Z,2026-10-17T19:53:19.332Z,finished,16389,621,47488,0
+contract-01,tetris-007-e03-r5,validator,validation,8. Implement scoring and its display.,,2026-10-17T19:53:03.253Z,2026-10-17T19:53:19.332Z,finished,16389,621,47488,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T19:53:19.784Z,2026-10-17T19:53:19.799Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,9. Implement game-over detection and restart.,1,2026-10-17T19:53:19.845Z,2026-10-17T19:54:18.031Z,finished,19856,3020,125568,0
-contract-01,tetris-007-e03-r5,validator,implementation,9. Implement game-over detection and restart.,,2026-10-17T19:54:18.089Z,2026-10-17T19:54:29.098Z,finished,15572,525,16768,0
+contract-01,tetris-007-e03-r5,validator,validation,9. Implement game-over detection and restart.,,2026-10-17T19:54:18.089Z,2026-10-17T19:54:29.098Z,finished,15572,525,16768,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T19:54:29.555Z,2026-10-17T19:54:29.584Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,9. Implement game-over detection and restart.,2,2026-10-17T19:54:29.639Z,2026-10-17T19:59:19.444Z,stopped,,,,
 contract-01,tetris-007-e03-r5,plan_gate,gate,9. Implement game-over detection and restart.,,2026-10-17T20:23:20.906Z,2026-10-17T20:23:20.916Z,finished,0,0,,
@@ -223,18 +225,18 @@ contract-01,tetris-007-e03-r5,doer,implementation,9. Implement game-over detecti
 contract-01,tetris-007-e03-r5,plan_gate,gate,9. Implement game-over detection and restart.,,2026-10-17T21:14:29.704Z,2026-10-17T21:14:29.710Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T21:14:29.883Z,2026-10-17T21:14:29.891Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,10. Add timed gravity and pause behavior.,1,2026-10-17T21:14:29.960Z,2026-10-17T21:15:22.182Z,finished,16248,3040,101888,0
-contract-01,tetris-007-e03-r5,validator,implementation,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:22.238Z,2026-10-17T21:15:44.400Z,finished,18070,1088,35328,0
+contract-01,tetris-007-e03-r5,validator,validation,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:22.238Z,2026-10-17T21:15:44.400Z,finished,18070,1088,35328,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,10. Add timed gravity and pause behavior.,,2026-10-17T21:15:44.879Z,2026-10-17T21:15:44.926Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,1,2026-10-17T21:15:45.035Z,2026-10-17T21:16:57.785Z,finished,15904,3714,110080,0
-contract-01,tetris-007-e03-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:16:57.887Z,2026-10-17T21:17:37.804Z,finished,16117,2126,45696,0
+contract-01,tetris-007-e03-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:16:57.887Z,2026-10-17T21:17:37.804Z,finished,16117,2126,45696,0
 contract-01,tetris-007-e03-r5,doer,implementation,11. Connect keyboard controls to the playable terminal session.,2,2026-10-17T21:17:37.844Z,2026-10-17T21:18:17.442Z,finished,10634,2037,57600,0
-contract-01,tetris-007-e03-r5,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:18:17.519Z,2026-10-17T21:18:46.382Z,finished,17381,1532,34560,0
+contract-01,tetris-007-e03-r5,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:18:17.519Z,2026-10-17T21:18:46.382Z,finished,17381,1532,34560,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T21:18:46.804Z,2026-10-17T21:18:46.822Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,12. Make terminal redraw and session teardown reliable.,1,2026-10-17T21:18:46.864Z,2026-10-17T21:20:02.211Z,finished,16107,4629,141184,0
-contract-01,tetris-007-e03-r5,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:20:02.275Z,2026-10-17T21:20:57.756Z,finished,20138,2629,55936,0
+contract-01,tetris-007-e03-r5,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:20:02.275Z,2026-10-17T21:20:57.756Z,finished,20138,2629,55936,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,12. Make terminal redraw and session teardown reliable.,,2026-10-17T21:20:58.200Z,2026-10-17T21:20:58.213Z,finished,0,0,,
 contract-01,tetris-007-e03-r5,doer,implementation,13. Verify and document the complete launch-to-exit experience.,1,2026-10-17T21:20:58.248Z,2026-10-17T21:21:59.523Z,finished,18569,3628,129920,0
-contract-01,tetris-007-e03-r5,validator,implementation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:21:59.598Z,2026-10-17T21:22:22.936Z,finished,25100,1345,27264,0
+contract-01,tetris-007-e03-r5,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:21:59.598Z,2026-10-17T21:22:22.936Z,finished,25100,1345,27264,0
 contract-01,tetris-007-e03-r5,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T21:22:23.382Z,2026-10-17T21:22:23.397Z,finished,0,0,,
 restart-01,tetris-007-e00-r4,plan_gate,gate,,,2026-10-17T19:12:49.682Z,2026-10-17T19:12:49.701Z,finished,0,0,,
 restart-01,tetris-007-e00-r4,plan_author,plan_review,,,2026-10-17T19:12:49.906Z,2026-10-17T19:13:45.885Z,finished,6659,2570,5888,0
@@ -254,49 +256,49 @@ restart-01,tetris-007-e01-r4,plan_reviewer_gemini,plan_review,,,2026-10-17T19:15
 restart-01,tetris-007-e01-r4,plan_synthesiser,plan_review,,,2026-10-17T19:16:00.335Z,2026-10-17T19:16:02.771Z,finished,2354,54,0,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,,,2026-10-17T19:16:02.809Z,2026-10-17T19:16:07.323Z,finished,2348,134,1792,0
 restart-01,tetris-007-e01-r4,doer,implementation,"1. Deliver a runnable, bounded terminal board display.",1,2026-10-17T19:16:07.368Z,2026-10-17T19:16:56.340Z,finished,13908,2612,99328,0
-restart-01,tetris-007-e01-r4,validator,implementation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:16:56.469Z,2026-10-17T19:17:12.230Z,finished,19676,715,12544,0
+restart-01,tetris-007-e01-r4,validator,validation,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:16:56.469Z,2026-10-17T19:17:12.230Z,finished,19676,715,12544,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,"1. Deliver a runnable, bounded terminal board display.",,2026-10-17T19:17:12.634Z,2026-10-17T19:17:21.180Z,finished,7197,264,14336,0
 restart-01,tetris-007-e01-r4,doer,implementation,2. Introduce tetromino definitions and initial piece generation.,1,2026-10-17T19:17:21.222Z,2026-10-17T19:18:38.482Z,finished,17112,3736,143872,0
-restart-01,tetris-007-e01-r4,validator,implementation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:18:38.538Z,2026-10-17T19:18:56.736Z,finished,18334,906,54656,0
+restart-01,tetris-007-e01-r4,validator,validation,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:18:38.538Z,2026-10-17T19:18:56.736Z,finished,18334,906,54656,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,2. Introduce tetromino definitions and initial piece generation.,,2026-10-17T19:18:57.159Z,2026-10-17T19:20:03.117Z,finished,3553,396,9088,0
 restart-01,tetris-007-e01-r4,doer,implementation,3. Implement collision-safe horizontal movement.,1,2026-10-17T19:20:03.173Z,2026-10-17T19:20:50.581Z,finished,13600,2440,83840,0
-restart-01,tetris-007-e01-r4,validator,implementation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:20:50.634Z,2026-10-17T19:21:01.139Z,finished,27301,453,18944,0
+restart-01,tetris-007-e01-r4,validator,validation,3. Implement collision-safe horizontal movement.,,2026-10-17T19:20:50.634Z,2026-10-17T19:21:01.139Z,finished,27301,453,18944,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,3. Implement collision-safe horizontal movement.,,2026-10-17T19:21:01.530Z,2026-10-17T19:21:17.821Z,finished,7264,433,9728,0
 restart-01,tetris-007-e01-r4,doer,implementation,4. Implement deterministic rotation.,1,2026-10-17T19:21:17.865Z,2026-10-17T19:22:06.445Z,finished,27161,2457,78976,0
-restart-01,tetris-007-e01-r4,validator,implementation,4. Implement deterministic rotation.,,2026-10-17T19:22:06.512Z,2026-10-17T19:22:23.702Z,finished,16211,585,33280,0
+restart-01,tetris-007-e01-r4,validator,validation,4. Implement deterministic rotation.,,2026-10-17T19:22:06.512Z,2026-10-17T19:22:23.702Z,finished,16211,585,33280,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,4. Implement deterministic rotation.,,2026-10-17T19:22:24.107Z,2026-10-17T19:22:36.580Z,finished,7150,427,6272,0
 restart-01,tetris-007-e01-r4,doer,implementation,5. Implement downward movement without locking.,1,2026-10-17T19:22:36.630Z,2026-10-17T19:23:24.783Z,finished,14405,2469,81664,0
-restart-01,tetris-007-e01-r4,validator,implementation,5. Implement downward movement without locking.,,2026-10-17T19:23:24.838Z,2026-10-17T19:23:44.045Z,finished,16365,601,61568,0
+restart-01,tetris-007-e01-r4,validator,validation,5. Implement downward movement without locking.,,2026-10-17T19:23:24.838Z,2026-10-17T19:23:44.045Z,finished,16365,601,61568,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,5. Implement downward movement without locking.,,2026-10-17T19:23:44.476Z,2026-10-17T19:23:55.580Z,finished,3538,345,9088,0
 restart-01,tetris-007-e01-r4,doer,implementation,6. Implement piece locking and next-piece progression.,1,2026-10-17T19:23:55.621Z,2026-10-17T19:24:43.868Z,finished,14187,2699,86272,0
-restart-01,tetris-007-e01-r4,validator,implementation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:24:43.925Z,2026-10-17T19:25:00.638Z,finished,16404,560,33152,0
+restart-01,tetris-007-e01-r4,validator,validation,6. Implement piece locking and next-piece progression.,,2026-10-17T19:24:43.925Z,2026-10-17T19:25:00.638Z,finished,16404,560,33152,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,6. Implement piece locking and next-piece progression.,,2026-10-17T19:25:01.011Z,2026-10-17T19:25:19.365Z,finished,4927,413,17024,0
 restart-01,tetris-007-e01-r4,doer,implementation,7. Implement completed-line clearing and board compaction.,1,2026-10-17T19:25:19.411Z,2026-10-17T19:26:03.433Z,finished,14459,2382,82048,0
-restart-01,tetris-007-e01-r4,validator,implementation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:26:03.491Z,2026-10-17T19:26:15.620Z,finished,16399,633,17280,0
+restart-01,tetris-007-e01-r4,validator,validation,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:26:03.491Z,2026-10-17T19:26:15.620Z,finished,16399,633,17280,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,7. Implement completed-line clearing and board compaction.,,2026-10-17T19:26:16.034Z,2026-10-17T19:26:59.162Z,finished,3707,370,8704,0
 restart-01,tetris-007-e01-r4,doer,implementation,8. Implement scoring and its display.,1,2026-10-17T19:26:59.240Z,2026-10-17T19:27:48.028Z,finished,32331,2526,86784,0
-restart-01,tetris-007-e01-r4,validator,implementation,8. Implement scoring and its display.,,2026-10-17T19:27:48.275Z,2026-10-17T19:28:07.291Z,finished,17967,739,33152,0
+restart-01,tetris-007-e01-r4,validator,validation,8. Implement scoring and its display.,,2026-10-17T19:27:48.275Z,2026-10-17T19:28:07.291Z,finished,17967,739,33152,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,8. Implement scoring and its display.,,2026-10-17T19:28:07.930Z,2026-10-17T19:28:20.807Z,finished,3532,356,9216,0
 restart-01,tetris-007-e01-r4,doer,implementation,9. Implement game-over detection and restart.,1,2026-10-17T19:28:20.895Z,2026-10-17T19:29:18.954Z,finished,31626,3182,141056,0
-restart-01,tetris-007-e01-r4,validator,implementation,9. Implement game-over detection and restart.,,2026-10-17T19:29:19.035Z,2026-10-17T19:29:33.289Z,finished,21941,609,12672,0
+restart-01,tetris-007-e01-r4,validator,validation,9. Implement game-over detection and restart.,,2026-10-17T19:29:19.035Z,2026-10-17T19:29:33.289Z,finished,21941,609,12672,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,9. Implement game-over detection and restart.,,2026-10-17T19:29:33.847Z,2026-10-17T19:29:48.237Z,finished,7439,361,11904,0
 restart-01,tetris-007-e01-r4,doer,implementation,10. Add timed gravity and pause behavior.,1,2026-10-17T19:29:48.290Z,2026-10-17T19:30:53.670Z,finished,30546,3871,116480,0
-restart-01,tetris-007-e01-r4,validator,implementation,10. Add timed gravity and pause behavior.,,2026-10-17T19:30:53.772Z,2026-10-17T19:31:14.573Z,finished,19567,649,57728,0
+restart-01,tetris-007-e01-r4,validator,validation,10. Add timed gravity and pause behavior.,,2026-10-17T19:30:53.772Z,2026-10-17T19:31:14.573Z,finished,19567,649,57728,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,10. Add timed gravity and pause behavior.,,2026-10-17T19:31:15.128Z,2026-10-17T19:31:30.240Z,finished,6632,427,11648,0
 restart-01,tetris-007-e01-r4,doer,implementation,11. Connect keyboard controls to the playable terminal session.,1,2026-10-17T19:31:30.293Z,2026-10-17T19:32:43.845Z,finished,25901,4004,150656,0
-restart-01,tetris-007-e01-r4,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:32:43.997Z,2026-10-17T19:33:20.266Z,finished,18648,1903,36992,0
+restart-01,tetris-007-e01-r4,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:32:43.997Z,2026-10-17T19:33:20.266Z,finished,18648,1903,36992,0
 restart-01,tetris-007-e01-r4,doer,implementation,11. Connect keyboard controls to the playable terminal session.,2,2026-10-17T19:33:20.377Z,2026-10-17T19:33:59.627Z,finished,17011,1960,125696,0
-restart-01,tetris-007-e01-r4,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:33:59.694Z,2026-10-17T19:34:27.922Z,finished,19561,1727,39424,0
+restart-01,tetris-007-e01-r4,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:33:59.694Z,2026-10-17T19:34:27.922Z,finished,19561,1727,39424,0
 restart-01,tetris-007-e01-r4,doer,implementation,11. Connect keyboard controls to the playable terminal session.,3,2026-10-17T19:34:27.960Z,2026-10-17T19:35:16.144Z,finished,17882,2092,162304,0
-restart-01,tetris-007-e01-r4,validator,implementation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:35:16.209Z,2026-10-17T19:35:59.266Z,finished,22979,2278,74240,0
+restart-01,tetris-007-e01-r4,validator,validation,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:35:16.209Z,2026-10-17T19:35:59.266Z,finished,22979,2278,74240,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,11. Connect keyboard controls to the playable terminal session.,,2026-10-17T19:35:59.632Z,2026-10-17T19:36:15.040Z,finished,8588,431,15488,0
 restart-01,tetris-007-e01-r4,doer,implementation,12. Make terminal redraw and session teardown reliable.,1,2026-10-17T19:36:15.089Z,2026-10-17T19:38:05.594Z,finished,24108,5129,212352,0
-restart-01,tetris-007-e01-r4,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T19:38:05.655Z,2026-10-17T19:38:40.212Z,finished,20049,2221,40704,0
+restart-01,tetris-007-e01-r4,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T19:38:05.655Z,2026-10-17T19:38:40.212Z,finished,20049,2221,40704,0
 restart-01,tetris-007-e01-r4,doer,implementation,12. Make terminal redraw and session teardown reliable.,2,2026-10-17T19:38:40.248Z,2026-10-17T19:39:23.672Z,finished,36599,2000,143744,0
-restart-01,tetris-007-e01-r4,validator,implementation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T19:39:23.738Z,2026-10-17T19:39:57.331Z,finished,21706,1485,117504,0
+restart-01,tetris-007-e01-r4,validator,validation,12. Make terminal redraw and session teardown reliable.,,2026-10-17T19:39:23.738Z,2026-10-17T19:39:57.331Z,finished,21706,1485,117504,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,12. Make terminal redraw and session teardown reliable.,,2026-10-17T19:39:57.766Z,2026-10-17T19:40:16.978Z,finished,6452,536,24832,0
 restart-01,tetris-007-e01-r4,doer,implementation,13. Verify and document the complete launch-to-exit experience.,1,2026-10-17T19:40:17.017Z,2026-10-17T19:41:28.043Z,finished,27662,4493,224896,0
-restart-01,tetris-007-e01-r4,validator,implementation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T19:41:28.103Z,2026-10-17T19:42:03.908Z,finished,22286,1682,39936,0
+restart-01,tetris-007-e01-r4,validator,validation,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T19:41:28.103Z,2026-10-17T19:42:03.908Z,finished,22286,1682,39936,0
 restart-01,tetris-007-e01-r4,planner,bookkeeping,13. Verify and document the complete launch-to-exit experience.,,2026-10-17T19:42:04.366Z,2026-10-17T19:42:19.425Z,finished,3652,398,9600,0
 restart-01,tetris-007-e02-r4,plan_gate,gate,,,2026-10-17T19:12:49.752Z,2026-10-17T19:12:49.757Z,finished,0,0,,
 restart-01,tetris-007-e02-r4,plan_author,plan_review,,,2026-10-17T19:12:49.812Z,2026-10-17T19:14:03.184Z,finished,5780,2272,5504,0
@@ -316,44 +318,44 @@ whole-plan-01,tetris-007-e04-r1,plan_reviewer_opus,plan_review,,,2026-10-17T22:1
 whole-plan-01,tetris-007-e04-r1,plan_synthesiser,plan_review,,,2026-10-17T22:14:34.522Z,2026-10-17T22:14:45.013Z,finished,3020,410,0,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,,,2026-10-17T22:14:45.057Z,2026-10-17T22:14:48.665Z,finished,5885,64,1920,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,1,2026-10-17T22:14:48.701Z,2026-10-17T22:17:25.708Z,finished,39638,9864,262656,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:17:25.798Z,2026-10-17T22:19:27.313Z,finished,35104,8100,177536,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:17:25.798Z,2026-10-17T22:19:27.313Z,finished,35104,8100,177536,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,2,2026-10-17T22:19:27.351Z,2026-10-17T22:20:29.181Z,finished,19075,2777,226944,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:20:29.259Z,2026-10-17T22:21:18.071Z,finished,30692,2951,60032,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:20:29.259Z,2026-10-17T22:21:18.071Z,finished,30692,2951,60032,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:21:18.487Z,2026-10-17T22:21:26.652Z,finished,6250,196,7680,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,3,2026-10-17T22:21:26.691Z,2026-10-17T22:22:18.600Z,finished,21807,2039,145664,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:22:18.648Z,2026-10-17T22:23:41.585Z,finished,22955,4505,51072,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:22:18.648Z,2026-10-17T22:23:41.585Z,finished,22955,4505,51072,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:23:41.941Z,2026-10-17T22:23:50.351Z,finished,6131,197,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,4,2026-10-17T22:23:50.391Z,2026-10-17T22:24:24.047Z,finished,19624,1217,108288,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:24:24.095Z,2026-10-17T22:25:27.208Z,finished,22995,3832,75776,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:24:24.095Z,2026-10-17T22:25:27.208Z,finished,22995,3832,75776,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:25:27.585Z,2026-10-17T22:25:36.292Z,finished,6167,180,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,5,2026-10-17T22:25:36.329Z,2026-10-17T22:26:09.930Z,finished,19846,1255,96640,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:26:09.977Z,2026-10-17T22:27:19.718Z,finished,22657,3833,70400,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:26:09.977Z,2026-10-17T22:27:19.718Z,finished,22657,3833,70400,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:27:20.163Z,2026-10-17T22:27:30.042Z,finished,6131,187,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,6,2026-10-17T22:27:30.077Z,2026-10-17T22:28:02.254Z,finished,20944,1528,127360,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:28:02.308Z,2026-10-17T22:28:59.621Z,finished,21536,2816,56448,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:28:02.308Z,2026-10-17T22:28:59.621Z,finished,21536,2816,56448,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:29:00.053Z,2026-10-17T22:29:08.090Z,finished,11914,166,2048,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,7,2026-10-17T22:29:08.127Z,2026-10-17T22:29:36.715Z,finished,17173,1234,100096,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:29:36.766Z,2026-10-17T22:30:53.512Z,finished,23946,4363,92416,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:29:36.766Z,2026-10-17T22:30:53.512Z,finished,23946,4363,92416,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:30:53.885Z,2026-10-17T22:31:01.375Z,finished,11888,173,2048,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,8,2026-10-17T22:31:01.411Z,2026-10-17T22:31:32.126Z,finished,20715,1182,144640,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:31:32.175Z,2026-10-17T22:32:40.140Z,finished,23436,4272,78208,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:31:32.175Z,2026-10-17T22:32:40.140Z,finished,23436,4272,78208,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:32:40.559Z,2026-10-17T22:32:48.266Z,finished,6160,183,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,9,2026-10-17T22:32:48.304Z,2026-10-17T22:33:18.629Z,finished,38915,1201,96384,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:33:18.682Z,2026-10-17T22:34:07.342Z,finished,22726,2500,72320,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:33:18.682Z,2026-10-17T22:34:07.342Z,finished,22726,2500,72320,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:34:07.764Z,2026-10-17T22:34:13.979Z,finished,6250,161,7680,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,10,2026-10-17T22:34:14.016Z,2026-10-17T22:34:48.500Z,finished,20854,1329,126976,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:34:48.552Z,2026-10-17T22:35:46.827Z,finished,22641,3189,67584,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:34:48.552Z,2026-10-17T22:35:46.827Z,finished,22641,3189,67584,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:35:47.204Z,2026-10-17T22:35:55.974Z,finished,6182,181,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,11,2026-10-17T22:35:56.012Z,2026-10-17T22:36:32.336Z,finished,23919,1343,122496,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:36:32.386Z,2026-10-17T22:37:37.017Z,finished,22880,3481,70912,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:36:32.386Z,2026-10-17T22:37:37.017Z,finished,22880,3481,70912,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:37:37.465Z,2026-10-17T22:37:45.709Z,finished,6176,214,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,12,2026-10-17T22:37:45.749Z,2026-10-17T22:38:15.802Z,finished,29968,1240,116480,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:38:15.850Z,2026-10-17T22:39:26.418Z,finished,27158,3521,69248,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:38:15.850Z,2026-10-17T22:39:26.418Z,finished,27158,3521,69248,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,13,2026-10-17T22:39:26.456Z,2026-10-17T22:40:24.622Z,finished,23668,3585,185984,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:40:24.669Z,2026-10-17T22:41:09.078Z,finished,34944,2534,70400,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:40:24.669Z,2026-10-17T22:41:09.078Z,finished,34944,2534,70400,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:41:09.453Z,2026-10-17T22:41:15.807Z,finished,6175,160,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,14,2026-10-17T22:41:15.842Z,2026-10-17T22:41:47.566Z,finished,20730,1455,126592,0
-whole-plan-01,tetris-007-e04-r1,validator,implementation,Implement the complete 13-task plan.,,2026-10-17T22:41:47.617Z,2026-10-17T22:42:53.478Z,finished,23805,3600,81664,0
+whole-plan-01,tetris-007-e04-r1,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:41:47.617Z,2026-10-17T22:42:53.478Z,finished,23805,3600,81664,0
 whole-plan-01,tetris-007-e04-r1,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T22:42:53.906Z,2026-10-17T22:43:02.404Z,finished,6136,163,7808,0
 whole-plan-01,tetris-007-e04-r1,doer,implementation,Implement the complete 13-task plan.,15,2026-10-17T22:43:02.441Z,2026-10-17T22:43:07.664Z,stopped,,,,
 whole-plan-02,tetris-007-e04-r2,plan_gate,gate,,,2026-10-17T22:51:39.793Z,2026-10-17T22:51:39.801Z,finished,0,0,,
@@ -369,7 +371,12 @@ whole-plan-02,tetris-007-e04-r2,plan_reviewer_gemini,plan_review,,,2026-10-17T22
 whole-plan-02,tetris-007-e04-r2,plan_synthesiser,plan_review,,,2026-10-17T22:54:06.112Z,2026-10-17T22:54:08.881Z,finished,2727,92,0,0
 whole-plan-02,tetris-007-e04-r2,planner,bookkeeping,,,2026-10-17T22:54:08.918Z,2026-10-17T22:54:12.448Z,finished,6268,66,2176,0
 whole-plan-02,tetris-007-e04-r2,doer,implementation,Implement the complete 13-task plan.,1,2026-10-17T22:54:12.484Z,2026-10-17T22:57:02.100Z,finished,27546,12404,352640,0
-whole-plan-02,tetris-007-e04-r2,validator,,Implement the complete 13-task plan.,,2026-10-17T22:57:02.188Z,,running,,,,
+whole-plan-02,tetris-007-e04-r2,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:57:02.188Z,2026-10-17T22:58:07.166Z,finished,33836,3406,96256,0
+whole-plan-02,tetris-007-e04-r2,doer,implementation,Implement the complete 13-task plan.,2,2026-10-17T22:58:07.204Z,2026-10-17T22:59:21.008Z,finished,49534,3430,302336,0
+whole-plan-02,tetris-007-e04-r2,validator,validation,Implement the complete 13-task plan.,,2026-10-17T22:59:21.094Z,2026-10-17T23:00:26.443Z,finished,35639,3436,123136,0
+whole-plan-02,tetris-007-e04-r2,doer,implementation,Implement the complete 13-task plan.,3,2026-10-17T23:00:26.481Z,2026-10-17T23:01:13.869Z,finished,21062,1998,181888,0
+whole-plan-02,tetris-007-e04-r2,validator,validation,Implement the complete 13-task plan.,,2026-10-17T23:01:13.953Z,2026-10-17T23:02:01.876Z,finished,34417,2897,101376,0
+whole-plan-02,tetris-007-e04-r2,planner,bookkeeping,Implement the complete 13-task plan.,,2026-10-17T23:02:02.343Z,2026-10-17T23:02:18.852Z,finished,14206,737,22400,0
 pilot,tetris-007-e00-r2,plan_gate,gate,,,2026-10-17T18:39:04.374Z,2026-10-17T18:39:04.390Z,finished,0,0,,
 pilot,tetris-007-e00-r2,plan_author,plan_review,,,2026-10-17T18:39:04.506Z,2026-10-17T18:40:09.371Z,finished,6643,2534,5888,0
 pilot,tetris-007-e00-r2,plan_reviewer_astra,plan_review,,,2026-10-17T18:40:09.644Z,2026-10-17T18:40:22.909Z,finished,8394,361,0,0

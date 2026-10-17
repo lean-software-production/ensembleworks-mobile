@@ -20,9 +20,12 @@ console.log(JSON.stringify({styles,passed:Object.values(styles).every(Boolean)&&
 def task_sections(text):
     return {m[1]:m[2] for m in re.finditer(r'^- \[[ xX]\] (\d+)\.([^\n]*\n[\s\S]*?)(?=^- \[[ xX]\] \d+\.|\Z)',text,re.M)}
 def check(code):
-    name=f'tetris-007-{code.lower()}-r5';w=Path('/workspaces/tetris-007-experiments/contract-01')/code;t=w/'tetris'/name;r=w/'factory/runs'/name
+    name=f'tetris-007-{code.lower()}-r'+('2' if code=='E04' else '5')
+    w=Path('/workspaces/tetris-007-experiments')/('whole-plan-receipt' if code=='E04' else 'contract-01')/code
+    t=w/'tetris'/name;r=w/'factory/runs'/name
     result=checker.verify(t,r/'plan.md')
-    palette=subprocess.run(['node','--input-type=module','-e',PALETTE,str(t)],text=True,capture_output=True,timeout=20)
+    probe=PALETTE if code!='E04' else PALETTE.replace('const {renderFrame}', 'const {render:renderFrame}').replace('{board,score:0,status:\'running\',active:null,color:true},{color:true,isTTY:true,env:{}}', '{board,score:0,over:false,paused:false,active:null},true')
+    palette=subprocess.run(['node','--input-type=module','-e',probe,str(t)],text=True,capture_output=True,timeout=20)
     result['label']='20261017 maintenance re-evaluation; original acceptance.json retained'
     result['seven_piece_render_palette']=json.loads(palette.stdout) if palette.returncode==0 else {'passed':False,'error':palette.stderr}
     frozen=task_sections((BASE/'inputs/plan.md').read_text());actual=task_sections((r/'plan.md').read_text())
@@ -31,4 +34,4 @@ def check(code):
     out=BASE/'maintenance'/f'{code}-acceptance-reevaluation.json';out.write_text(json.dumps(result,indent=2)+'\n')
     print(code,'checks', {k:v['passed'] for k,v in result['checks'].items()},'palette',result['seven_piece_render_palette'],'drift', {k:v for k,v in result['clause_audit'].items() if not v['heading_preserved'] or v['original_clauses_missing_verbatim']},flush=True)
 if __name__=='__main__':
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:list(pool.map(check,['E00','E01','E02','E03']))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:list(pool.map(check,['E00','E01','E02','E03','E04']))

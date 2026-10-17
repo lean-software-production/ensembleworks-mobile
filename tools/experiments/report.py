@@ -36,7 +36,7 @@ def calls(es):
                 c['status']=e['status'];c['finished']=e['time'];r=result(c.pop('text'))
                 if n=='doer':
                     task=r.get('task') or task or 'unidentified';c['task']=task;attempts[task]=attempts.get(task,0)+1;c['attempt']=attempts[task]
-                c['phase']='plan_review' if n.startswith('plan_') and n!='plan_gate' else 'bookkeeping' if n=='planner' else 'gate' if n=='plan_gate' else 'implementation'
+                c['phase']='plan_review' if n.startswith('plan_') and n!='plan_gate' else 'bookkeeping' if n=='planner' else 'gate' if n=='plan_gate' else 'validation' if n=='validator' else 'implementation'
                 rows.append(c);del active[n]
     for c in active.values():
         c.pop('text');c['status']='running';rows.append(c)

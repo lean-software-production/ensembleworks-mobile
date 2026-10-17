@@ -45,7 +45,7 @@ def refresh():
     (out/'combined.json').write_text(json.dumps(payload,indent=2)+'\n')
     fields=['cohort','id','machine','phase','task','attempt','started','finished','status',*KEYS]
     with (out/'combined-calls.csv').open('w') as f:
-        writer=csv.DictWriter(f,fields,extrasaction='ignore');writer.writeheader();writer.writerows(rows)
+        writer=csv.DictWriter(f,fields,extrasaction='ignore',lineterminator='\n');writer.writeheader();writer.writerows(rows)
     def cell(s):return '<td>'+html.escape(str(s))+'</td>'
     (BASE/'results.md').write_text('# Tetris 007 combined observations\n\n'+payload['limitations']+'\n\n'+progress_text()+'\n\nSee results.html and maintenance/combined.json for all retained trials, timing, recovery and usage coverage.\n')
     table=''
@@ -63,6 +63,9 @@ def refresh():
         if latest:
             label=f"{latest['tasks']}/13 · {latest['status']}"
             text=re.sub(r'(<tr data-experiment="'+code+r'"[\s\S]*?<span class="badge">)[^<]*(</span>)',lambda m:m[1]+html.escape(label)+m[2],text,count=1)
-    text=text.replace('</main>','<!-- maintenance-summary --><aside class="callout"><strong>Maintenance '+stamp+':</strong> E00/E01/E03 finished 13 tasks; acceptance scope review pending. E02 recovery preserves the genuine reachable-fixture rejection and malformed-output history. E04 receipt repair is running; old loop remains stopped. No efficiency verdict yet. <a href="experiments/tetris-007/results.html">Combined ledger and local check-ins</a>.</aside><!-- /maintenance-summary -->\n</main>')
+            io=latest['usage']['inputTokens']['reported']+latest['usage']['outputTokens']['reported']
+            detail=f"{io:,} reported I/O · {latest['calls']} calls · tested, inconclusive"
+            text=re.sub(r'(<tr data-experiment="'+code+r'"[\s\S]*?<span class="result-slot">)[^<]*(</span>)',lambda m:m[1]+html.escape(detail)+m[2],text,count=1)
+    text=text.replace('</main>','<!-- maintenance-summary --><aside class="callout"><strong>Maintenance '+stamp+':</strong> All five hypotheses have completed independently checked observations. All products finish 13 tasks; strict frozen acceptance remains failed (plain non-TTY policy conflict, plus E00 task-boundary drift). E02 correction was revalidated; E04 finished with one accepted commit after three doer/validator attempts. Results are exploratory and do not establish causal savings. <a href="experiments/tetris-007/results.html">Combined ledger and local check-ins</a>.</aside><!-- /maintenance-summary -->\n</main>')
     one.write_text(text)
 if __name__=='__main__':refresh()
