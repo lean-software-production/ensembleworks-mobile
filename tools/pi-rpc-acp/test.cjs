@@ -112,3 +112,11 @@ test('retains the model stop reason separately from the ACP turn boundary', { ti
   assert.equal(response.stopReason, 'end_turn');
   assert.deepEqual(response._meta.modelStopReasons, ['length']);
 });
+
+test('does not present a partial aggregate when one model turn has no usage', { timeout: 10000 }, async t => {
+  const { response } = await stream(t, [
+    { type: 'turn_end', message: { role: 'assistant', stopReason: 'error' } }
+  ], [{ input: 3, output: 4, cacheRead: 0, cacheWrite: 0 }]);
+  assert.equal(response.usage, undefined);
+  assert.deepEqual(response._meta.modelStopReasons, ['error']);
+});
