@@ -61,6 +61,11 @@ class CohortTests(unittest.TestCase):
                 self.assertFalse(s.MODEL_ERRORS)
                 self.assertTrue(all('tag' not in call.args for call in git.call_args_list))
 
+    def test_whole_plan_commit_guard_allows_one_commit_but_stops_repetition(self):
+        self.assertFalse(s.repeated_whole_plan_commits(['Prepare E04']))
+        self.assertFalse(s.repeated_whole_plan_commits(['Implement the complete 13-task plan.','Prepare E04']))
+        self.assertTrue(s.repeated_whole_plan_commits(['Implement the complete 13-task plan.']*2))
+
     def test_unterminated_record_is_not_misread(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp);(p/'record.jsonl').write_text('{"type":"run","status":"running"}\n{"type":')

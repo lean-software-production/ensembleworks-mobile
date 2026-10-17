@@ -81,3 +81,13 @@ python3 tools/experiments/supervise.py --configs E04 --worktrees /workspaces/tet
 ```
 
 Preflight its daemon before launch. The existing four-configuration results stay separate. E04's manifest and `launch.json` record the setup and pending state. Starting this command makes no additional control run. For a later simultaneous E00/E04 pair use new trial identities and the same shared runner revision in both.
+
+## Whole-plan-02: explicit factory completion receipt
+
+Whole-plan-01 was stopped after the planner repeatedly treated the historical doer report's "validation pending" note as a present blocker, despite successful independent validation and accepted commits. That failed observation is retained. The retry is a fresh empty product, not a continuation of the looped game.
+
+The runner now supplies `commit_receipt` alongside historical `committed` data only on the immediate post-commit planner call. The receipt is generated after Git commit succeeds and contains task identity, actual commit hash and the accepted validator result/checks. Initial and subsequent implementation calls receive no receipt. It never claims validator acceptance for a legacy unchecked line. The E04 planner checks receipt identity, satisfied validation, HEAD hash and commit subject, then marks the 13 tasks complete without asking the doer to retroactively claim its own independent approval. The historical report may correctly say approval was pending when written.
+
+The existing deterministic factory regression exercises stale pending notes through real engine/validator/commit/planner transitions. A one-call real Sol medium planner smoke checks that the E04 instructions finish all 13 markers with a valid receipt and a stale pending report. A guard stops E04 if a second accepted whole-plan commit appears, preserving the unexpected state instead of allowing another repeated cycle.
+
+Fresh trial `tetris-007-e04-r2`, cohort `whole-plan-02`, uses branch `exp/007-whole-plan-receipt` and its own worktree under `/workspaces/tetris-007-experiments/whole-plan-receipt/E04`. The original pre-author plan, seed, models/thinking, full-product doer/validator contracts and three-attempt retry budget remain unchanged. The new runner receipt and E04 planner completion instructions are the recorded repair. The launch gate requires the full factory suite and real planner smoke to pass before starting one trial. No model call is scheduled beyond that one trial's normal plan/retry workflow. Comparisons with earlier configurations remain exploratory because this runner revision adds receipt context and earlier runs include service interruptions.

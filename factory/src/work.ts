@@ -41,7 +41,7 @@ export function changedWork(target: string): string {
   return [tracked, ...untracked].join("\n");
 }
 
-export function commitWork(target: string, task: string): void {
+export function commitWork(target: string, task: string): string {
   const newFiles = untrackedFiles(target);
   const work = [...new Set([...changedFiles(target, projectPaths), ...newFiles])];
   if (!work.length) throw new Error("Validated task produced no committable work; the plan has not advanced.");
@@ -49,4 +49,5 @@ export function commitWork(target: string, task: string): void {
   if (newFiles.length) git(target, ["add", "--", ...newFiles]);
   // --only leaves unrelated staged and unstaged changes exactly as they were.
   git(target, ["commit", "--only", "-m", task, "--", ...work]);
+  return reference(target);
 }

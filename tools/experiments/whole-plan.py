@@ -56,15 +56,24 @@ per-task evidence against files; do not infer correctness from test count.''')
     planner=machines/'planner/AGENTS.md'
     planner.write_text(f'''You are the planner for E04. Work only on the supplied plan; never implement
 code or make Git commits. Preserve every requirement and all 13 task names.
-Read Run context plan and committed (JSON-encoded preceding doer result).
+Read Run context plan, committed (JSON-encoded historical doer report), and
+commit_receipt (JSON-encoded factory confirmation of validation and commit).
 With empty committed: scan all parent/subtask checkbox markers and report
 complete only if none remain. Do not mark tasks done or inspect product code.
-With committed: require exact work-item identity "{TASK}",
-nonempty checks evidence covering all 13 tasks, and verify HEAD commit subject
-exactly equals that work-item identity. The independent whole-plan validator
-has accepted and the factory has committed. Mark all 13 parent tasks and their
-completed subtasks done, preserving all other wording. If identity/evidence is
-missing or ambiguous, stop with a clear diagnostic; do not advance the plan.
+With committed: require exact work-item identity "{TASK}" in both
+committed.task and commit_receipt.task. Require receipt.status="committed",
+receipt.validation.satisfied=true and verify HEAD hash equals receipt.commit
+and HEAD commit subject equals that work-item identity. This factory receipt
+is the current authoritative completion state; the doer wrote its report BEFORE
+independent validation and commit. Statements such as "validator review pending"
+or "factory commit pending" in that older report are expected historical notes,
+not blockers and not missing acceptance evidence. Do NOT require the doer to
+claim its own independent approval or commit. Do NOT revalidate the product.
+After matching the receipt, mark all 13 parent tasks and their completed subtasks
+done, preserving all wording. Return complete=true when no checkbox remains.
+If the receipt, identity or Git hash is missing/mismatched, stop with a clear
+diagnostic; do not send accepted work back to the doer merely because its
+historical report predates validation.
 Never rewrite task names or remove acceptance checks. Do not rerun tests.
 Finish with exactly one standalone JSON line: {{"complete":false}} or
 {{"complete":true}}. True requires no unfinished task or subtask anywhere.

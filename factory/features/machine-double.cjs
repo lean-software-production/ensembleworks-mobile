@@ -147,6 +147,7 @@ if (machine === "plan_author") {
   if (config.largeLockfile) fs.writeFileSync(path.join(cwd, "package-lock.json"), config.largeLockfile);
   // Answer regardless of which result fields the prompt asks for. Do not mark the parent done.
   result = { task: nextTask };
+  if (config.stalePendingReport) result.limitations = "Validator review and factory commit remain pending.";
 } else if (machine === "validator") {
   if (config.validatorInProse) {
     emit("The work seems fine, but here is no JSON result.");

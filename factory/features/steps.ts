@@ -1120,3 +1120,25 @@ Then("the doer's {word} configuration is isolated", function (this: FactoryWorld
   if (harness === "claude") assert.equal(readFileSync(join(folder, "CLAUDE.md"), "utf8"), "@AGENTS.md\n");
   if (harness === "codex") assert.match(readFileSync(join(folder, "config.toml"), "utf8"), /^project_doc_max_bytes = 0/m);
 });
+
+Given("the doer reports validation and commit as pending", function (this: FactoryWorld) {
+  this.agentConfig.stalePendingReport = true;
+});
+Then("the planner receives authoritative validation and commit receipts", function (this: FactoryWorld) {
+  successful(this);
+  const planners = calls(this, "planner");
+  const contexts = planners.map(call => JSON.parse(call.prompt.match(/Run context:\n([^\n]+)/)![1]));
+  assert.equal(contexts[0].commit_receipt, "");
+  for (const context of contexts.slice(1)) {
+    const receipt = JSON.parse(context.commit_receipt);
+    const historical = JSON.parse(context.committed);
+    assert.match(historical.limitations, /remain pending/);
+    assert.equal(receipt.status, "committed");
+    assert.equal(receipt.task, historical.task);
+    assert.equal(receipt.validation.satisfied, true);
+    assert.equal(receipt.validation.machine, "validator");
+    assert.match(receipt.commit, /^[0-9a-f]{40,64}$/);
+    assert.equal(run(this.codebase, "git", ["show", "-s", "--format=%s", receipt.commit]), receipt.task);
+  }
+  assert.equal(contexts.slice(1).length, 2);
+});

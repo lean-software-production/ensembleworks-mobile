@@ -30,6 +30,7 @@ export interface AgentConfig {
   planSynthesis?: "always" | "reject-first" | "never";
   planObjection?: boolean;
   planDefectFirst?: boolean;
+  stalePendingReport?: boolean;
   malformedPlanReport?: boolean;
   missingPlanDisposition?: boolean;
   planAuthorSkipsTask?: boolean;

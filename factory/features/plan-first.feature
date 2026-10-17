@@ -81,3 +81,9 @@ Feature: Review a comprehensive plan before implementing it
     And the plan synthesiser omits that finding's disposition
     When the factory runs the "tetris" run
     Then an unexplained plan objection stopped implementation
+
+  Scenario: Factory commit receipts supersede the doer's historical pending notes
+    Given the doer reports validation and commit as pending
+    When the factory runs the "tetris" run
+    Then the plan-first run committed 2 tasks
+    And the planner receives authoritative validation and commit receipts

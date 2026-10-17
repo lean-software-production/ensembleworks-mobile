@@ -67,6 +67,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
   let node = line.next("start", {});
   let pendingWork: Result | undefined;
   let committedTask: string | undefined;
+  let commitReceipt: Result | undefined;
   let findings: unknown[] = [];
   let attempts = 0;
   let reports: Record<string, Result> | undefined;
@@ -81,6 +82,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
     const data = {
       name: machine.role === "reviewer" ? "reviewer" : machine.name,
       seed: joining ? "" : seed, plan: joining ? "" : plan, target: joining ? "" : target,
+      commit_receipt: committedTask ? JSON.stringify(commitReceipt ?? {}) : "",
       committed: committedTask ?? "", findings: JSON.stringify(findings),
       review: !joining && ["plan_author", "plan_reviewer", "plan_gate"].includes(machine.role) ? review?.context() ?? "" : "", accepted,
       task: JSON.stringify(pendingWork ?? {}), reports: JSON.stringify(branchReports ?? {}),
@@ -97,7 +99,7 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
     if (machine.role === "plan_author") review!.startRound();
     const prompt = promptFor(machine, undefined, reports);
     reports = undefined;
-    if (!joining && machine.role === "planner") committedTask = undefined;
+    if (!joining && machine.role === "planner") { committedTask = undefined; commitReceipt = undefined; }
     if (machine.role === "doer") {
       if (review && !review.accepted) throw new Error("Implementation requires an accepted plan.");
       if (attempts >= options.attempts) throw new Error(`A task hit its limit of ${options.attempts} attempts.`);
@@ -161,7 +163,9 @@ export async function runFactory(options: Options, prepared: { run: Run; line: A
     const mayCommit = !review || (machine.role === "plan_validator" && result.satisfied === true);
     if (!fan && next !== "finish" && line.machine(next).role === "planner" && pendingWork && mayCommit) {
       signal.throwIfAborted();
-      commitWork(target, typeof pendingWork.task === "string" ? pendingWork.task : "Factory task");
+      const commit = commitWork(target, typeof pendingWork.task === "string" ? pendingWork.task : "Factory task");
+      commitReceipt = { status: "committed", commit, task: pendingWork.task,
+        validation: review ? { machine: machine.name, satisfied: true, checks: result.checks } : undefined };
       review?.completeTask();
       committedTask = JSON.stringify(pendingWork);
       pendingWork = undefined;

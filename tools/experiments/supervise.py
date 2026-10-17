@@ -38,6 +38,9 @@ def summarize(es):
                 if k in e: t[k]+=e[k];t[c]+=1
     return {'machines':totals,'calls':calls,'diagnostics':sum(e['type']=='diagnostic' for e in es)}
 
+def repeated_whole_plan_commits(subjects):
+    return subjects.count('Implement the complete 13-task plan.')>1
+
 def configuration(code, worktree):
     config=RESULTS/f'{code}.json'; state={'experiment':code,'worktree':str(worktree),'status':'running','started':now(),'trials':[]};atomic(config,state)
     for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
@@ -88,6 +91,12 @@ def configuration(code, worktree):
                     subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
                     record['intervention']='Stopped after provider errors in two configurations; cohort circuit breaker.'
                     continue
+                if code=='E04':
+                    subjects=git(worktree,'log','--format=%s',record['pre_run_commit']+'..HEAD').splitlines()
+                    if repeated_whole_plan_commits(subjects):
+                        subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
+                        atomic(RESULTS/'incident.json',{'status':'halted','reason':'E04 made more than one accepted whole-plan commit; stopped a possible completion-handoff loop.'})
+                        raise RuntimeError('E04 completion-handoff loop guard: repeated accepted whole-plan commits.')
                 if time.monotonic()>deadline:
                     subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
                     raise RuntimeError('Three-hour trial ceiling reached; run stopped and retained.')

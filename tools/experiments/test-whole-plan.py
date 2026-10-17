@@ -21,6 +21,10 @@ class WholePlanTests(unittest.TestCase):
             self.assertIn('Leave ALL parent task checkboxes unchecked',doer)
             self.assertIn('all 13 task',validator)
             self.assertIn('HEAD commit subject',planner)
+            self.assertIn('commit_receipt',planner)
+            self.assertIn('current authoritative completion state',planner)
+            self.assertIn('not blockers',planner)
+            self.assertIn('BEFORE',planner)
             for name in ['plan_author','plan_reviewer_opus','plan_reviewer_gemini','plan_reviewer_astra','plan_synthesiser']:
                 self.assertIn(v.EXECUTION,(machines/name/'AGENTS.md').read_text())
     def test_control_instruction_drift_fails_instead_of_silently_half_applying(self):
