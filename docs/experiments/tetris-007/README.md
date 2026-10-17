@@ -49,3 +49,11 @@ python3 tools/experiments/supervise.py --cohort restart-01 --first-trial 4 --tri
 ```
 
 Do not invoke that command a second time over existing observations. The detached supervisor continues after the chat turn and updates the ledger every 30 seconds.
+
+## Contract-01: one fresh trial after the shared result-prompt fix
+
+The user approved fixing the shared result-contract conflict, testing the exact two-object failure, performing one small Opus review smoke test, and starting a fresh one-trial-per-configuration cohort. The new runner explicitly reinforces the required role report fields and forbids a trailing second metadata object. It still reads the last standalone JSON object and validates it strictly; an earlier valid findings object does not rescue an invalid final result. The same shared patch applies to all four new branches. Models, thinking levels, seed, pre-author plan, acceptance criteria and variant-specific machine instructions remain unchanged.
+
+Four new worktrees under `/workspaces/tetris-007-experiments/contract-01/` use branches `exp/007-contract-e00` through `exp/007-contract-e03`. They start from the frozen pre-r4 configurations, plus the shared fix. Fresh targets/runs use `r5`; no code from the current E01 product is copied. The ongoing restart-01 E01 worktree/daemon remains untouched.
+
+`tools/experiments/after-validation.py` gates the next launch on an all-passing full factory suite, a successful one-call Opus smoke test using the real reviewer instructions/model and strict report validator, and completion of restart-01's E01 supervisor. It then preflights four fresh daemons and starts exactly one trial each. Validation failure blocks launch and is recorded. Gate state is in `cohorts/contract-01/launch.json`; validation, manifest and observations stay in that cohort. The existing ledger continues showing restart-01 until the next cohort starts. Shared output-prompt changes mean the new cohort must compare against its own fresh E00 control.

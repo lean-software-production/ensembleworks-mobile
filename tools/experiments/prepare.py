@@ -5,7 +5,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 BASE=Path('/workspaces/tetris-007-experiments')
 PACKET=ROOT/'docs/experiments/tetris-007/inputs'
-parser=argparse.ArgumentParser();parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--cohort',default='');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--worktrees',default=str(BASE));parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--cohort',default='');args=parser.parse_args()
+BASE=Path(args.worktrees).resolve()
 if args.first_trial<1 or args.trials<1:parser.error('Positive trial numbers/count required')
 if args.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',args.cohort):parser.error('Invalid cohort')
 manifest={'protocol':f'{args.trials} fresh trial(s)/configuration; no steering or automatic resume','input_hashes':{str(p.relative_to(PACKET)):hashlib.sha256(p.read_bytes()).hexdigest() for p in PACKET.rglob('*') if p.is_file()},'experiments':[]}

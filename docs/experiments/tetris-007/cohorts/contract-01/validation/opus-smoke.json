@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "record": "/workspaces/ensembleworks-mobile/factory/runs/tetris-007-opus-contract-smoke/record.jsonl",
+  "model": "openrouter/anthropic/claude-opus-5.5:high",
+  "findings": 5,
+  "standalone_objects": 1,
+  "folder": "/tmp/tetris-opus-contract-zVfUc6"
+}

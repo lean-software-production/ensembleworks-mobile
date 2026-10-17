@@ -9,6 +9,7 @@ RESULTS=BASE/'results'
 FIRST_TRIAL=1
 TRIALS=3
 COHORT=''
+WORKTREES=Path('/workspaces/tetris-007-experiments')
 
 def read_events(path):
     if not path.exists():return []
@@ -46,7 +47,7 @@ def refresh():
     incident_path=RESULTS/'incident.json'
     incident=json.loads(incident_path.read_text()) if incident_path.exists() else None
     for code in ['E00','E01','E02','E03']:
-        worktree=Path('/workspaces/tetris-007-experiments')/code
+        worktree=WORKTREES/code
         for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
             name=f'tetris-007-{code.lower()}-r{trial}';folder=RESULTS/name;record=folder/'result.json'
             state=json.loads(record.read_text()) if record.exists() else {'status':'queued'}
@@ -94,13 +95,16 @@ def refresh():
             lines+=['',f"{code}: median observed I/O {statistics.median(vals):,.0f}, range {min(vals):,}–{max(vals):,}; {eligible}/3 passed automated checks pending evidence review. Includes failed runs; do not interpret as equivalent completed work unless quality matches."]
     (BASE/'results.md').write_text('\n'.join(lines)+'\n')
     rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(v))}</td>' for v in [s['experiment']+' / '+str(s['trial']),s['status'],str(s['tasks_complete'])+'/13',f"{s['recorded_io']:,}",f"{s['cache_read_reported']:,} ({s['cache_read_reports']}/{s['usage_reports']} reports)",s['calls_started'],f"{s['active_seconds']/60:.1f}"])+'</tr>' for s in summary)
+    gate_path=BASE/'cohorts/contract-01/launch.json'
+    gate=json.loads(gate_path.read_text()) if gate_path.exists() else None
+    queue_note=('<p>Next cohort: contract-01 · '+html.escape(gate['status'])+' · <a href="cohorts/contract-01/launch.json">launch gate</a></p>') if gate and gate['status']!='launched' else ''
     style='<style>body{font:16px system-ui;background:#f7f3e8;color:#243d42;margin:2rem}main{max-width:1100px;margin:auto}h1{color:#176c65}table{width:100%;border-collapse:collapse;background:white}th,td{text-align:left;padding:.7rem;border-bottom:1px solid #ddd}th{background:#f2d16b}.scroll{overflow:auto}small{color:#52666a}</style>'
-    (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main>'+('<p><strong>'+html.escape(incident['reason'])+'</strong></p>' if incident else '')+'<h1>Tetris 007 · Live experiments</h1><p>Four isolated configurations. One fresh trial each in restart-01; earlier pilot retained separately. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="' + str(RESULTS.relative_to(BASE)) + '/summary.json">Summary JSON</a> · <a href="' + str(RESULTS.relative_to(BASE)) + '/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
+    (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main>'+('<p><strong>'+html.escape(incident['reason'])+'</strong></p>' if incident else '')+queue_note+'<h1>Tetris 007 · Live experiments</h1><p>Four isolated configurations. One fresh trial each; earlier cohorts retained separately. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="' + str(RESULTS.relative_to(BASE)) + '/summary.json">Summary JSON</a> · <a href="' + str(RESULTS.relative_to(BASE)) + '/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default=str(WORKTREES));p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Positive trial numbers/count required')
     if a.cohort and not re.fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort')
-    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort
+    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;WORKTREES=Path(a.worktrees).resolve()
     if COHORT:RESULTS=BASE/'cohorts'/COHORT/'results'
     refresh()

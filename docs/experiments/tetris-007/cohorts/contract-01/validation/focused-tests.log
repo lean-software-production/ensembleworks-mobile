@@ -1,0 +1,18 @@
+
+> lean-software-factory@0.1.0 test:telemetry
+> node -r ts-node/register --test test/acp.test.cjs test/prompts.test.cjs
+
+✔ ACP usage records retain measured cache counters including zero (153.288467ms)
+✔ ACP usage records keep unknown cache counters absent and reject invalid counters (94.677325ms)
+✔ malformed JSON stops the call and saves bounded output and stop diagnostics (44.771448ms)
+✔ a trailing metadata object is never silently replaced with earlier valid findings (170.362444ms)
+✔ reviewer final instruction reinforces the report schema instead of requesting a second summary (1.289628ms)
+✔ role contracts and line routing fields are both retained (0.589497ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3947.90431

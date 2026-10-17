@@ -103,7 +103,7 @@ if __name__=='__main__':
     if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
     FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort
     if COHORT:RESULTS=ROOT/'docs/experiments/tetris-007/cohorts'/COHORT/'results'
-    report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT]
+    report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT,'--worktrees',str(Path(a.worktrees).resolve())]
     RESULTS.mkdir(parents=True,exist_ok=True)
     lock=(RESULTS/'supervisor.lock').open('w')
     fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
