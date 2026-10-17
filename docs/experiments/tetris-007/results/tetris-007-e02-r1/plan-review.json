@@ -1,0 +1,10 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "reviewing",
+  "findings": [],
+  "changes": "Revised plan.md with shared gameplay, state, rendering, timing, input, lifecycle, dependency, and verification contracts; clarified ownership and handoffs across tasks 1–13. Added brief revision notes. Preserved all task identities, acceptance checks, and unchecked states; edited no other files.",
+  "reports": {},
+  "previousReports": {}
+}

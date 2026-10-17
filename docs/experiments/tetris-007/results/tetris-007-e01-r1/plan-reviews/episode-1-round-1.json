@@ -1,0 +1,126 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "reviewing",
+  "findings": [
+    {
+      "id": "launch-display-contract",
+      "sections": "Display and observable boundary contracts; Tasks 12–13",
+      "required_revision": "Specify startup and redraw behavior that preserves the 24-row display through the documented npm launch, including whether npm output counts toward the non-TTY limit. Verify the actual documented launch command.",
+      "acceptance_example": "In a 24-row PTY, launch through the documented npm command and confirm the complete frame occupies rows 1–24 without scrolling; captured non-TTY output satisfies the stated budget."
+    },
+    {
+      "id": "task11-input-boundary",
+      "sections": "Collaboration boundaries and dependencies; Tasks 11–12",
+      "required_revision": "Align Task 11's no-Enter acceptance check with Task 12's ownership of raw mode and cleanup. Either defer interactive verification to Task 12 and use injected input in Task 11, or explicitly assign the necessary lifecycle responsibility earlier.",
+      "acceptance_example": "Task 11 can pass its stated checks without borrowing an unimplemented Task 12 responsibility; the task enabling raw mode verifies restoration on quit."
+    },
+    {
+      "id": "soft-drop-clock-contract",
+      "sections": "Clock, input, and lifecycle contracts; Task 10",
+      "required_revision": "Define whether successful soft drops and soft-drop-induced locks reset gravity timing, and make fake-clock acceptance checks reflect that choice.",
+      "acceptance_example": "With gravity due at 500 ms and down pressed at 300 ms, state and test the next gravity deadline for both movement and lock cases."
+    }
+  ],
+  "changes": "Updated plan.md with compact gameplay, ownership, dependency, timing, randomness, input/output, display, and lifecycle contracts plus boundary examples. Added brief revision notes; preserved all 13 tasks, acceptance checks, and unchecked states. Edited only the plan.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "Revision 1 plan is coherent and testable against the seed: gameplay order, ownership, injected time/randomness/I/O, the 24-row budget, cleanup and the 13-task order all hold up. No blockers; three suggestions: clear the screen and use absolute positioning so the npm banner can't cause scrolling, and smoke-test via npm start; resolve the Task 11/12 raw-mode overlap; say whether soft drop resets the gravity timer.",
+      "findings": [
+        {
+          "id": "npm-banner-first-frame",
+          "issue": "npm start prints its banner lines before the game draws. If the first frame is drawn below them, or redraws use relative cursor moves, a 24-row frame scrolls a 24-row terminal. The non-TTY snapshot through npm also goes over 24 rows.",
+          "section": "Clock, input, and lifecycle contracts / Display and observable boundary contracts; Tasks 12-13",
+          "severity": "suggestion",
+          "recommendation": "Make the first TTY frame clear the screen and draw from the top-left corner, with absolute positioning for every redraw. Have Task 13's PTY smoke test run `npm start` itself (not `node`) and check rows 1-24 hold the whole frame with no scrolling. Say how much non-TTY output is allowed through npm, or use `npm start --silent`."
+        },
+        {
+          "id": "raw-mode-ownership-task11",
+          "issue": "Task 11 must read keys without Enter in an interactive terminal, which needs raw mode, but the contracts give raw mode, listeners and teardown to Task 12. Task 11 could be committed with raw mode on and no restore, or with no interactive session that can be checked.",
+          "section": "Collaboration boundaries and dependencies; Tasks 11-12",
+          "severity": "suggestion",
+          "recommendation": "Either let Task 11 turn on minimal raw mode and restore it on quit, with Task 12 adding the full cleanup, or say Task 11 is tested only through injected streams and move the no-Enter check to Task 12."
+        },
+        {
+          "id": "soft-drop-gravity-timer",
+          "issue": "The plan doesn't say whether a soft drop, or a lock caused by one, restarts the 500 ms gravity wait, so fake-clock tests could expect either.",
+          "section": "Clock, input, and lifecycle contracts; Task 10",
+          "severity": "suggestion",
+          "recommendation": "State the rule, e.g. 'down-arrow and locks do not reschedule gravity; the existing timer keeps its phase', and add a fake-clock case: down at 300 ms, gravity still fires at 500 ms."
+        }
+      ],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, timing, randomness, input/output, display, and lifecycle contracts plus boundary examples. Added brief revision notes; preserved all 13 tasks, acceptance checks, and unchecked states. Edited only the plan."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "Reviewed the full 13-task plan against the seed requirements and implementation contracts; all gameplay rules, boundaries, test seams, display constraints, and task dependencies are coherent and complete with no findings.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, timing, randomness, input/output, display, and lifecycle contracts plus boundary examples. Added brief revision notes; preserved all 13 tasks, acceptance checks, and unchecked states. Edited only the plan."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Reviewed the full plan against the seed. Gameplay ordering, ownership, deterministic test seams, terminal lifecycle, 24-row display limits, and actual launch verification are adequately specified. The 13-task sequence has coherent dependencies and meaningful acceptance checks. No blocking gaps or actionable suggestions found.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, timing, randomness, input/output, display, and lifecycle contracts plus boundary examples. Added brief revision notes; preserved all 13 tasks, acceptance checks, and unchecked states. Edited only the plan."
+      }
+    }
+  },
+  "previousReports": {},
+  "decision": {
+    "satisfied": false,
+    "summary": "All three reviews identify episode 1, round 1, revision 1. Gameplay and overall structure are supported; three narrow contract clarifications remain necessary despite the reviewers' nonblocking assessments.",
+    "findings": [
+      {
+        "id": "launch-display-contract",
+        "sections": "Display and observable boundary contracts; Tasks 12–13",
+        "required_revision": "Specify startup and redraw behavior that preserves the 24-row display through the documented npm launch, including whether npm output counts toward the non-TTY limit. Verify the actual documented launch command.",
+        "acceptance_example": "In a 24-row PTY, launch through the documented npm command and confirm the complete frame occupies rows 1–24 without scrolling; captured non-TTY output satisfies the stated budget."
+      },
+      {
+        "id": "task11-input-boundary",
+        "sections": "Collaboration boundaries and dependencies; Tasks 11–12",
+        "required_revision": "Align Task 11's no-Enter acceptance check with Task 12's ownership of raw mode and cleanup. Either defer interactive verification to Task 12 and use injected input in Task 11, or explicitly assign the necessary lifecycle responsibility earlier.",
+        "acceptance_example": "Task 11 can pass its stated checks without borrowing an unimplemented Task 12 responsibility; the task enabling raw mode verifies restoration on quit."
+      },
+      {
+        "id": "soft-drop-clock-contract",
+        "sections": "Clock, input, and lifecycle contracts; Task 10",
+        "required_revision": "Define whether successful soft drops and soft-drop-induced locks reset gravity timing, and make fake-clock acceptance checks reflect that choice.",
+        "acceptance_example": "With gravity due at 500 ms and down pressed at 300 ms, state and test the next gravity deadline for both movement and lock cases."
+      }
+    ],
+    "dispositions": [
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "npm-banner-first-frame",
+        "status": "revise",
+        "reason": "The reported npm banner exposes an unresolved launch/display boundary. Other reviews endorse the display generally but provide no evidence addressing this specific startup case."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "raw-mode-ownership-task11",
+        "status": "revise",
+        "reason": "The reported no-Enter check depends on lifecycle responsibility assigned to a later task; the acceptance boundary needs clarification, not a broader ownership redesign."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "soft-drop-gravity-timer",
+        "status": "revise",
+        "reason": "Either timing policy can be valid, but the reported omission permits incompatible fake-clock expectations and therefore leaves the acceptance contract ambiguous."
+      }
+    ]
+  }
+}

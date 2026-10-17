@@ -1,0 +1,82 @@
+{
+  "id": "tetris-007-e01-r2",
+  "experiment": "E01",
+  "trial": 2,
+  "started": "2026-10-17T18:43:15.657739+00:00",
+  "status": "failed",
+  "worktree": "/workspaces/tetris-007-experiments/E01",
+  "target": "/workspaces/tetris-007-experiments/E01/tetris/tetris-007-e01-r2",
+  "branch": "exp/007-compact",
+  "pre_run_commit": "3e7780bdf8bd600a61ba61aa40b56026163c1192",
+  "pre_run_tag": "tetris-007-e01-r2-before-run",
+  "input_hashes": {
+    "seed.md": "55e1de2092433ae22247f94709834792908f47f8cfdc60740b7f5fecf370351a",
+    "plan.md": "25934aff06e1a175834cca9981bb646ebacb631f041741cb9aadaf76cf5032b1",
+    "acceptance.md": "ce1032fc7731f56f582f80d903d6a9db5ce87f70c3704a7fd269dee22166f7c9",
+    "assembly-lines/efficient.dot": "939f0385ac1599ba77d3c622460431a64e192793d6873a2c0f120bb40e794d0d",
+    "assembly-lines/.machines/planner/AGENTS.md": "65ba6bbd412b3cf9cf2d778799ec9764b82e7edbfb0609537c636471b958408e",
+    "assembly-lines/.machines/planner/machine.json": "33471a4f9e23e6a671eeb09e5b58ff1b0c5fbe0ffb862592daa320d955f2d60b",
+    "assembly-lines/.machines/planner/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_reviewer_opus/AGENTS.md": "c35ff60059b5b031e2861a8d02e9135c5ec9a495ad329acd6fa197983e4632d3",
+    "assembly-lines/.machines/plan_reviewer_opus/machine.json": "80cc2fabf3e6bca5bd1d5d253bb527d43fc5405318266b0dd778eb72be2539bb",
+    "assembly-lines/.machines/plan_reviewer_opus/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_reviewer_gemini/AGENTS.md": "c35ff60059b5b031e2861a8d02e9135c5ec9a495ad329acd6fa197983e4632d3",
+    "assembly-lines/.machines/plan_reviewer_gemini/machine.json": "509a88998f918075c6e9675fa026b94eec8bfc27ee8cfcd84539071325c1bd05",
+    "assembly-lines/.machines/plan_reviewer_gemini/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_author/AGENTS.md": "5ef66d481c92493f470891784de8c039fd503c7b85d2f63ef082312d8daec63d",
+    "assembly-lines/.machines/plan_author/machine.json": "e722cf0e8bacc0f9c90d1b187f04fdd6da705708382ec80069e982ffe313824a",
+    "assembly-lines/.machines/plan_author/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_synthesiser/AGENTS.md": "60f9d5a511a7aadf57130f8da142192cb40f371d863d40009b31985f633fa679",
+    "assembly-lines/.machines/plan_synthesiser/machine.json": "40b5875498c2d174bf9ff1310a9f71d5f20551af836d166e683289b7ff088f4a",
+    "assembly-lines/.machines/plan_synthesiser/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_gate/AGENTS.md": "94981d08865442c27f89dbc7833075e526d8f2935ace4458e3c75700f405baec",
+    "assembly-lines/.machines/plan_gate/gate.cjs": "1ec7c5c9f00383f4f222f36cc4a658164a0c6408f4e343f17f81724d5435ec0b",
+    "assembly-lines/.machines/plan_gate/machine.json": "0f22ab62357e8a17e8cfe4b927ce3440fe21f4eb3a1ac8ec12b25129e56fa19a",
+    "assembly-lines/.machines/plan_gate/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/doer/AGENTS.md": "0e9c05dfac68ee1f0993bcd954651e0a1c9873640ce7923ec7ddc9bf269cce49",
+    "assembly-lines/.machines/doer/machine.json": "38e1fb719d0ba7fbc3eb42af2a609c28d5be5a714cb0a56fb94d72a8392ac950",
+    "assembly-lines/.machines/doer/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/plan_reviewer_astra/AGENTS.md": "c35ff60059b5b031e2861a8d02e9135c5ec9a495ad329acd6fa197983e4632d3",
+    "assembly-lines/.machines/plan_reviewer_astra/machine.json": "20d8936a7b023b1d1c754dc2cb3b5c24b75d17f89404209203f35cbe32fa57ad",
+    "assembly-lines/.machines/plan_reviewer_astra/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "assembly-lines/.machines/validator/AGENTS.md": "4815db1b6b849098bf8bdbfa0b745b71af954f31cd741c3291572051047f7bcd",
+    "assembly-lines/.machines/validator/machine.json": "1dff2f479c11c534a0d771467b17c45ff60589da8a309bf437404edc37ff4a92",
+    "assembly-lines/.machines/validator/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455"
+  },
+  "progress": {
+    "last_event": "2026-10-17T18:43:25.105Z",
+    "machine": "plan_author",
+    "events": 10
+  },
+  "factory_status": "failed",
+  "usage": {
+    "machines": {
+      "plan_gate": {
+        "reports": 1,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cachedReadTokens": 0,
+        "cachedWriteTokens": 0,
+        "cacheReadReports": 0,
+        "cacheWriteReports": 0
+      },
+      "plan_author": {
+        "reports": 1,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cachedReadTokens": 0,
+        "cachedWriteTokens": 0,
+        "cacheReadReports": 1,
+        "cacheWriteReports": 1
+      }
+    },
+    "calls": {
+      "plan_gate": 1,
+      "plan_author": 1
+    },
+    "diagnostics": 1
+  },
+  "failure": "Could not read the plan_author's result.",
+  "result_commit": "3e7780bdf8bd600a61ba61aa40b56026163c1192",
+  "finished": "2026-10-17T18:43:28.096869+00:00"
+}

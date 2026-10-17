@@ -40,6 +40,8 @@ def calls(es):
 def refresh():
     RESULTS.mkdir(parents=True,exist_ok=True)
     summary=[];callrows=[]
+    incident_path=RESULTS/'incident.json'
+    incident=json.loads(incident_path.read_text()) if incident_path.exists() else None
     for code in ['E00','E01','E02','E03']:
         worktree=Path('/workspaces/tetris-007-experiments')/code
         for trial in range(1,4):
@@ -68,16 +70,18 @@ def refresh():
         running=sum(s['status'] in ['starting','running'] for s in group)
         finished=sum(s['status'] not in ['queued','starting','running'] for s in group)
         label=f'{finished}/3 recorded' + (' · running' if running else '') if finished or running else 'Queued'
+        if incident: label='Halted · no verdict'
         pattern=r'(<tr data-experiment="'+code+r'"[\s\S]*?<span class="badge">)[^<]*(</span>)'
         page=re.sub(pattern,lambda m:m[1]+label+m[2],page,count=1)
     onepager.write_text(page)
-    payload={'updated':datetime.now(timezone.utc).isoformat(),'trials':summary,'note':'Partial tokens omit active calls. Missing cache reports are unknown. Checks passed remains pending review of preserved acceptance and validator evidence.'}
+    payload={'updated':datetime.now(timezone.utc).isoformat(),'incident':incident,'trials':summary,'note':'Partial tokens omit active calls. Missing cache reports are unknown. Checks passed remains pending review of preserved acceptance and validator evidence.'}
     (RESULTS/'summary.json').write_text(json.dumps(payload,indent=2)+'\n')
     if callrows:
         fields=['experiment','trial','id','machine','phase','task','attempt','started','finished','status','inputTokens','outputTokens','cachedReadTokens','cachedWriteTokens']
         with (RESULTS/'calls.csv').open('w',newline='') as f:
             writer=csv.DictWriter(f,fields,extrasaction='ignore',lineterminator='\n');writer.writeheader();writer.writerows(callrows)
     lines=['# Tetris 007 measured pilot',f"Updated {payload['updated']}",'','| Experiment / trial | Status | Tasks | Recorded I/O | Cache read / coverage | Calls | Active min |','| --- | --- | ---: | ---: | ---: | ---: | ---: |']
+    if incident:lines.insert(2, '\n**Halted: '+incident['reason']+'**\n')
     for s in summary:lines.append(f"| {s['experiment']} / {s['trial']} | {s['status']} | {s['tasks_complete']}/13 | {s['recorded_io']:,} | {s['cache_read_reported']:,} / {s['cache_read_reports']}/{s['usage_reports']} reports | {s['calls_started']} | {s['active_seconds']/60:.1f} |")
     lines+=['','Partial totals omit active calls. Cache totals include only reported fields; absent does not mean zero. Local machines also count as calls. All failures stay in the dataset.','', 'A lower total from a failed or incomplete game is not evidence of improved efficiency. Final quality verdict requires reviewing retained acceptance clauses and validator evidence.']
     for code in ['E00','E01','E02','E03']:
@@ -88,6 +92,6 @@ def refresh():
     (BASE/'results.md').write_text('\n'.join(lines)+'\n')
     rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(v))}</td>' for v in [s['experiment']+' / '+str(s['trial']),s['status'],str(s['tasks_complete'])+'/13',f"{s['recorded_io']:,}",f"{s['cache_read_reported']:,} ({s['cache_read_reports']}/{s['usage_reports']} reports)",s['calls_started'],f"{s['active_seconds']/60:.1f}"])+'</tr>' for s in summary)
     style='<style>body{font:16px system-ui;background:#f7f3e8;color:#243d42;margin:2rem}main{max-width:1100px;margin:auto}h1{color:#176c65}table{width:100%;border-collapse:collapse;background:white}th,td{text-align:left;padding:.7rem;border-bottom:1px solid #ddd}th{background:#f2d16b}.scroll{overflow:auto}small{color:#52666a}</style>'
-    (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main><h1>Tetris 007 · Live experiments</h1><p>Four isolated configurations, three fresh trials each. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="results/summary.json">Summary JSON</a> · <a href="results/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
+    (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main>'+('<p><strong>'+html.escape(incident['reason'])+'</strong></p>' if incident else '')+'<h1>Tetris 007 · Live experiments</h1><p>Four isolated configurations, three fresh trials each. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="results/summary.json">Summary JSON</a> · <a href="results/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
 
 if __name__=='__main__':refresh()

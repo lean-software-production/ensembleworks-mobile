@@ -1,0 +1,13 @@
+{
+  "status": "halted",
+  "reason": "Pilot halted after supporting Codex agents reported a usage limit and factory model calls ended with error stop reasons. No trial completed the game; no efficiency verdict is possible.",
+  "evidence": {
+    "startup_failures": 2,
+    "plan_reviewer_result_failures": 2,
+    "factory_model_error_failures": 7,
+    "operator_stopped": 1,
+    "completed_games": 0,
+    "factory_provider_error_message": "Not preserved by the bridge; error stop reasons alone do not prove the specific provider cause."
+  },
+  "intervention": "Detached supervisor terminated and E02/r3 stopped through factory CLI. No measured runner/configuration was repaired or resumed."
+}

@@ -1,0 +1,20 @@
+
+> lean-software-factory@0.1.0 test:bridge
+> node --test ../tools/pi-rpc-acp/test.cjs
+
+✔ separates progress messages from a fragmented final JSON result (526.487424ms)
+✔ preserves existing newlines without adding blank lines (371.151262ms)
+✔ does not turn commentary containing JSON into a standalone result (213.459118ms)
+✔ aggregates reported cache usage and preserves explicit zero (152.185395ms)
+✔ does not report partial or missing cache measurements as complete totals (184.806721ms)
+✔ does not invent usage when no model turn reported it (116.722623ms)
+✔ retains the model stop reason separately from the ACP turn boundary (105.694756ms)
+✔ does not present a partial aggregate when one model turn has no usage (96.509856ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2140.107231

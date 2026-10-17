@@ -1,0 +1,163 @@
+{
+  "episode": 1,
+  "round": 2,
+  "revision": 2,
+  "status": "accepted",
+  "findings": [],
+  "changes": "Revised plan contracts for suspended-input handling, controlled entry-point integration versus non-TTY launch, task-11 exit cleanup, and observable no-scrolling checks. Recorded all four review findings and affected handoffs; preserved all 13 tasks, acceptance checks, and completion states. Edited only plan.md.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "Revision 2 fixes all four round-1 findings with testable contracts: input is discarded while the terminal is too small, with a recovery test; the integration test and launcher share one entry routine, kept separate from the non-terminal and real npm start checks; task 11 restores the terminal on quit and Ctrl-C; and a screen-model check confirms redraws never scroll. No new blockers or suggestions.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan contracts for suspended-input handling, controlled entry-point integration versus non-TTY launch, task-11 exit cleanup, and observable no-scrolling checks. Recorded all four review findings and affected handoffs; preserved all 13 tasks, acceptance checks, and completion states. Edited only plan.md."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "Reviewed revision 2 of plan.md focusing on the four prior findings and affected contracts. Suspended-session input discarding, the shared callable entry path with TTY fakes vs. non-TTY/PTY verification, task 11 minimum exit cleanup, and the screen/cursor model oracle for zero-scroll redraw checks are all cleanly resolved with no new issues.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan contracts for suspended-input handling, controlled entry-point integration versus non-TTY launch, task-11 exit cleanup, and observable no-scrolling checks. Recorded all four review findings and affected handoffs; preserved all 13 tasks, acceptance checks, and completion states. Edited only plan.md."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Reviewed revision 2 against the four prior findings and affected task handoffs. All are resolved: suspended inputs are discarded, interactive integration and non-TTY verification are distinct, task 11 includes safe exit cleanup, and repeated redraws have an observable no-scrolling oracle. No new issues found. No files changed or tests run.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan contracts for suspended-input handling, controlled entry-point integration versus non-TTY launch, task-11 exit cleanup, and observable no-scrolling checks. Recorded all four review findings and affected handoffs; preserved all 13 tasks, acceptance checks, and completion states. Edited only plan.md."
+      }
+    }
+  },
+  "previousReports": {
+    "plan_reviewer_opus": {
+      "summary": "Revision 1 is coherent, minimal and testable against the seed, and I found no blockers. Gameplay ordering, injected time/randomness/I-O, the 24-row/64-column budget, cleanup and the 13-task order are all well specified. Four suggestions: define what input does while the size warning is shown, say how the task-13 harness reconciles 'actual entry point' with the non-TTY exit rule, make the task-11 commit safe for raw mode, and name a concrete check for 'no scrolling'.",
+      "findings": [
+        {
+          "id": "suspended-input-policy",
+          "issue": "The plan does not say whether model actions (move/rotate/drop/pause/restart) apply while the session is suspended for a too-small terminal. Only quit and interruption are guaranteed, and recovery must preserve board, score and phase.",
+          "section": "Time, input, display, and lifecycle boundaries",
+          "severity": "suggestion",
+          "recommendation": "State that while suspended only quit/Ctrl-C have effect and every other decoded action is ignored, not queued. Add a test: at 64x24, send Left and P, resize to 65x24, and confirm the piece position and running phase are unchanged."
+        },
+        {
+          "id": "integration-launch-vs-nontty",
+          "issue": "Task 13 requires launching 'the actual entry point with controlled terminal I/O' and a controlled scheduler. The non-TTY policy makes a piped child process emit one frame and exit, so it is unclear whether the harness runs in-process with fake TTY objects or uses a PTY with env-based seams.",
+          "section": "Observable boundaries and verification handoffs / Task 13",
+          "severity": "suggestion",
+          "recommendation": "Specify the mechanism, for example: the entry module exports a main(deps) that the bin calls with real process deps, and the integration test calls the same main with fake TTY streams (isTTY=true, columns=65, rows=24), a fake scheduler and a finite piece source. Keep the separate `npm start` PTY smoke check for real launch."
+        },
+        {
+          "id": "task11-raw-mode-interim",
+          "issue": "Task 11 needs input without Enter, which requires raw mode. Raw-mode restoration belongs to task 12, so the task-11 commit could leave the terminal in raw mode after quit and not be a safe committable increment.",
+          "section": "Tasks 11-12 / Ownership and dependencies",
+          "severity": "suggestion",
+          "recommendation": "Require task 11 to restore raw mode and show the cursor on quit/Ctrl-C at minimum, with task 12 making cleanup idempotent and covering signals, failures and partial initialization. Alternatively, move raw-mode enabling into task 12."
+        },
+        {
+          "id": "scroll-test-oracle",
+          "issue": "'Repeated redraws at 65x24 must be tested for scrolling' gives no check that can actually be run. A fake output stream cannot observe scrolling unless the test interprets the output as screen operations.",
+          "section": "Renderer/session examples",
+          "severity": "suggestion",
+          "recommendation": "Name the check: each frame write starts with cursor-home (or absolute positioning), contains exactly 23 line separators across 24 rows with no trailing newline, and never writes past row 24. Alternatively, feed the output to a small screen model or headless terminal emulator and assert the top row stays the top border after N redraws."
+        }
+      ],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, deterministic testing, input, timing, rendering, and lifecycle contracts plus boundary examples and revision notes. Preserved all 13 tasks, acceptance checks, and unchecked states; changed no implementation files."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "Reviewed plan.md against seed.md across gameplay rules, component contracts, event ordering, deterministic testability, 24-row rendering/lifecycle rules, and the 13-task sequence; found no blocking issues or suggestions.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, deterministic testing, input, timing, rendering, and lifecycle contracts plus boundary examples and revision notes. Preserved all 13 tasks, acceptance checks, and unchecked states; changed no implementation files."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Reviewed the seed and full plan. Gameplay ordering, ownership contracts, deterministic testing, 24-row rendering, cleanup, launch verification, and the 13-task sequence are adequately specified. No blocking gaps or actionable suggestions found. No files changed or implementation tests run.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan.md with compact gameplay, ownership, dependency, deterministic testing, input, timing, rendering, and lifecycle contracts plus boundary examples and revision notes. Preserved all 13 tasks, acceptance checks, and unchecked states; changed no implementation files."
+      }
+    }
+  },
+  "previousDecision": {
+    "satisfied": false,
+    "summary": "All three reports identify episode 1, round 1, revision 1. Core gameplay and structure are accepted; four boundary and verification contracts need clarification.",
+    "findings": [
+      {
+        "id": "suspended-input-policy",
+        "section": "Time, input, display, and lifecycle boundaries",
+        "required_revision": "Define suspended-session input behavior consistently with preserving board, score and phase. Specify whether non-exit actions are ignored rather than queued.",
+        "acceptance_example": "While undersized at 64x24, send Left and P, then recover to 65x24; verify the documented preservation behavior and that quit/Ctrl-C remain effective."
+      },
+      {
+        "id": "integration-launch-vs-nontty",
+        "section": "Observable boundaries and verification handoffs / Task 13",
+        "required_revision": "Identify how the integration harness exercises the actual entry path with controlled time and input without triggering non-TTY exit behavior; distinguish this from real-launch verification.",
+        "acceptance_example": "The controlled interactive harness remains active for scheduled input, while a separate non-TTY invocation emits one frame and exits."
+      },
+      {
+        "id": "task11-raw-mode-interim",
+        "section": "Tasks 11–12 / Ownership and dependencies",
+        "required_revision": "Ensure the task-11 increment cannot leave the terminal in raw mode or the cursor hidden after its supported exit paths. Clarify the minimum cleanup responsibility before task 12 broadens lifecycle coverage.",
+        "acceptance_example": "At task 11, quit and Ctrl-C restore any terminal state changed by that increment."
+      },
+      {
+        "id": "scroll-test-oracle",
+        "section": "Renderer/session examples",
+        "required_revision": "Define an observable pass/fail oracle for the required repeated-redraw no-scrolling check, rather than relying solely on captured output.",
+        "acceptance_example": "At 65x24, repeated redraws demonstrably preserve the top border on row 1 and never advance output beyond row 24, using checked cursor operations or a screen model."
+      }
+    ],
+    "dispositions": [
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "suspended-input-policy",
+        "status": "revise",
+        "reason": "The reported recovery-preservation guarantee leaves action handling during suspension undefined; this needs an explicit behavioral contract."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "integration-launch-vs-nontty",
+        "status": "revise",
+        "reason": "The required interactive entry-point test needs a stated execution boundary compatible with the separate non-TTY exit rule; no particular implementation mechanism is mandated."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "task11-raw-mode-interim",
+        "status": "revise",
+        "reason": "Deferring restoration until task 12 leaves the reported task-11 interactive increment unsafe on exit; later cleanup does not establish interim safety."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "scroll-test-oracle",
+        "status": "revise",
+        "reason": "The required no-scrolling acceptance check lacks an observable oracle, making this a testability gap despite its suggestion-level classification."
+      }
+    ]
+  },
+  "decision": {
+    "satisfied": true,
+    "summary": "All three reports identify episode 1, round 2, revision 2 and confirm the four prior concerns have testable resolutions. No new findings or required revisions.",
+    "findings": [],
+    "dispositions": []
+  }
+}

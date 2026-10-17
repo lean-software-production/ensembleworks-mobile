@@ -29,3 +29,9 @@ At the initial four-way cold start, E00/r1 and E03/r1 hit the existing factory d
 The first successful author calls confirm cache-read counters reach records and the ledger (including explicit cache-write zero). Full factory regression suites run concurrently have reported failures; exact diagnostics are being collected. Live records and the ledger remain the source of truth.
 
 E02/r1 then failed at the first plan review: Opus emitted a valid findings object followed by a second standalone metadata JSON object without findings. The existing runner takes the last JSON object and rejected it. This is a measured protocol/output failure, distinct from the zero-call startup failures; usage and full reviewer output are archived. E02/r2 starts fresh, with no configuration repair.
+
+## Halted pilot — no efficiency verdict
+
+All 12 trial slots have observations: two zero-call startup failures, two E02 plan-review output/schema failures, seven factory failures ending with model stop reason `error`, and one explicit operator stop (E02/r3). No game completed and no task was committed. Supporting Codex agents explicitly reported an account usage limit at the same time as the model errors. The bridge retained factory stop reasons but not the providers' detailed error messages, so the factory errors' exact cause remains unverified.
+
+The supervisor was terminated and the remaining active factory run stopped to avoid further model work. All original inputs, records, plans/reviews and partial products are archived under `results/<trial>/`; credentials are excluded. Experiment branches/worktrees remain intact. The ledger is an incident dataset, not an efficiency comparison. Resuming needs a newly identified cohort after service capacity is available, with daemon preflight and provider-error circuit breaking before new measurement. Do not overwrite or resume these observations as if they were fresh trials.

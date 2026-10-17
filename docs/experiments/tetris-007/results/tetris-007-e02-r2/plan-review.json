@@ -1,0 +1,10 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "reviewing",
+  "findings": [],
+  "changes": "Revised plan requirements and added compact design/collaboration contracts covering gameplay, ownership, state invariants, deterministic testing, terminal boundaries, lifecycle failures and dependencies. Added separate brief revision notes. Preserved all 13 tasks, acceptance checks and unfinished states; changed only the plan.",
+  "reports": {},
+  "previousReports": {}
+}

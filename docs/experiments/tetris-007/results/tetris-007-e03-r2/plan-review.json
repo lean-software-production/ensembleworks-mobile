@@ -1,0 +1,144 @@
+{
+  "episode": 1,
+  "round": 2,
+  "revision": 2,
+  "status": "accepted",
+  "findings": [],
+  "changes": "Revised plan.md collaboration, timing, display, and preparation sections to clarify Task 11 raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended input. Added targeted validation examples for Tasks 10–12; preserved all 13 tasks, existing checks, and completion states. Only the plan was edited.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "Revision 2 resolves all three prior findings: task 11 raw-mode enable/restore goes through task 12's terminal boundary, interactive mode requires both stdin and stdout to be terminals (otherwise one plain snapshot and exit 0) with separate redirection tests, and player actions never reset gravity while only Q/Ctrl-C work during size suspension, each with fake-clock or resize checks. No new contradictions or gaps.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan.md collaboration, timing, display, and preparation sections to clarify Task 11 raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended input. Added targeted validation examples for Tasks 10–12; preserved all 13 tasks, existing checks, and completion states. Only the plan was edited."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "Round 2 revisions cleanly resolve all prior findings: Task 11/12 raw-mode ownership, both-TTY interactive and colour selection with separate redirection tests, retained gravity deadlines across player actions, and quit-only input handling during size suspension are all explicitly specified and testable.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan.md collaboration, timing, display, and preparation sections to clarify Task 11 raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended input. Added targeted validation examples for Tasks 10–12; preserved all 13 tasks, existing checks, and completion states. Only the plan was edited."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Reviewed revision 2 against the seed and prior findings. Raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended-input behavior now have explicit contracts and targeted checks. No remaining findings; no files changed or tests run.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 2,
+        "revision": 2,
+        "changes": "Revised plan.md collaboration, timing, display, and preparation sections to clarify Task 11 raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended input. Added targeted validation examples for Tasks 10–12; preserved all 13 tasks, existing checks, and completion states. Only the plan was edited."
+      }
+    }
+  },
+  "previousReports": {
+    "plan_reviewer_opus": {
+      "summary": "Plan is coherent and fully covers the seed: atomic descent/lock/clear/score/spawn ordering, injectable source/clock/IO, 24-row/60-column frame budget, cleanup and PTY launch verification, with committable task increments. No blockers; three suggestions clarify task 11/12 raw-mode ownership, how interactive/colour mode is chosen, and gravity/size-suspension input semantics.",
+      "findings": [
+        {
+          "id": "raw-mode-ownership-t11-t12",
+          "issue": "Task 11 requires keyboard input without Enter and a scripted playable session, which needs raw mode. The contracts assign all terminal effects and cleanup to task 12, so task 11's commit could enable raw mode with no defined restore.",
+          "section": "Collaboration boundaries and dependencies; Tasks 11-12",
+          "severity": "suggestion",
+          "recommendation": "State that task 11 adds minimal raw-mode enable and restore on Q/Ctrl-C through the injected terminal boundary, and that task 12 extends this to idempotent cleanup, signals, failures and resize. Example: a task 11 test asserts setRawMode(false) after a scripted 'q'."
+        },
+        {
+          "id": "mode-selection-rule",
+          "issue": "Plain redirected startup and plain/non-colour rendering are required, but the condition choosing interactive vs snapshot mode and colour vs plain is unspecified (stdin TTY, stdout TTY, both, or an env flag), so tests cannot check a single rule.",
+          "section": "Display and observable boundaries; Task 12",
+          "severity": "suggestion",
+          "recommendation": "Define the rule explicitly. Example: interactive only when both stdin and stdout are TTYs; otherwise print one plain snapshot without ANSI and exit 0. Colour is on only for interactive TTY output. Test stdout-redirected and stdin-redirected cases separately."
+        },
+        {
+          "id": "gravity-reset-and-suspended-input",
+          "issue": "The plan says rendering and ignored input do not reset gravity, but does not say whether accepted moves, rotations or soft drops (including a soft drop that locks and spawns) reset the 1000 ms interval. Input handling during the size-warning suspension is also unspecified (e.g. whether P or arrows act).",
+          "section": "Session, input, and time",
+          "severity": "suggestion",
+          "recommendation": "Add one sentence for each. Example: 'Player actions never reset the gravity interval; during size suspension only Q/Ctrl-C are honoured and other keys are discarded.' Cover both with a fake-clock test in task 10 and a resize test in task 12."
+        }
+      ],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Added shared gameplay, ownership/dependency, deterministic testing, input/timing, terminal lifecycle, and display-boundary contracts to plan.md. Preserved all 13 tasks, acceptance checks, and unchecked states; added brief preparation notes. No product files changed."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "The plan is complete, coherent, and testable across all 13 tasks, covering the 24-row frame budget, retro ANSI styling with readable plain output, deterministic gameplay ordering, and clean terminal lifecycle management.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Added shared gameplay, ownership/dependency, deterministic testing, input/timing, terminal lifecycle, and display-boundary contracts to plan.md. Preserved all 13 tasks, acceptance checks, and unchecked states; added brief preparation notes. No product files changed."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Reviewed the full plan against the seed. Gameplay ordering, collaboration boundaries, deterministic testing, terminal lifecycle, 24-row rendering, launch verification, and the 13-task sequence are sufficiently specified. No blocking gaps or actionable findings.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Added shared gameplay, ownership/dependency, deterministic testing, input/timing, terminal lifecycle, and display-boundary contracts to plan.md. Preserved all 13 tasks, acceptance checks, and unchecked states; added brief preparation notes. No product files changed."
+      }
+    }
+  },
+  "previousDecision": {
+    "satisfied": false,
+    "summary": "All reports identify episode 1, round 1, revision 1. Coverage is otherwise sufficient, but three reported ambiguities require explicit, testable contracts; their suggestion labels do not remove those gaps.",
+    "findings": [
+      {
+        "id": "terminal-ownership",
+        "sections": "Collaboration boundaries; Tasks 11–12",
+        "required_revision": "Clarify responsibility for raw-mode acquisition and restoration at the playable Task 11 milestone, consistent with Task 12's terminal ownership. Acceptance: a scripted Task 11 session accepts input without Enter and restores terminal mode on Q/Ctrl-C.",
+        "reason": "The reported milestone requires raw input before its cleanup ownership is defined."
+      },
+      {
+        "id": "terminal-mode-selection",
+        "sections": "Display and observable boundaries; Task 12",
+        "required_revision": "Define when startup selects interactive versus snapshot mode and colour versus plain output. Acceptance: separately test redirected stdin and redirected stdout against the declared rule, including output format and termination behavior.",
+        "reason": "Required redirected/plain behavior lacks a single testable selection rule."
+      },
+      {
+        "id": "timing-and-suspension",
+        "sections": "Session, input, and time; Tasks 10 and 12",
+        "required_revision": "Specify whether accepted movement, rotation, soft drop, and soft-drop lock/spawn reset gravity, and which inputs are honored during size suspension. Acceptance: fake-clock tests distinguish retained versus reset gravity deadlines; resize tests verify permitted and discarded inputs.",
+        "reason": "These unspecified transitions leave observable gameplay and suspension behavior ambiguous."
+      }
+    ],
+    "dispositions": [
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "raw-mode-ownership-t11-t12",
+        "status": "revise",
+        "reason": "The reported Task 11 acceptance depends on raw mode while terminal effects belong to Task 12. Clarify safe milestone ownership without mandating the suggested implementation split."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "mode-selection-rule",
+        "status": "revise",
+        "reason": "Required plain redirected startup cannot have a deterministic acceptance test until mode-selection conditions are stated; the proposed both-TTY rule is an example, not a mandated choice."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "gravity-reset-and-suspended-input",
+        "status": "revise",
+        "reason": "The reports provide no rule for accepted-action gravity resets or suspended input. Specify and test these behaviors; no particular policy is imposed."
+      }
+    ]
+  },
+  "decision": {
+    "satisfied": true,
+    "summary": "All three review contexts match episode 1, round 2, revision 2. Reports confirm explicit, testable contracts for raw-mode ownership, TTY/colour selection, gravity deadlines, and suspended input, with no remaining findings. No revisions required.",
+    "findings": [],
+    "dispositions": []
+  }
+}

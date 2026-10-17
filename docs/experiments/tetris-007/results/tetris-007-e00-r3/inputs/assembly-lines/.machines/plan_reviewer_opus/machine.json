@@ -1,0 +1,5 @@
+{
+  "role": "plan_reviewer",
+  "harness": "pi",
+  "model": "openrouter/anthropic/claude-opus-5.5:high"
+}

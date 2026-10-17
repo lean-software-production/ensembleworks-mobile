@@ -1,0 +1,8 @@
+{"type":"run","status":"running","time":"2026-10-17T18:44:09.415Z"}
+{"type":"machine","machine":"plan_gate","status":"running","time":"2026-10-17T18:44:09.700Z"}
+{"type":"text","machine":"plan_gate","text":"{\"ready\":false}\n","time":"2026-10-17T18:44:09.701Z"}
+{"type":"usage","machine":"plan_gate","provider":"local","inputTokens":0,"outputTokens":0,"time":"2026-10-17T18:44:09.701Z"}
+{"type":"machine","machine":"plan_gate","status":"finished","time":"2026-10-17T18:44:09.714Z"}
+{"type":"machine","machine":"plan_author","status":"running","time":"2026-10-17T18:44:09.932Z"}
+{"type":"machine","machine":"plan_author","status":"stopped","time":"2026-10-17T18:44:48.996Z"}
+{"type":"run","status":"stopped","text":"Run stopped.","time":"2026-10-17T18:44:48.997Z"}

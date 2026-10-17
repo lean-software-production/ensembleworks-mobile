@@ -1,0 +1,21 @@
+{
+  "bridge_tests": {
+    "passed": 8,
+    "failed": 0
+  },
+  "acp_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "local_planner_tests": {
+    "passed": 10,
+    "failed": 0
+  },
+  "single_instruction_regression": {
+    "scenarios_passed": 1,
+    "steps_passed": 13
+  },
+  "full_factory_suites": "Both launched; failures observed under concurrent load. Supporting agents hit usage limits before final diagnostics were recovered; no full-suite pass is claimed.",
+  "original_game_external_checker": "passed (126 game tests plus bounded launch/palette/PTY/termios checks)"
+}
