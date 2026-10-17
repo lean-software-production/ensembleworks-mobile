@@ -1,0 +1,26 @@
+{
+  "status": "evidence_delivered",
+  "original_diagnostic": {
+    "type": "diagnostic",
+    "machine": "validator",
+    "text": "No complete JSON object result was found.",
+    "stopReason": "end_turn",
+    "modelStopReasons": [
+      "toolUse",
+      "toolUse",
+      "toolUse",
+      "toolUse",
+      "toolUse",
+      "stop"
+    ],
+    "outputBytes": 1317,
+    "outputTail": "I\u2019ll read Task 13 and the global requirements, inspect its changed files, and run focused integration and actual-launch checks without editing files.\nAll 163 tests pass, and both `npm start` PTY runs pass frame-bound and terminal-restoration checks. However, the integration fixture is not reachable: its isolated T cell at row 0 lacks the companion cells that must remain from its lock. That misses the plan\u2019s explicit reachable-fixture requirement.{\"satisfied\":false,\"retry\":true,\"replan\":false,\"findings\":[{\"file\":\"test/integration.test.js:10-16\",\"issue\":\"The integration fixture violates Task 13's reachable-fixture contract.\",\"evidence\":\"The running O could not have spawned: board[0][4] already obstructs its spawn, and settled cells cannot change while that piece descends. The isolated top-row T also lacks its required locked companion cells.\",\"remedy\":\"Replace this setup with demonstrably reachable near-clear/game-over fixtures, retaining lifecycle, colour and frame-bound assertions. Update the verification claims accordingly.\"}],\"checks\":[\"npm test: 163 passed.\",\"Focused integration: 3 passed; git diff --check passed.\",\"Actual npm start PTY: colour/q and NO_COLOR/Ctrl-C passed; bounded frames and exact termios/cursor restoration verified.\",\"Non-TTY entry: 24 rows, <=60 columns, no escapes.\"]}\n",
+    "time": "2026-10-17T21:53:48.275Z"
+  },
+  "intervention": "One resumed segment, same runner/models/seed/accepted plan. Deliver preserved negative validator evidence to doer; independent validator must check correction. Attempt budget restarts on resume; cumulative usage and historical failures retained. This is an intervened observation, not a fresh comparison.",
+  "supervisor_pid": 277227,
+  "delivery": {
+    "ok": true,
+    "message": "delivered to doer"
+  }
+}

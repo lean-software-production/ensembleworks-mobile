@@ -1,0 +1,105 @@
+{
+  "passed": false,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@0.1.0 test\n> node --test\n\n\u2714 0 simultaneous clears preserve ordered survivors and dimensions (4.270825ms)\n\u2714 1 simultaneous clears preserve ordered survivors and dimensions (0.387294ms)\n\u2714 2 simultaneous clears preserve ordered survivors and dimensions (0.846058ms)\n\u2714 3 simultaneous clears preserve ordered survivors and dimensions (0.348863ms)\n\u2714 4 simultaneous clears preserve ordered survivors and dimensions (0.274417ms)\n\u2714 nonadjacent clears retain every surviving row in order (0.556835ms)\n\u2714 lock completes 1 rows before exactly one successor spawn (1.129816ms)\n\u2714 lock completes 2 rows before exactly one successor spawn (0.381729ms)\n\u2714 lock completes 3 rows before exactly one successor spawn (0.8225ms)\n\u2714 lock completes 4 rows before exactly one successor spawn (0.684685ms)\n\u2714 clear opens obstructed spawn region before placement (0.46943ms)\n\u2714 remaining spawn obstruction retains compaction result and prevents repeat lock (2.135897ms)\n\u2714 I/0: descent stops at floor without locking (16.892459ms)\n\u2714 I/0: descent stops at settled cells without locking (3.414525ms)\n\u2714 I/1: descent stops at floor without locking (5.164325ms)\n\u2714 I/1: descent stops at settled cells without locking (3.152022ms)\n\u2714 I/2: descent stops at floor without locking (4.222736ms)\n\u2714 I/2: descent stops at settled cells without locking (0.768655ms)\n\u2714 I/3: descent stops at floor without locking (10.592431ms)\n\u2714 I/3: descent stops at settled cells without locking (2.122826ms)\n\u2714 J/0: descent stops at floor without locking (9.460996ms)\n\u2714 J/0: descent stops at settled cells without locking (0.895121ms)\n\u2714 J/1: descent stops at floor without locking (1.039156ms)\n\u2714 J/1: descent stops at settled cells without locking (0.577331ms)\n\u2714 J/2: descent stops at floor without locking (7.196101ms)\n\u2714 J/2: descent stops at settled cells without locking (0.638081ms)\n\u2714 J/3: descent stops at floor without locking (6.087476ms)\n\u2714 J/3: descent stops at settled cells without locking (0.64378ms)\n\u2714 L/0: descent stops at floor without locking (5.097527ms)\n\u2714 L/0: descent stops at settled cells without locking (4.525545ms)\n\u2714 L/1: descent stops at floor without locking (0.865102ms)\n\u2714 L/1: descent stops at settled cells without locking (0.494605ms)\n\u2714 L/2: descent stops at floor without locking (0.833821ms)\n\u2714 L/2: descent stops at settled cells without locking (0.466676ms)\n\u2714 L/3: descent stops at floor without locking (0.730991ms)\n\u2714 L/3: descent stops at settled cells without locking (5.776175ms)\n\u2714 O/0: descent stops at floor without locking (0.862104ms)\n\u2714 O/0: descent stops at settled cells without locking (6.633169ms)\n\u2714 S/0: descent stops at floor without locking (1.202891ms)\n\u2714 S/0: descent stops at settled cells without locking (0.508813ms)\n\u2714 S/1: descent stops at floor without locking (0.817633ms)\n\u2714 S/1: descent stops at settled cells without locking (0.528793ms)\n\u2714 S/2: descent stops at floor without locking (7.376117ms)\n\u2714 S/2: descent stops at settled cells without locking (0.514008ms)\n\u2714 S/3: descent stops at floor without locking (5.71684ms)\n\u2714 S/3: descent stops at settled cells without locking (3.684897ms)\n\u2714 T/0: descent stops at floor without locking (0.911296ms)\n\u2714 T/0: descent stops at settled cells without locking (5.949434ms)\n\u2714 T/1: descent stops at floor without locking (2.198353ms)\n\u2714 T/1: descent stops at settled cells without locking (0.444748ms)\n\u2714 T/2: descent stops at floor without locking (1.831638ms)\n\u2714 T/2: descent stops at settled cells without locking (1.661983ms)\n\u2714 T/3: descent stops at floor without locking (3.442783ms)\n\u2714 T/3: descent stops at settled cells without locking (0.542119ms)\n\u2714 Z/0: descent stops at floor without locking (2.317868ms)\n\u2714 Z/0: descent stops at settled cells without locking (1.405131ms)\n\u2714 Z/1: descent stops at floor without locking (3.962667ms)\n\u2714 Z/1: descent stops at settled cells without locking (0.446798ms)\n\u2714 Z/2: descent stops at floor without locking (1.802536ms)\n\u2714 Z/2: descent stops at settled cells without locking (1.533064ms)\n\u2714 Z/3: descent stops at floor without locking (2.741794ms)\n\u2714 Z/3: descent stops at settled cells without locking (0.486127ms)\n\u2714 descent ignores paused, non-running, and absent-active states (0.385442ms)\n\u2714 blocked spawn becomes game over; all gameplay actions are inert (15.36729ms)\n\u2714 restart clears all gameplay state and draws once from the same source (11.947414ms)\n\u2714 running and game-over frames are pure, bounded, and advertise applicable controls (12.392284ms)\n\u2714 1000ms gravity moves once, locks grounded pieces, never catches up (9.352268ms)\n\u2714 pause suppresses due/stale ticks and model inputs; resume has a fresh interval (4.903871ms)\n\u2714 resize suspension preserves user pause; recovery and cleanup invalidate callbacks (0.380913ms)\n\u2714 game over stops ticks; restart consumes one piece with one fresh timer (0.681434ms)\n\u2714 external game-over sync invalidates queued callbacks across restart (1.41652ms)\n\u2714 running, paused, resumed and game-over frames remain pure and bounded (12.531656ms)\n\u2714 stream decoder handles split/coalesced CSI and application arrows, bounded junk recovery (39.242295ms)\n\u2714 unsupported function keys are consumed at every chunk boundary and recover (7.930989ms)\n\u2714 unsupported Alt commands are ignored across chunks with supported-key recovery (1.95323ms)\n\u2714 Enter-free session dispatches model actions, pause/resume and game-over restart (10.375618ms)\n\u2714 cleanup restores raw=false on \"q\" (0.583418ms)\n\u2714 cleanup restores raw=true on \"q\" (0.426946ms)\n\u2714 cleanup restores raw=false on \"\\u0003\" (0.726412ms)\n\u2714 cleanup restores raw=true on \"\\u0003\" (1.096521ms)\n\u2714 cleanup restores raw=false on \"SIGINT\" (2.85522ms)\n\u2714 cleanup restores raw=true on \"SIGINT\" (1.210108ms)\n\u2714 entry point lifecycle and bounded visible frames: colour (25.479222ms)\n\u2714 entry point lifecycle and bounded visible frames: NO_COLOR (12.867842ms)\n\u2714 entry point lifecycle and bounded visible frames: non-TTY (0.439751ms)\n\u2714 I: lock copies exactly four identities and cannot lock twice (12.96072ms)\n\u2714 I: blocked descent locks once and draws one unadvanced successor (3.657221ms)\n\u2714 J: lock copies exactly four identities and cannot lock twice (2.979443ms)\n\u2714 J: blocked descent locks once and draws one unadvanced successor (0.407528ms)\n\u2714 L: lock copies exactly four identities and cannot lock twice (0.480192ms)\n\u2714 L: blocked descent locks once and draws one unadvanced successor (5.011357ms)\n\u2714 O: lock copies exactly four identities and cannot lock twice (6.762506ms)\n\u2714 O: blocked descent locks once and draws one unadvanced successor (0.29262ms)\n\u2714 S: lock copies exactly four identities and cannot lock twice (0.483351ms)\n\u2714 S: blocked descent locks once and draws one unadvanced successor (0.410075ms)\n\u2714 T: lock copies exactly four identities and cannot lock twice (1.053954ms)\n\u2714 T: blocked descent locks once and draws one unadvanced successor (1.032348ms)\n\u2714 Z: lock copies exactly four identities and cannot lock twice (0.287812ms)\n\u2714 Z: blocked descent locks once and draws one unadvanced successor (0.192807ms)\n\u2714 successful descent moves only, preserving board and source (0.232582ms)\n\u2714 settled obstruction locks; blocked spawn consumes one candidate and disables actions (0.470852ms)\n\u2714 invalid and inactive pieces never merge or consume a successor (0.729908ms)\n\u2714 all seven documented initial geometries spawn centered and in bounds (25.60434ms)\n\u2714 uniform source selects each equal-width interval and scripted source advances once per game (1.933919ms)\n\u2714 seven distinct reset-terminated colours and readable bounded plain pieces (23.626165ms)\n\u2714 I: horizontal steps, self-overlap, and both walls (44.583593ms)\n\u2714 I: settled cells reject either direction without changing any state (1.903489ms)\n\u2714 J: horizontal steps, self-overlap, and both walls (7.276802ms)\n\u2714 J: settled cells reject either direction without changing any state (1.354524ms)\n\u2714 L: horizontal steps, self-overlap, and both walls (11.489527ms)\n\u2714 L: settled cells reject either direction without changing any state (2.070221ms)\n\u2714 O: horizontal steps, self-overlap, and both walls (12.405718ms)\n\u2714 O: settled cells reject either direction without changing any state (0.541406ms)\n\u2714 S: horizontal steps, self-overlap, and both walls (8.515328ms)\n\u2714 S: settled cells reject either direction without changing any state (1.182707ms)\n\u2714 T: horizontal steps, self-overlap, and both walls (7.569633ms)\n\u2714 T: settled cells reject either direction without changing any state (0.292984ms)\n\u2714 Z: horizontal steps, self-overlap, and both walls (10.940881ms)\n\u2714 Z: settled cells reject either direction without changing any state (0.241936ms)\n\u2714 shared placement rejects every board edge and settled overlap without mutation (0.796852ms)\n\u2714 inactive, paused, and invalid-direction actions are unchanged (9.255752ms)\n\u2714 pure empty-board frame includes board, borders, score and controls (12.721589ms)\n\u2714 TTY styles all border/status spans, with a reset for every span (0.754803ms)\n\u2714 NO_COLOR presence or non-TTY disables every escape sequence (3.995791ms)\n\u2714 actual entry point captures one plain bounded frame without a terminal (133.543269ms)\n\u2714 I: clockwise fixed-frame cycle preserves position, board and source (5.260423ms)\n\u2714 I: exhaustive edge placements reject atomically or remain valid (81.95999ms)\n\u2714 I: settled obstruction rejects rotation without side effects (0.477646ms)\n\u2714 J: clockwise fixed-frame cycle preserves position, board and source (7.235353ms)\n\u2714 J: exhaustive edge placements reject atomically or remain valid (88.701836ms)\n\u2714 J: settled obstruction rejects rotation without side effects (0.388826ms)\n\u2714 L: clockwise fixed-frame cycle preserves position, board and source (1.695942ms)\n\u2714 L: exhaustive edge placements reject atomically or remain valid (50.937571ms)\n\u2714 L: settled obstruction rejects rotation without side effects (6.208852ms)\n\u2714 O: clockwise fixed-frame cycle preserves position, board and source (0.821864ms)\n\u2714 O: exhaustive edge placements reject atomically or remain valid (20.981172ms)\n\u2714 S: clockwise fixed-frame cycle preserves position, board and source (0.627633ms)\n\u2714 S: exhaustive edge placements reject atomically or remain valid (83.147406ms)\n\u2714 S: settled obstruction rejects rotation without side effects (5.857747ms)\n\u2714 T: clockwise fixed-frame cycle preserves position, board and source (3.329552ms)\n\u2714 T: exhaustive edge placements reject atomically or remain valid (72.405493ms)\n\u2714 T: settled obstruction rejects rotation without side effects (0.211385ms)\n\u2714 Z: clockwise fixed-frame cycle preserves position, board and source (3.072634ms)\n\u2714 Z: exhaustive edge placements reject atomically or remain valid (34.312628ms)\n\u2714 Z: settled obstruction rejects rotation without side effects (0.241823ms)\n\u2714 inactive and paused rotation is ignored (3.198264ms)\n\u2714 score starts at zero and accumulates once per lock for every clear count (26.377554ms)\n\u2714 ordinary and rejected movement, rotation and zero-line locks award nothing (0.462174ms)\n\u2714 live large scores render purely within the reserved 24-row, 60-column frame (9.134771ms)\n\u2714 redraw replaces screen; resize suspends and recovery preserves game and pause (8.341918ms)\n\u2714 cleanup on quit preserves unrelated resources (16.155098ms)\n\u2714 cleanup on SIGINT preserves unrelated resources (3.098494ms)\n\u2714 cleanup on SIGTERM preserves unrelated resources (3.367605ms)\n\u2714 cleanup on input-error preserves unrelated resources (1.126331ms)\n\u2714 cleanup on output-error preserves unrelated resources (3.392189ms)\n\u2714 cleanup on write preserves unrelated resources (2.206534ms)\n\u2714 cleanup on raw preserves unrelated resources (1.84626ms)\n\u2714 cleanup on resume preserves unrelated resources (3.017854ms)\n\u2714 cleanup on runtime preserves unrelated resources (3.023293ms)\n\u2714 non-TTY input writes once without interactive effects (0.575244ms)\n\u2714 non-TTY output writes once without interactive effects (0.23663ms)\n\u2714 real Writable asynchronous failure during non-TTY frame (4.81714ms)\n\u2714 real Writable asynchronous failure during cursor restoration (3.591778ms)\n\u2139 tests 163\n\u2139 suites 0\n\u2139 pass 163\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 4057.345538\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": false,
+      "distinct_colours": 0
+    },
+    "tasks_complete": {
+      "passed": false
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": ". . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . .[] . . . .|\r\n| . . .[][][] . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . .[] . . . . .|\r\n| . .[][][] . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[][] . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[][] . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[][] . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0  PAUSED\r\nP: resume  Q: quit\u001b[?25l\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[] . . . . . .|\r\n| . . .[][] . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: move/rotate  P: pause  Q: quit\u001b[0m\u001b[?25h"
+    },
+    "documentation": {
+      "passed": true
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "label": "20261017 maintenance re-evaluation; original acceptance.json retained",
+  "seven_piece_render_palette": {
+    "styles": {
+      "I": "96",
+      "J": "94",
+      "L": "91",
+      "O": "93",
+      "S": "92",
+      "T": "95",
+      "Z": "31"
+    },
+    "passed": true
+  },
+  "clause_audit": {
+    "1": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "2": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "3": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "4": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "5": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "6": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "7": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "8": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "9": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "10": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "11": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "12": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": [
+        "- Redraw in place instead of scrolling frames; manage raw mode, cursor visibility, input listeners, and timers for the session lifetime. Restore terminal state on quit, interruption, and handled failures. Define safe behavior for non-TTY input and terminals too small for the board, without crashing or printing an oversized frame."
+      ]
+    },
+    "13": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    }
+  },
+  "interpretation": "Non-TTY palette failure conflicts with accepted plain non-TTY design; render palette and PTY evidence evaluated separately. Frozen acceptance explicitly requests non-TTY colours: this scope discrepancy remains recorded, not silently waived. Clause wording changes require semantic review. No final acceptance granted by this re-evaluation."
+}

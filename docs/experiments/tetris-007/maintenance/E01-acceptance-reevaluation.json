@@ -1,0 +1,103 @@
+{
+  "passed": false,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@1.0.0 test\n> node --test\n\n\u2714 stable compaction of 0 completed rows (2.507766ms)\n\u2714 stable compaction of 1 completed rows (1.837941ms)\n\u2714 stable compaction of 2 completed rows (0.545425ms)\n\u2714 stable compaction of 3 completed rows (0.292366ms)\n\u2714 stable compaction of 4 completed rows (0.262107ms)\n\u2714 lock completes one through four rows, clears before source draw, and spawns at row zero (1.976952ms)\n\u2714 compaction opens spawn space before placement is checked (0.341525ms)\n\u2714 size suspension preserves explicit pause and resumes with a fresh full interval (5.866744ms)\n\u2714 fixed interval, no early fall, no catch-up, exactly one stream (1.001912ms)\n\u2714 pause freezes all gameplay; resume begins a fresh interval and rejects stale ticks (1.985978ms)\n\u2714 gravity locks once; game over cancels; restart resets pause and schedules once (0.6447ms)\n\u2714 running, paused and terminated views preserve bounded geometry and score (11.018995ms)\n\u2714 every shape steps exactly one row without locking or drawing (31.207579ms)\n\u2714 repeated steps stop at the floor atomically for every shape (21.755003ms)\n\u2714 settled cells stop repeated steps at the first obstruction without locking (7.242468ms)\n\u2714 downward steps in inactive contexts are harmless no-ops (2.489144ms)\n\u2714 spawn decision follows compaction; blocked spawn preserves settled cells and score (13.597094ms)\n\u2714 all game-over actions are inert; restart resets gameplay and continues source once (1.114334ms)\n\u2714 running and game-over views retain board/score and relevant controls in 24 rows (3.361165ms)\n\u2714 entry point: fall, lock, compact/score, game over, restart and quit (11.723519ms)\n\u2714 locking all seven types copies exactly four cells and preserves unrelated cells (6.50141ms)\n\u2714 high-level move does not lock or consume a piece (0.672362ms)\n\u2714 blocked floor and settled-cell drops lock once and spawn without advancing (6.40875ms)\n\u2714 invalid locks reject atomically without overwriting or consuming source (1.304357ms)\n\u2714 blocked spawn preserves locked board and repeated actions consume nothing (1.432544ms)\n\u2714 all seven canonical pieces spawn centered, distinct, visible and separate from board (24.364174ms)\n\u2714 uniform source maps all seven intervals and supports independent repeated draws (1.834266ms)\n\u2714 launch plain policy preserves readable identities; seven colors are distinct (5.072014ms)\n\u2714 all shapes move one column without self-collision, board mutation or source draws (6.663315ms)\n\u2714 repeated movement stops at both walls atomically for every shape (21.096753ms)\n\u2714 settled cells reject either direction without changing any state (2.90581ms)\n\u2714 placement rejects all four bounds and overlap; invalid-context actions are no-ops (1.032912ms)\n\u2714 pure empty frame has all board rows, borders, score and controls (3.627947ms)\n\u2714 actual writer emits exactly one frame without a newline (2.405036ms)\n\u2714 npm start launches from the target and exits with a bounded captured frame (416.445086ms)\n\u2714 all seven fixed-box rotation cycles preserve cells, origin, board and source (10.259099ms)\n\u2714 clockwise rule is exact and O is an unchanged successful action (0.474194ms)\n\u2714 both walls, floor and settled obstruction reject rotation atomically (3.069719ms)\n\u2714 inactive contexts reject rotation without mutation or source consumption (1.940885ms)\n\u2714 fixed points table and accumulation apply once per lock, before source draw (16.620318ms)\n\u2714 movement, rejected actions, rotation and zero-line locks earn no points (4.971858ms)\n\u2714 earned points survive a failed spawn and cannot be awarded again (4.953917ms)\n\u2714 live and arbitrarily large scores occupy the existing bounded status slot (12.266649ms)\n\u2714 decoder handles split arrows, multiple bytes, unknown sequences and bounded prefixes (9.631089ms)\n\u2714 unsupported CSI intermediates never dispatch controls or mutate a session (6.365223ms)\n\u2714 Ctrl-C interrupts every incomplete escape state and restores session resources (8.067536ms)\n\u2714 scripted live launch moves, rotates, drops, pauses, resumes, restarts and quits (2.856181ms)\n\u2714 resize suspends gameplay, clips warnings, clears stale views and preserves pause/game over (2.740057ms)\n\u2714 small startup remains quit-capable; SIGTERM and repeated disposal restore prior raw state (0.488207ms)\n\u2714 non-TTY launch acquires no resources and emits only one bounded plain frame (0.854902ms)\n\u2714 interruptions and handled setup/input/render failures restore ownership (0.899426ms)\n\u2139 tests 51\n\u2139 suites 0\n\u2139 pass 51\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 3143.673272\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": false,
+      "distinct_colours": 0
+    },
+    "tasks_complete": {
+      "passed": true
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": ". . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . J J J . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . J . . . . . . .|\r\n| . . J J J . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . J J . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . J J . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . J J . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nPAUSED | P resume | Q quit\u001b[H\u001b[2J+--------------------+\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . J J . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . J . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n| . . . . . . . . . .|\r\n+--------------------+\r\nScore: 0\r\nArrows: left/right move, up rotate, down drop | P pause | Q quit\u001b[0m\u001b[?25h"
+    },
+    "documentation": {
+      "passed": true
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "label": "20261017 maintenance re-evaluation; original acceptance.json retained",
+  "seven_piece_render_palette": {
+    "styles": {
+      "I": "1;36",
+      "J": "1;34",
+      "L": "38;5;208",
+      "O": "1;33",
+      "S": "1;32",
+      "T": "1;35",
+      "Z": "1;31"
+    },
+    "passed": true
+  },
+  "clause_audit": {
+    "1": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "2": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "3": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "4": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "5": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "6": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "7": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "8": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "9": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "10": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "11": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "12": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "13": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    }
+  },
+  "interpretation": "Non-TTY palette failure conflicts with accepted plain non-TTY design; render palette and PTY evidence evaluated separately. Frozen acceptance explicitly requests non-TTY colours: this scope discrepancy remains recorded, not silently waived. Clause wording changes require semantic review. No final acceptance granted by this re-evaluation."
+}

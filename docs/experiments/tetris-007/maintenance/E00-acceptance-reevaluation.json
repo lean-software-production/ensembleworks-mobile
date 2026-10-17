@@ -1,0 +1,113 @@
+{
+  "passed": false,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@1.0.0 test\n> node --test\n\n\u2714 simultaneous compaction of rows [] (7.909903ms)\n\u2714 simultaneous compaction of rows [19] (0.610812ms)\n\u2714 simultaneous compaction of rows [18,19] (7.015335ms)\n\u2714 simultaneous compaction of rows [17,18,19] (2.950497ms)\n\u2714 simultaneous compaction of rows [16,17,18,19] (0.380481ms)\n\u2714 simultaneous compaction of rows [2,7,13,19] (0.29598ms)\n\u2714 lock completes two rows, compacts before drawing, and spawns only once (0.924929ms)\n\u2714 clear precedes spawn validation: replacement freed (0.426243ms)\n\u2714 clear precedes spawn validation: replacement still blocked (0.364187ms)\n\u2714 I: downward steps stop at first floor without locking or drawing (12.409745ms)\n\u2714 I: downward steps stop at first settled without locking or drawing (2.063233ms)\n\u2714 J: downward steps stop at first floor without locking or drawing (16.001876ms)\n\u2714 J: downward steps stop at first settled without locking or drawing (3.088546ms)\n\u2714 L: downward steps stop at first floor without locking or drawing (6.556582ms)\n\u2714 L: downward steps stop at first settled without locking or drawing (5.288249ms)\n\u2714 O: downward steps stop at first floor without locking or drawing (6.13129ms)\n\u2714 O: downward steps stop at first settled without locking or drawing (2.971017ms)\n\u2714 S: downward steps stop at first floor without locking or drawing (2.901776ms)\n\u2714 S: downward steps stop at first settled without locking or drawing (3.411698ms)\n\u2714 T: downward steps stop at first floor without locking or drawing (2.00272ms)\n\u2714 T: downward steps stop at first settled without locking or drawing (1.345717ms)\n\u2714 Z: downward steps stop at first floor without locking or drawing (1.593817ms)\n\u2714 Z: downward steps stop at first settled without locking or drawing (0.622929ms)\n\u2714 downward primitive rejects non-running or absent active pieces unchanged (0.425219ms)\n\u2714 failed spawn preserves settled cells; all gameplay actions ignore game over; restart continues source (5.336159ms)\n\u2714 running frames remain pure and bounded with relevant controls and huge scores (1.101823ms)\n\u2714 game-over frames remain pure and bounded with relevant controls and huge scores (0.878736ms)\n\u2714 decoder preserves byte order across every possible chunk boundary (10.863227ms)\n\u2714 escape recovery discards unsupported payloads and prioritizes quit (1.283241ms)\n\u2714 scripted input moves, rotates, drops, pauses and resumes immediately (5.109084ms)\n\u2714 drop locks atomically; game over ignores controls and R restarts continuing source (2.314386ms)\n\u2714 quit works paused or game over, and controls stay within two status rows (6.359906ms)\n\u2714 entry path: fall, lock, clear/score, game over, restart and quit (30.251878ms)\n\u2714 I: separate lock copies four cells and cannot lock twice (4.723083ms)\n\u2714 J: separate lock copies four cells and cannot lock twice (0.717762ms)\n\u2714 L: separate lock copies four cells and cannot lock twice (1.093801ms)\n\u2714 O: separate lock copies four cells and cannot lock twice (0.830896ms)\n\u2714 S: separate lock copies four cells and cannot lock twice (0.364032ms)\n\u2714 T: separate lock copies four cells and cannot lock twice (0.345168ms)\n\u2714 Z: separate lock copies four cells and cannot lock twice (0.296634ms)\n\u2714 gameplay descent moves without locking, then locks once and spawns without advancing replacement (6.168931ms)\n\u2714 settled obstruction locks; failed spawn is explicit, disjoint and draws only once (2.369713ms)\n\u2714 non-running actions leave state and source untouched (0.523158ms)\n\u2714 all templates spawn four distinct centered cells on a separate empty board (8.262665ms)\n\u2714 injected randomness selects all seven uniform bins, one draw per initial spawn (1.019249ms)\n\u2714 spawn data and renderer never mutate templates or settled cells (0.458253ms)\n\u2714 I: horizontal moves overlap self safely, stop at walls and never draw (25.00724ms)\n\u2714 I: settled cells block either direction without changing state (0.544586ms)\n\u2714 J: horizontal moves overlap self safely, stop at walls and never draw (8.352472ms)\n\u2714 J: settled cells block either direction without changing state (0.404204ms)\n\u2714 L: horizontal moves overlap self safely, stop at walls and never draw (6.254325ms)\n\u2714 L: settled cells block either direction without changing state (0.89599ms)\n\u2714 O: horizontal moves overlap self safely, stop at walls and never draw (1.765158ms)\n\u2714 O: settled cells block either direction without changing state (0.930473ms)\n\u2714 S: horizontal moves overlap self safely, stop at walls and never draw (5.823493ms)\n\u2714 S: settled cells block either direction without changing state (4.149252ms)\n\u2714 T: horizontal moves overlap self safely, stop at walls and never draw (4.890367ms)\n\u2714 T: settled cells block either direction without changing state (0.289452ms)\n\u2714 Z: horizontal moves overlap self safely, stop at walls and never draw (5.717906ms)\n\u2714 Z: settled cells block either direction without changing state (0.230173ms)\n\u2714 shared placement checks all visible boundaries, including negative spawn origins (0.287576ms)\n\u2714 inactive game rejects movement and invalid directions cannot change state (5.431244ms)\n\u2714 empty board is pure, readable and bounded in plain and ANSI modes (4.848261ms)\n\u2714 palette distinguishes seven cell labels and oversized score stays bounded (0.757255ms)\n\u2714 normal npm start preserves controls in a 40x24 PTY after terminal effects (544.632412ms)\n\u2714 actual entry point and npm start exit with one plain bounded snapshot (925.735639ms)\n\u2714 I: clockwise fixed-square cycle preserves position, board and source (8.262795ms)\n\u2714 J: clockwise fixed-square cycle preserves position, board and source (1.725849ms)\n\u2714 L: clockwise fixed-square cycle preserves position, board and source (0.391822ms)\n\u2714 O: clockwise fixed-square cycle preserves position, board and source (0.363843ms)\n\u2714 S: clockwise fixed-square cycle preserves position, board and source (3.274795ms)\n\u2714 T: clockwise fixed-square cycle preserves position, board and source (0.386009ms)\n\u2714 Z: clockwise fixed-square cycle preserves position, board and source (2.454985ms)\n\u2714 left wall: rotation rejects without wall kicks (0.435204ms)\n\u2714 right wall: rotation rejects without wall kicks (3.322218ms)\n\u2714 floor and visible ceiling reject rotation without normalization (0.643885ms)\n\u2714 I: settled-cell collision preserves all state and draws nothing (0.442616ms)\n\u2714 J: settled-cell collision preserves all state and draws nothing (5.317058ms)\n\u2714 L: settled-cell collision preserves all state and draws nothing (0.278376ms)\n\u2714 S: settled-cell collision preserves all state and draws nothing (0.193459ms)\n\u2714 T: settled-cell collision preserves all state and draws nothing (0.185751ms)\n\u2714 Z: settled-cell collision preserves all state and draws nothing (0.344315ms)\n\u2714 rotation ignores game-over and absent active pieces (3.400684ms)\n\u2714 0-line lock awards 0 exactly once and renders live score (11.649939ms)\n\u2714 1-line lock awards 100 exactly once and renders live score (2.071354ms)\n\u2714 2-line lock awards 300 exactly once and renders live score (0.72648ms)\n\u2714 3-line lock awards 500 exactly once and renders live score (0.317878ms)\n\u2714 4-line lock awards 800 exactly once and renders live score (3.540556ms)\n\u2714 multiple clears accumulate while movement, rejection and rotation award nothing (2.608432ms)\n\u2714 a final clear earns points before failed spawn, and ignored drops do not repeat scoring (0.298287ms)\n\u2714 large score rendering clips presentation without changing model or adding rows (0.468433ms)\n\u2714 500ms gravity uses the atomic lock/spawn action once per tick (5.996757ms)\n\u2714 pause invalidates ticks; resume waits a fresh interval without duplicates (3.218455ms)\n\u2714 failed spawn stops time and restart draws once with a fresh interval (0.533804ms)\n\u2714 running, paused and game-over presentations stay pure and within 24x40 (6.599256ms)\n\u2714 live keys redraw absolute rows without newlines; quit restores resources once (16.059037ms)\n\u2714 SIGINT restores prior raw mode and cancels stale tick (2.439038ms)\n\u2714 SIGTERM restores prior raw mode and cancels stale tick (0.440772ms)\n\u2714 ctrl-c restores prior raw mode and cancels stale tick (0.348912ms)\n\u2714 input-error restores prior raw mode and cancels stale tick (2.632167ms)\n\u2714 output-error restores prior raw mode and cancels stale tick (0.437083ms)\n\u2714 shrink/input/grow preserves running and source (3.953745ms)\n\u2714 shrink/input/grow preserves paused and source (0.489778ms)\n\u2714 shrink/input/grow preserves game-over and source (2.737319ms)\n\u2714 non-TTY snapshot acquires no resources (2.417409ms)\n\u2714 startup write failure restores acquired resources (0.578796ms)\n\u2714 redraw write failure restores acquired resources (1.06768ms)\n\u2714 initial-frame failure pauses real stream after data attachment (21.57725ms)\n\u2714 partial startup raw acquisition failure detaches listeners (0.714206ms)\n\u2714 runtime model failure from input cleans the terminal (0.564387ms)\n\u2714 runtime model failure from timer cleans the terminal (0.695628ms)\n\u2139 tests 111\n\u2139 suites 0\n\u2139 pass 111\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 4128.002146\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": false,
+      "distinct_colours": 0
+    },
+    "tasks_complete": {
+      "passed": false
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": ";1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[13;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[14;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[15;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[16;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[17;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[18;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[19;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[20;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[21;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[22;1H\u001b[96m+--------------------+\u001b[0m\u001b[23;1H\u001b[93mScore: 0 | Ready\u001b[0m\u001b[24;1H\u001b[95mArrows:move/rotate/drop P:pause Q:quit\u001b[0m\u001b[H\u001b[2J\u001b[1;1H\u001b[96m+--------------------+\u001b[0m\u001b[2;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[3;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[4;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[5;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[6;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[7;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[8;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m\u001b[33mL \u001b[0m. . . . . \u001b[96m|\u001b[0m\u001b[9;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[10;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[11;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[12;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[13;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[14;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[15;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[16;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[17;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[18;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[19;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[20;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[21;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[22;1H\u001b[96m+--------------------+\u001b[0m\u001b[23;1H\u001b[93mScore: 0 | Ready\u001b[0m\u001b[24;1H\u001b[95mArrows:move/rotate/drop P:pause Q:quit\u001b[0m\u001b[H\u001b[2J\u001b[1;1H\u001b[96m+--------------------+\u001b[0m\u001b[2;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[3;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[4;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[5;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[6;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[7;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[8;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m\u001b[33mL \u001b[0m. . . . . \u001b[96m|\u001b[0m\u001b[9;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[10;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[11;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[12;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[13;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[14;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[15;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[16;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[17;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[18;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[19;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[20;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[21;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[22;1H\u001b[96m+--------------------+\u001b[0m\u001b[23;1H\u001b[93mScore: 0 | Paused\u001b[0m\u001b[24;1H\u001b[95mP:resume  Q:quit\u001b[0m\u001b[H\u001b[2J\u001b[1;1H\u001b[96m+--------------------+\u001b[0m\u001b[2;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[3;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[4;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[5;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[6;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[7;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m. . . . . . \u001b[96m|\u001b[0m\u001b[8;1H\u001b[96m|\u001b[0m. . . \u001b[33mL \u001b[0m\u001b[33mL \u001b[0m. . . . . \u001b[96m|\u001b[0m\u001b[9;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[10;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[11;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[12;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[13;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[14;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[15;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[16;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[17;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[18;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[19;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[20;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[21;1H\u001b[96m|\u001b[0m. . . . . . . . . . \u001b[96m|\u001b[0m\u001b[22;1H\u001b[96m+--------------------+\u001b[0m\u001b[23;1H\u001b[93mScore: 0 | Ready\u001b[0m\u001b[24;1H\u001b[95mArrows:move/rotate/drop P:pause Q:quit\u001b[0m\u001b[0m\u001b[?25h\u001b[?7h\u001b[?1049l"
+    },
+    "documentation": {
+      "passed": true
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "label": "20261017 maintenance re-evaluation; original acceptance.json retained",
+  "seven_piece_render_palette": {
+    "styles": {
+      "I": "96",
+      "J": "94",
+      "L": "33",
+      "O": "93",
+      "S": "92",
+      "T": "95",
+      "Z": "91"
+    },
+    "passed": true
+  },
+  "clause_audit": {
+    "1": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "2": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "3": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "4": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": [
+        "- Add clockwise rotation using a documented rule, with invalid rotations rejected (wall kicks are optional, not required). Handle the square piece consistently."
+      ]
+    },
+    "5": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "6": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "7": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "8": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": [
+        "- Choose and document a simple points table for cleared lines, initialize score to zero, and update score exactly once per lock/clear result. Render the live score in the reserved status area."
+      ]
+    },
+    "9": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "10": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    },
+    "11": {
+      "heading_preserved": false,
+      "original_clauses_missing_verbatim": [
+        "- Wire left/right arrows, up-arrow rotation, down-arrow soft drop, pause/resume, restart after game over, and quit; advertise the actual bindings within the display. Process input without requiring Enter in an interactive terminal.",
+        "- Keep input decoding testable and handle unknown keys safely. If an additional hard-drop control is offered, implement and test it explicitly rather than implying support.",
+        "- Acceptance/automated checks: feed real key byte sequences through the input adapter and verify the corresponding model actions, including multiple keys in a chunk and arrow sequences split across chunks; unknown keys cause no state change; a scripted terminal session can move, rotate, descend, pause, resume, and restart. Controls and status still occupy no more than the allocated rows."
+      ]
+    },
+    "12": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": [
+        "- Redraw in place instead of scrolling frames; manage raw mode, cursor visibility, input listeners, and timers for the session lifetime. Restore terminal state on quit, interruption, and handled failures. Define safe behavior for non-TTY input and terminals too small for the board, without crashing or printing an oversized frame."
+      ]
+    },
+    "13": {
+      "heading_preserved": true,
+      "original_clauses_missing_verbatim": []
+    }
+  },
+  "interpretation": "Non-TTY palette failure conflicts with accepted plain non-TTY design; render palette and PTY evidence evaluated separately. Frozen acceptance explicitly requests non-TTY colours: this scope discrepancy remains recorded, not silently waived. Clause wording changes require semantic review. No final acceptance granted by this re-evaluation."
+}

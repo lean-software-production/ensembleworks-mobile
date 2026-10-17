@@ -110,3 +110,5 @@ if __name__=='__main__':
     CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;WORKTREES=Path(a.worktrees).resolve()
     if COHORT:RESULTS=BASE/'cohorts'/COHORT/'results'
     refresh()
+    import runpy
+    runpy.run_path(str(Path(__file__).with_name("combined-report.py")), run_name="__main__")

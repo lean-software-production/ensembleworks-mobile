@@ -13,6 +13,7 @@ TRIALS=3
 COHORT=''
 CONFIGS=['E00','E01','E02','E03']
 RESUME=False
+RESUME_REASON="User reported usage reset and requested continuation"
 HALT=__import__('threading').Event()
 MODEL_ERRORS=set()
 ERROR_LOCK=__import__('threading').Lock()
@@ -56,7 +57,7 @@ def configuration(code, worktree):
             index=len(list(history.glob('result-*.json')))+1
             shutil.copy2(out/'result.json',history/f'result-{index}.json')
             if (run/'record.jsonl').exists():shutil.copy2(run/'record.jsonl',history/f'record-{index}.jsonl')
-            record.setdefault('resumes',[]).append({'time':now(),'reason':'User reported usage reset and requested continuation','previous_status':record['status'],'previous_failure':record.get('failure'),'commit':git(worktree,'rev-parse','HEAD')})
+            record.setdefault('resumes',[]).append({'time':now(),'reason':RESUME_REASON,'previous_status':record['status'],'previous_failure':record.get('failure'),'commit':git(worktree,'rev-parse','HEAD')})
             for field in ['failure','finished','factory_status','acceptance_passed']:record.pop(field,None)
             record['status']='starting'
         else:
@@ -125,10 +126,10 @@ def configuration(code, worktree):
     return code
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');p.add_argument('--resume-reason',default=RESUME_REASON);a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Trial numbers/count must be positive.')
     if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
-    CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume
+    CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume;RESUME_REASON=a.resume_reason
     if COHORT:RESULTS=ROOT/'docs/experiments/tetris-007/cohorts'/COHORT/'results'
     report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT,'--worktrees',str(Path(a.worktrees).resolve()),'--configs',*CONFIGS]
     RESULTS.mkdir(parents=True,exist_ok=True)

@@ -1,0 +1,2699 @@
+{
+  "updated": "2026-10-17T22:57:50.938863+00:00",
+  "observations": [
+    {
+      "elapsed_seconds": 6223.384002,
+      "cohort": "contract-01",
+      "experiment": "E00",
+      "id": "tetris-007-e00-r5",
+      "status": "acceptance_failed",
+      "tasks": 13,
+      "calls": 60,
+      "usage": {
+        "inputTokens": {
+          "reported": 718988,
+          "coverage": 60,
+          "calls": 60
+        },
+        "outputTokens": {
+          "reported": 82517,
+          "coverage": 60,
+          "calls": 60
+        },
+        "cachedReadTokens": {
+          "reported": 3110925,
+          "coverage": 57,
+          "calls": 60
+        },
+        "cachedWriteTokens": {
+          "reported": 22132,
+          "coverage": 57,
+          "calls": 60
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 58455,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 15400,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 66317,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 22132,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 65873,
+            "coverage": 16,
+            "calls": 16
+          },
+          "outputTokens": {
+            "reported": 4869,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedReadTokens": {
+            "reported": 121088,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 16,
+            "calls": 16
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 594660,
+            "coverage": 31,
+            "calls": 31
+          },
+          "outputTokens": {
+            "reported": 62248,
+            "coverage": 31,
+            "calls": 31
+          },
+          "cachedReadTokens": {
+            "reported": 2923520,
+            "coverage": 31,
+            "calls": 31
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 31,
+            "calls": 31
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 12839,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2342,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 82048,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 18155,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2910,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 78080,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [
+        {
+          "time": "2026-10-17T20:23:18.385093+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the doer's result.",
+          "commit": "fe8ed458c47d2acc551e0563fe231e30c803f4d9"
+        },
+        {
+          "time": "2026-10-17T21:14:27.191835+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the planner's result.",
+          "commit": "fe8ed458c47d2acc551e0563fe231e30c803f4d9"
+        }
+      ],
+      "active_seconds": 1699.9,
+      "started": "2026-10-17T19:42:29.922917+00:00",
+      "finished": "2026-10-17T21:26:13.306919+00:00",
+      "failure": null,
+      "raw_result": "cohorts/contract-01/results/tetris-007-e00-r5/result.json"
+    },
+    {
+      "elapsed_seconds": 6073.178644,
+      "cohort": "contract-01",
+      "experiment": "E01",
+      "id": "tetris-007-e01-r5",
+      "status": "acceptance_failed",
+      "tasks": 13,
+      "calls": 58,
+      "usage": {
+        "inputTokens": {
+          "reported": 649929,
+          "coverage": 58,
+          "calls": 58
+        },
+        "outputTokens": {
+          "reported": 81172,
+          "coverage": 58,
+          "calls": 58
+        },
+        "cachedReadTokens": {
+          "reported": 2635609,
+          "coverage": 55,
+          "calls": 58
+        },
+        "cachedWriteTokens": {
+          "reported": 18719,
+          "coverage": 55,
+          "calls": 58
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 56739,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 17343,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 56281,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 18719,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 62574,
+            "coverage": 16,
+            "calls": 16
+          },
+          "outputTokens": {
+            "reported": 5076,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedReadTokens": {
+            "reported": 131584,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 16,
+            "calls": 16
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 530616,
+            "coverage": 29,
+            "calls": 29
+          },
+          "outputTokens": {
+            "reported": 58753,
+            "coverage": 29,
+            "calls": 29
+          },
+          "cachedReadTokens": {
+            "reported": 2447744,
+            "coverage": 29,
+            "calls": 29
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 29,
+            "calls": 29
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 10841,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2355,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 83456,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 14373,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 859,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 29952,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [
+        {
+          "time": "2026-10-17T20:23:18.387470+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the doer's result.",
+          "commit": "b5dd85c0203b7c65b018e27d723fddaa1a2e88dd"
+        },
+        {
+          "time": "2026-10-17T21:14:27.196956+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the planner's result.",
+          "commit": "b5dd85c0203b7c65b018e27d723fddaa1a2e88dd"
+        }
+      ],
+      "active_seconds": 1552.2,
+      "started": "2026-10-17T19:42:29.923157+00:00",
+      "finished": "2026-10-17T21:23:43.101801+00:00",
+      "failure": null,
+      "raw_result": "cohorts/contract-01/results/tetris-007-e01-r5/result.json"
+    },
+    {
+      "elapsed_seconds": 11720.95152,
+      "cohort": "contract-01",
+      "experiment": "E02",
+      "id": "tetris-007-e02-r5",
+      "status": "running",
+      "tasks": 12,
+      "calls": 65,
+      "usage": {
+        "inputTokens": {
+          "reported": 839645,
+          "coverage": 64,
+          "calls": 65
+        },
+        "outputTokens": {
+          "reported": 226971,
+          "coverage": 64,
+          "calls": 65
+        },
+        "cachedReadTokens": {
+          "reported": 3697121,
+          "coverage": 60,
+          "calls": 65
+        },
+        "cachedWriteTokens": {
+          "reported": 17340,
+          "coverage": 60,
+          "calls": 65
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 4
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 51021,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 14117,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 41057,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 17340,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 59757,
+            "coverage": 16,
+            "calls": 16
+          },
+          "outputTokens": {
+            "reported": 5154,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedReadTokens": {
+            "reported": 112384,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 16,
+            "calls": 16
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 728867,
+            "coverage": 34,
+            "calls": 34
+          },
+          "outputTokens": {
+            "reported": 207700,
+            "coverage": 34,
+            "calls": 34
+          },
+          "cachedReadTokens": {
+            "reported": 3543680,
+            "coverage": 34,
+            "calls": 34
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 34,
+            "calls": 34
+          }
+        },
+        "active": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 14468,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2929,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 80640,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 14193,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 1498,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 28160,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [
+        {
+          "time": "2026-10-17T20:23:18.385564+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the validator's result.",
+          "commit": "56484af1ffcde18936ebe362f7cebbad9845696d"
+        },
+        {
+          "time": "2026-10-17T21:14:27.197655+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the planner's result.",
+          "commit": "56484af1ffcde18936ebe362f7cebbad9845696d"
+        },
+        {
+          "time": "2026-10-17T22:56:50.561139+00:00",
+          "reason": "Maintenance recovery after attached-JSON parse failure; preserve negative reachable-fixture validator finding.",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the validator's result.",
+          "commit": "8be58593d745ee8b365a24b044d18dda7a5c1f89"
+        }
+      ],
+      "active_seconds": 3420.7,
+      "started": "2026-10-17T19:42:29.923926+00:00",
+      "finished": null,
+      "failure": null,
+      "raw_result": "cohorts/contract-01/results/tetris-007-e02-r5/result.json"
+    },
+    {
+      "elapsed_seconds": 6002.311813,
+      "cohort": "contract-01",
+      "experiment": "E03",
+      "id": "tetris-007-e03-r5",
+      "status": "acceptance_failed",
+      "tasks": 13,
+      "calls": 54,
+      "usage": {
+        "inputTokens": {
+          "reported": 495746,
+          "coverage": 53,
+          "calls": 54
+        },
+        "outputTokens": {
+          "reported": 67014,
+          "coverage": 53,
+          "calls": 54
+        },
+        "cachedReadTokens": {
+          "reported": 1953897,
+          "coverage": 34,
+          "calls": 54
+        },
+        "cachedWriteTokens": {
+          "reported": 10071,
+          "coverage": 34,
+          "calls": 54
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 3,
+            "calls": 3
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 3
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 25714,
+            "coverage": 5,
+            "calls": 5
+          },
+          "outputTokens": {
+            "reported": 9698,
+            "coverage": 5,
+            "calls": 5
+          },
+          "cachedReadTokens": {
+            "reported": 13417,
+            "coverage": 5,
+            "calls": 5
+          },
+          "cachedWriteTokens": {
+            "reported": 10071,
+            "coverage": 5,
+            "calls": 5
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 16,
+            "calls": 16
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 16,
+            "calls": 16
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 16
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 16
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 470032,
+            "coverage": 29,
+            "calls": 30
+          },
+          "outputTokens": {
+            "reported": 57316,
+            "coverage": 29,
+            "calls": 30
+          },
+          "cachedReadTokens": {
+            "reported": 1940480,
+            "coverage": 29,
+            "calls": 30
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 29,
+            "calls": 30
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 22603,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2165,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 77056,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 12752,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 1054,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 25984,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [
+        {
+          "time": "2026-10-17T20:23:18.387861+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "stopped",
+          "previous_failure": "Run stopped.",
+          "commit": "eb3ac112d5709c6f28e91273c71f470c7c10c03f"
+        },
+        {
+          "time": "2026-10-17T21:14:27.195245+00:00",
+          "reason": "User reported usage reset and requested continuation",
+          "previous_status": "failed",
+          "previous_failure": "Could not read the doer's result.",
+          "commit": "eb3ac112d5709c6f28e91273c71f470c7c10c03f"
+        }
+      ],
+      "active_seconds": 1483.7,
+      "started": "2026-10-17T19:42:29.923715+00:00",
+      "finished": "2026-10-17T21:22:32.235528+00:00",
+      "failure": null,
+      "raw_result": "cohorts/contract-01/results/tetris-007-e03-r5/result.json"
+    },
+    {
+      "elapsed_seconds": 117.107513,
+      "cohort": "restart-01",
+      "experiment": "E00",
+      "id": "tetris-007-e00-r4",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 5,
+      "usage": {
+        "inputTokens": {
+          "reported": 22173,
+          "coverage": 5,
+          "calls": 5
+        },
+        "outputTokens": {
+          "reported": 10387,
+          "coverage": 5,
+          "calls": 5
+        },
+        "cachedReadTokens": {
+          "reported": 13130,
+          "coverage": 4,
+          "calls": 5
+        },
+        "cachedWriteTokens": {
+          "reported": 9596,
+          "coverage": 4,
+          "calls": 5
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 22173,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 10387,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 13130,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 9596,
+            "coverage": 4,
+            "calls": 4
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 113.6,
+      "started": "2026-10-17T19:12:47.466829+00:00",
+      "finished": "2026-10-17T19:14:44.574342+00:00",
+      "failure": "Could not read the plan_reviewer_opus's plan findings.",
+      "raw_result": "cohorts/restart-01/results/tetris-007-e00-r4/result.json"
+    },
+    {
+      "elapsed_seconds": 1778.937269,
+      "cohort": "restart-01",
+      "experiment": "E01",
+      "id": "tetris-007-e01-r4",
+      "status": "acceptance_failed",
+      "tasks": 13,
+      "calls": 57,
+      "usage": {
+        "inputTokens": {
+          "reported": 807617,
+          "coverage": 57,
+          "calls": 57
+        },
+        "outputTokens": {
+          "reported": 89884,
+          "coverage": 57,
+          "calls": 57
+        },
+        "cachedReadTokens": {
+          "reported": 2910240,
+          "coverage": 56,
+          "calls": 57
+        },
+        "cachedWriteTokens": {
+          "reported": 21749,
+          "coverage": 56,
+          "calls": 57
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 57746,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 18795,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 47776,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 21749,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 75979,
+            "coverage": 14,
+            "calls": 14
+          },
+          "outputTokens": {
+            "reported": 5291,
+            "coverage": 14,
+            "calls": 14
+          },
+          "cachedReadTokens": {
+            "reported": 158720,
+            "coverage": 14,
+            "calls": 14
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 14,
+            "calls": 14
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 673892,
+            "coverage": 32,
+            "calls": 32
+          },
+          "outputTokens": {
+            "reported": 65798,
+            "coverage": 32,
+            "calls": 32
+          },
+          "cachedReadTokens": {
+            "reported": 2703744,
+            "coverage": 32,
+            "calls": 32
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 32,
+            "calls": 32
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 13908,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2612,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 99328,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 19676,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 715,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 12544,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 1769.7,
+      "started": "2026-10-17T19:12:47.467002+00:00",
+      "finished": "2026-10-17T19:42:26.404271+00:00",
+      "failure": null,
+      "raw_result": "cohorts/restart-01/results/tetris-007-e01-r4/result.json"
+    },
+    {
+      "elapsed_seconds": 132.263958,
+      "cohort": "restart-01",
+      "experiment": "E02",
+      "id": "tetris-007-e02-r4",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 5,
+      "usage": {
+        "inputTokens": {
+          "reported": 19828,
+          "coverage": 5,
+          "calls": 5
+        },
+        "outputTokens": {
+          "reported": 11471,
+          "coverage": 5,
+          "calls": 5
+        },
+        "cachedReadTokens": {
+          "reported": 11722,
+          "coverage": 4,
+          "calls": 5
+        },
+        "cachedWriteTokens": {
+          "reported": 8473,
+          "coverage": 4,
+          "calls": 5
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 19828,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 11471,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 11722,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 8473,
+            "coverage": 4,
+            "calls": 4
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 128.8,
+      "started": "2026-10-17T19:12:47.467965+00:00",
+      "finished": "2026-10-17T19:14:59.731923+00:00",
+      "failure": "Could not read the plan_reviewer_opus's plan findings.",
+      "raw_result": "cohorts/restart-01/results/tetris-007-e02-r4/result.json"
+    },
+    {
+      "elapsed_seconds": 142.545164,
+      "cohort": "restart-01",
+      "experiment": "E03",
+      "id": "tetris-007-e03-r4",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 5,
+      "usage": {
+        "inputTokens": {
+          "reported": 21814,
+          "coverage": 5,
+          "calls": 5
+        },
+        "outputTokens": {
+          "reported": 12288,
+          "coverage": 5,
+          "calls": 5
+        },
+        "cachedReadTokens": {
+          "reported": 13110,
+          "coverage": 4,
+          "calls": 5
+        },
+        "cachedWriteTokens": {
+          "reported": 9384,
+          "coverage": 4,
+          "calls": 5
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 21814,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 12288,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 13110,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 9384,
+            "coverage": 4,
+            "calls": 4
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 137.1,
+      "started": "2026-10-17T19:12:47.468511+00:00",
+      "finished": "2026-10-17T19:15:10.013675+00:00",
+      "failure": "Could not read the plan_reviewer_opus's plan findings.",
+      "raw_result": "cohorts/restart-01/results/tetris-007-e03-r4/result.json"
+    },
+    {
+      "elapsed_seconds": 1818.756607,
+      "cohort": "whole-plan-01",
+      "experiment": "E04",
+      "id": "tetris-007-e04-r1",
+      "status": "stopped",
+      "tasks": 0,
+      "calls": 48,
+      "usage": {
+        "inputTokens": {
+          "reported": 812663,
+          "coverage": 47,
+          "calls": 48
+        },
+        "outputTokens": {
+          "reported": 97106,
+          "coverage": 47,
+          "calls": 48
+        },
+        "cachedReadTokens": {
+          "reported": 3179516,
+          "coverage": 46,
+          "calls": 48
+        },
+        "cachedWriteTokens": {
+          "reported": 10188,
+          "coverage": 46,
+          "calls": 48
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 26867,
+            "coverage": 5,
+            "calls": 5
+          },
+          "outputTokens": {
+            "reported": 10135,
+            "coverage": 5,
+            "calls": 5
+          },
+          "cachedReadTokens": {
+            "reported": 14460,
+            "coverage": 5,
+            "calls": 5
+          },
+          "cachedWriteTokens": {
+            "reported": 10188,
+            "coverage": 5,
+            "calls": 5
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 91445,
+            "coverage": 13,
+            "calls": 13
+          },
+          "outputTokens": {
+            "reported": 2225,
+            "coverage": 13,
+            "calls": 13
+          },
+          "cachedReadTokens": {
+            "reported": 83840,
+            "coverage": 13,
+            "calls": 13
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 13,
+            "calls": 13
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 694351,
+            "coverage": 28,
+            "calls": 29
+          },
+          "outputTokens": {
+            "reported": 84746,
+            "coverage": 28,
+            "calls": 29
+          },
+          "cachedReadTokens": {
+            "reported": 3081216,
+            "coverage": 28,
+            "calls": 29
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 28,
+            "calls": 29
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 39638,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 9864,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 262656,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 35104,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 8100,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 177536,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 1816.7,
+      "started": "2026-10-17T22:12:50.339290+00:00",
+      "finished": "2026-10-17T22:43:09.095897+00:00",
+      "failure": "Run stopped.",
+      "raw_result": "cohorts/whole-plan-01/results/tetris-007-e04-r1/result.json"
+    },
+    {
+      "elapsed_seconds": 371.818029,
+      "cohort": "whole-plan-02",
+      "experiment": "E04",
+      "id": "tetris-007-e04-r2",
+      "status": "running",
+      "tasks": 0,
+      "calls": 14,
+      "usage": {
+        "inputTokens": {
+          "reported": 90296,
+          "coverage": 13,
+          "calls": 14
+        },
+        "outputTokens": {
+          "reported": 25104,
+          "coverage": 13,
+          "calls": 14
+        },
+        "cachedReadTokens": {
+          "reported": 414807,
+          "coverage": 12,
+          "calls": 14
+        },
+        "cachedWriteTokens": {
+          "reported": 17678,
+          "coverage": 12,
+          "calls": 14
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 56482,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 12634,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 59991,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 17678,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 6268,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 66,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 2176,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 27546,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 12404,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 352640,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "active": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 27546,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 12404,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 352640,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "validator": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 371.2,
+      "started": "2026-10-17T22:51:39.107617+00:00",
+      "finished": null,
+      "failure": null,
+      "raw_result": "cohorts/whole-plan-02/results/tetris-007-e04-r2/result.json"
+    },
+    {
+      "elapsed_seconds": 14.823126,
+      "cohort": "pilot",
+      "experiment": "E00",
+      "id": "tetris-007-e00-r1",
+      "status": "orchestration_failed",
+      "tasks": 0,
+      "calls": 0,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        }
+      },
+      "phase_usage": {},
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 0,
+      "started": "2026-10-17T18:38:39.482861+00:00",
+      "finished": "2026-10-17T18:38:54.305987+00:00",
+      "failure": "Could not start factory daemon.",
+      "raw_result": "results/tetris-007-e00-r1/result.json"
+    },
+    {
+      "elapsed_seconds": 250.905169,
+      "cohort": "pilot",
+      "experiment": "E00",
+      "id": "tetris-007-e00-r2",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 13,
+      "usage": {
+        "inputTokens": {
+          "reported": 80511,
+          "coverage": 13,
+          "calls": 13
+        },
+        "outputTokens": {
+          "reported": 17648,
+          "coverage": 13,
+          "calls": 13
+        },
+        "cachedReadTokens": {
+          "reported": 84237,
+          "coverage": 12,
+          "calls": 13
+        },
+        "cachedWriteTokens": {
+          "reported": 17952,
+          "coverage": 12,
+          "calls": 13
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 64706,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 15486,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 44173,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 17952,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 2346,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 132,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 1792,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 13459,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2030,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 38272,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 13459,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2030,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 38272,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 239.8,
+      "started": "2026-10-17T18:38:54.313061+00:00",
+      "finished": "2026-10-17T18:43:05.218230+00:00",
+      "failure": "Could not read the doer's result.",
+      "raw_result": "results/tetris-007-e00-r2/result.json"
+    },
+    {
+      "elapsed_seconds": 11.752864,
+      "cohort": "pilot",
+      "experiment": "E00",
+      "id": "tetris-007-e00-r3",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 2,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 3.5,
+      "started": "2026-10-17T18:43:05.231311+00:00",
+      "finished": "2026-10-17T18:43:16.984175+00:00",
+      "failure": "Could not read the plan_author's result.",
+      "raw_result": "results/tetris-007-e00-r3/result.json"
+    },
+    {
+      "elapsed_seconds": 276.1572,
+      "cohort": "pilot",
+      "experiment": "E01",
+      "id": "tetris-007-e01-r1",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 13,
+      "usage": {
+        "inputTokens": {
+          "reported": 71783,
+          "coverage": 13,
+          "calls": 13
+        },
+        "outputTokens": {
+          "reported": 21111,
+          "coverage": 13,
+          "calls": 13
+        },
+        "cachedReadTokens": {
+          "reported": 104236,
+          "coverage": 12,
+          "calls": 13
+        },
+        "cachedWriteTokens": {
+          "reported": 20322,
+          "coverage": 12,
+          "calls": 13
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 53477,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 18949,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 62508,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 20322,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 4865,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 197,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 1792,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 13441,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 1965,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 39936,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 13441,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 1965,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 39936,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 258.3,
+      "started": "2026-10-17T18:38:39.496494+00:00",
+      "finished": "2026-10-17T18:43:15.653694+00:00",
+      "failure": "Could not read the doer's result.",
+      "raw_result": "results/tetris-007-e01-r1/result.json"
+    },
+    {
+      "elapsed_seconds": 12.43913,
+      "cohort": "pilot",
+      "experiment": "E01",
+      "id": "tetris-007-e01-r2",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 2,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 2.3,
+      "started": "2026-10-17T18:43:15.657739+00:00",
+      "finished": "2026-10-17T18:43:28.096869+00:00",
+      "failure": "Could not read the plan_author's result.",
+      "raw_result": "results/tetris-007-e01-r2/result.json"
+    },
+    {
+      "elapsed_seconds": 10.661171,
+      "cohort": "pilot",
+      "experiment": "E01",
+      "id": "tetris-007-e01-r3",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 2,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 2.0,
+      "started": "2026-10-17T18:43:28.100569+00:00",
+      "finished": "2026-10-17T18:43:38.761740+00:00",
+      "failure": "Could not read the plan_author's result.",
+      "raw_result": "results/tetris-007-e01-r3/result.json"
+    },
+    {
+      "elapsed_seconds": 146.213787,
+      "cohort": "pilot",
+      "experiment": "E02",
+      "id": "tetris-007-e02-r1",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 5,
+      "usage": {
+        "inputTokens": {
+          "reported": 21901,
+          "coverage": 5,
+          "calls": 5
+        },
+        "outputTokens": {
+          "reported": 12734,
+          "coverage": 5,
+          "calls": 5
+        },
+        "cachedReadTokens": {
+          "reported": 9804,
+          "coverage": 4,
+          "calls": 5
+        },
+        "cachedWriteTokens": {
+          "reported": 8672,
+          "coverage": 4,
+          "calls": 5
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 21901,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 12734,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 9804,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 8672,
+            "coverage": 4,
+            "calls": 4
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 129.4,
+      "started": "2026-10-17T18:38:39.505421+00:00",
+      "finished": "2026-10-17T18:41:05.719208+00:00",
+      "failure": "Could not read the plan_reviewer_opus's plan findings.",
+      "raw_result": "results/tetris-007-e02-r1/result.json"
+    },
+    {
+      "elapsed_seconds": 177.910123,
+      "cohort": "pilot",
+      "experiment": "E02",
+      "id": "tetris-007-e02-r2",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 5,
+      "usage": {
+        "inputTokens": {
+          "reported": 20514,
+          "coverage": 5,
+          "calls": 5
+        },
+        "outputTokens": {
+          "reported": 16892,
+          "coverage": 5,
+          "calls": 5
+        },
+        "cachedReadTokens": {
+          "reported": 11347,
+          "coverage": 4,
+          "calls": 5
+        },
+        "cachedWriteTokens": {
+          "reported": 8599,
+          "coverage": 4,
+          "calls": 5
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 20514,
+            "coverage": 4,
+            "calls": 4
+          },
+          "outputTokens": {
+            "reported": 16892,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedReadTokens": {
+            "reported": 11347,
+            "coverage": 4,
+            "calls": 4
+          },
+          "cachedWriteTokens": {
+            "reported": 8599,
+            "coverage": 4,
+            "calls": 4
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 168.2,
+      "started": "2026-10-17T18:41:05.727597+00:00",
+      "finished": "2026-10-17T18:44:03.637720+00:00",
+      "failure": "Could not read the plan_reviewer_opus's plan findings.",
+      "raw_result": "results/tetris-007-e02-r2/result.json"
+    },
+    {
+      "elapsed_seconds": 65.677885,
+      "cohort": "pilot",
+      "experiment": "E02",
+      "id": "tetris-007-e02-r3",
+      "status": "stopped",
+      "tasks": 0,
+      "calls": 2,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 2
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 2
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 39.6,
+      "started": "2026-10-17T18:44:03.642295+00:00",
+      "finished": "2026-10-17T18:45:09.320180+00:00",
+      "failure": "Run stopped.",
+      "raw_result": "results/tetris-007-e02-r3/result.json"
+    },
+    {
+      "elapsed_seconds": 15.224499,
+      "cohort": "pilot",
+      "experiment": "E03",
+      "id": "tetris-007-e03-r1",
+      "status": "orchestration_failed",
+      "tasks": 0,
+      "calls": 0,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 0,
+          "calls": 0
+        }
+      },
+      "phase_usage": {},
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 0,
+      "started": "2026-10-17T18:38:39.514709+00:00",
+      "finished": "2026-10-17T18:38:54.739208+00:00",
+      "failure": "Could not start factory daemon.",
+      "raw_result": "results/tetris-007-e03-r1/result.json"
+    },
+    {
+      "elapsed_seconds": 255.4922,
+      "cohort": "pilot",
+      "experiment": "E03",
+      "id": "tetris-007-e03-r2",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 13,
+      "usage": {
+        "inputTokens": {
+          "reported": 64973,
+          "coverage": 13,
+          "calls": 13
+        },
+        "outputTokens": {
+          "reported": 16108,
+          "coverage": 13,
+          "calls": 13
+        },
+        "cachedReadTokens": {
+          "reported": 132424,
+          "coverage": 11,
+          "calls": 13
+        },
+        "cachedWriteTokens": {
+          "reported": 17639,
+          "coverage": 11,
+          "calls": 13
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 52578,
+            "coverage": 10,
+            "calls": 10
+          },
+          "outputTokens": {
+            "reported": 13542,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedReadTokens": {
+            "reported": 51912,
+            "coverage": 10,
+            "calls": 10
+          },
+          "cachedWriteTokens": {
+            "reported": 17639,
+            "coverage": 10,
+            "calls": 10
+          }
+        },
+        "bookkeeping": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "implementation": {
+          "inputTokens": {
+            "reported": 12395,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2566,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 80512,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {
+        "doer": {
+          "inputTokens": {
+            "reported": 12395,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 2566,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 80512,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "resumes": [],
+      "active_seconds": 242.9,
+      "started": "2026-10-17T18:38:54.743917+00:00",
+      "finished": "2026-10-17T18:43:10.236117+00:00",
+      "failure": "Could not read the doer's result.",
+      "raw_result": "results/tetris-007-e03-r2/result.json"
+    },
+    {
+      "elapsed_seconds": 13.294143,
+      "cohort": "pilot",
+      "experiment": "E03",
+      "id": "tetris-007-e03-r3",
+      "status": "failed",
+      "tasks": 0,
+      "calls": 2,
+      "usage": {
+        "inputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "outputTokens": {
+          "reported": 0,
+          "coverage": 2,
+          "calls": 2
+        },
+        "cachedReadTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        },
+        "cachedWriteTokens": {
+          "reported": 0,
+          "coverage": 1,
+          "calls": 2
+        }
+      },
+      "phase_usage": {
+        "gate": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 0,
+            "calls": 1
+          }
+        },
+        "plan_review": {
+          "inputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "outputTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedReadTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          },
+          "cachedWriteTokens": {
+            "reported": 0,
+            "coverage": 1,
+            "calls": 1
+          }
+        }
+      },
+      "first_implementation_validation": {},
+      "resumes": [],
+      "active_seconds": 2.9,
+      "started": "2026-10-17T18:43:10.247104+00:00",
+      "finished": "2026-10-17T18:43:23.541247+00:00",
+      "failure": "Could not read the plan_author's result.",
+      "raw_result": "results/tetris-007-e03-r3/result.json"
+    }
+  ],
+  "limitations": "All attempts retained. Input/output are reported separately from cache reads/writes; absent counters unknown. Active calls are partial. First whole-plan implementation/validation costs are separate from later completion loops. One trial, runner repairs and service interruptions prevent causal efficiency claims. No incomplete game counts as a saving."
+}
