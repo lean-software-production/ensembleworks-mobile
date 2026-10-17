@@ -5,13 +5,14 @@ import { createEmptyState, renderFrame } from '../src/render.js';
 
 const visible = text => text.replace(/\x1b\[[0-9;]*m/g, '');
 
-function checkFrame(frame) {
+function checkFrame(frame, hasActive = false) {
   const rows = visible(frame).split('\n');
   assert.equal(rows.length, 24);
   assert.ok(rows.every(row => row.length <= 40));
   assert.equal(rows[0], '+--------------------+');
   assert.equal(rows[21], rows[0]);
-  assert.deepEqual(rows.slice(1, 21), Array(20).fill('| . . . . . . . . . .|'));
+  if (!hasActive) assert.deepEqual(rows.slice(1, 21), Array(20).fill('| . . . . . . . . . .|'));
+  else assert.equal((rows.slice(1, 21).join('').match(/\[\]/g) ?? []).length, 4);
   assert.match(rows[22], /Score: 0/);
   assert.match(rows[23], /Arrows:.*P:pause Q:quit/);
   assert.ok(!frame.endsWith('\n'));
@@ -47,5 +48,5 @@ test('actual entry point exits successfully with capturable bounded output', () 
   const result = spawnSync(process.execPath, ['src/main.js'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stderr, '');
-  checkFrame(result.stdout);
+  checkFrame(result.stdout, true);
 });

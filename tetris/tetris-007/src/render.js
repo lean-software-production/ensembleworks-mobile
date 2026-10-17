@@ -1,21 +1,18 @@
-export const BOARD_WIDTH = 10;
-export const BOARD_HEIGHT = 20;
+import { BOARD_WIDTH, activeCells } from './model.js';
+export { BOARD_WIDTH, BOARD_HEIGHT, createEmptyState } from './model.js';
 
-export function createEmptyState() {
-  return {
-    board: Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null)),
-    score: 0,
-    status: 'running',
-  };
-}
+const pieceColours = { I: '96', O: '93', T: '95', S: '92', Z: '91', J: '94', L: '33' };
 
 const colour = (code, text) => `\x1b[${code}m${text}\x1b[0m`;
 
 // Pure presentation: exactly 24 rows, no trailing newline or terminal side effects.
 export function renderFrame(state) {
   const border = colour('36', `+${'-'.repeat(BOARD_WIDTH * 2)}+`);
-  const rows = state.board.map(row =>
-    colour('36', '|') + row.map(cell => cell == null ? ' .': colour('35', '[]')).join('') + colour('36', '|'));
+  const active = new Set(activeCells(state.active).map(([x, y]) => `${x},${y}`));
+  const rows = state.board.map((row, y) =>
+    colour('36', '|') + row.map((cell, x) => active.has(`${x},${y}`)
+      ? colour(pieceColours[state.active.type], '[]')
+      : cell == null ? ' .' : colour('35', '[]')).join('') + colour('36', '|'));
   const score = String(state.score);
   const scoreLabel = score.length <= 16 ? score : `${score.slice(0, 12)}...`;
   return [
