@@ -1,0 +1,5 @@
+{
+  "role": "plan_reviewer",
+  "harness": "pi",
+  "model": "openai-codex/gpt-6-astra:high"
+}

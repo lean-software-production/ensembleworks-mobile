@@ -1,0 +1,5 @@
+{
+  "role": "plan_reviewer",
+  "harness": "pi",
+  "model": "openrouter/google/gemini-4-argon:high"
+}
