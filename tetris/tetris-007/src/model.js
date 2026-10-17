@@ -1,6 +1,9 @@
 export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
 
+// Points per simultaneous clear; no movement/drop bonuses or level multiplier.
+export const LINE_POINTS = Object.freeze([0, 100, 300, 500, 800]);
+
 // Coordinates are local to fixed square rotation frames; I starts on row 1.
 const definitions = {
   I: { size: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]] },
@@ -108,6 +111,7 @@ export function lockPiece(state, typeSource = createRandomTypeSource()) {
   for (const [x, y] of activeCells(piece)) state.board[y][x] = piece.type;
   const { board, clearedRows } = clearFullRows(state.board);
   state.board = board;
+  state.score += LINE_POINTS[clearedRows];
   const spawned = canPlace(state.board, next);
   state.active = spawned ? next : null;
   return { locked: true, clearedRows, spawned, spawnBlocked: !spawned };

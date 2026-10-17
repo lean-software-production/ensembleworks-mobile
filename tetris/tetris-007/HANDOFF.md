@@ -1,13 +1,13 @@
 # Handoff
 
-`src/model.js` owns shapes, spawning, placement, movement, rotation, downward steps, and locking. Task 7 adds pure `clearFullRows(board)`, returning `{ board, clearedRows }`: full rows disappear simultaneously, survivors retain order, and independent empty rows pad the top. Input rows are not mutated or aliased.
+`src/model.js` owns gameplay through locking/clearing. Task 8 adds frozen `LINE_POINTS`: 0/100/300/500/800 for simultaneous clears of 0–4 rows. `lockPiece` adds the award exactly once using `clearedRows`, after compaction and before next spawn. Movement, rotation, rejected locks and zero-line locks award nothing. Blocked spawn preserves earned points; game-over status remains task 9 (currently running with active null and explicit `spawnBlocked`).
 
-`lockPiece` validates a grounded running piece and obtains a valid next type before mutation, settles four cells, compacts, then checks next spawn. Lock/descend results now include `clearedRows` (zero for non-lock actions). Invalid lock requests do not clear rows. Score remains unchanged pending task 8. A blocked spawn still leaves active null with running status and explicit `spawnBlocked`; task 9 owns game over. Pass the same injected type source across actions.
+`src/render.js` already renders live score in the reserved status row and abbreviates long score strings without changing model state. Frames remain 24 rows, at most 40 visible columns, no trailing newline.
 
-`test/clearing.test.js` covers zero through four simultaneous clears, nonadjacent rows, ordering, padding, dimensions, input independence, lock-completes-row, no-op locks, and clearing top obstruction before spawn. `test/locking.test.js` retains locking and source atomicity checks with the extended event shape.
+`test/scoring.test.js` covers all five awards, repeated-lock protection, accumulation, non-scoring actions, blocked-spawn score preservation, live display and large-score bounds. `test/clearing.test.js` now expects its single-clear award. Existing clearing and locking contracts remain intact.
 
-Verified after final code/test edits:
-- `node --test test/clearing.test.js test/locking.test.js`: 26 passed.
-- `npm test`: 83 passed, including bounded renderer checks.
+Verified after final code/test changes:
+- `node --test test/scoring.test.js test/clearing.test.js test/render.test.js`: 22 passed.
+- `npm test`: 92 passed.
 
-`src/main.js` still renders once and exits; scheduling, input, and terminal lifecycle remain later tasks. No PTY gameplay check is claimed. Bounded capture uses `node src/main.js` or `npm start --silent` to avoid npm banners.
+`src/main.js` still renders once and exits; scheduling, input, and terminal lifecycle belong to later tasks. No PTY gameplay check is claimed. For bounded output capture use `node src/main.js` or `npm start --silent` to avoid npm banners. Keep injected type sources consistent across model actions; next type validation occurs before lock mutation.

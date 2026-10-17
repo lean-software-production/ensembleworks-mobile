@@ -42,7 +42,7 @@ test('downward lock completes a row, compacts, and reports exactly one clear', (
   assert.equal(state.board[19][0], 'T');
   assert.equal(state.board.flat().filter(cell => cell !== null).length, 1);
   assert.deepEqual(state.active, createSpawnPiece('O'));
-  assert.equal(state.score, 123); // Scoring belongs to task 8.
+  assert.equal(state.score, 223); // One single-line award added to the prior score.
   assert.equal(lockPiece(state).clearedRows, 0);
 });
 
