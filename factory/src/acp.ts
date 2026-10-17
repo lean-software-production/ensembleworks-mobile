@@ -95,15 +95,30 @@ export async function callMachine(machine: MachineConfig, target: string, prompt
     const response = await turn.finally(() => active.delete(machine.name));
     signal.throwIfAborted();
     if (response.usage) {
-      const { inputTokens, outputTokens } = response.usage;
+      const { inputTokens, outputTokens, cachedReadTokens, cachedWriteTokens } = response.usage;
       if (![inputTokens, outputTokens].every(value => Number.isFinite(value) && value >= 0)) throw new Error("Invalid ACP token usage.");
-      record.write({ type: "usage", machine: machine.name, provider: machineProvider(machine), inputTokens, outputTokens });
+      const cache: { cachedReadTokens?: number; cachedWriteTokens?: number } = {};
+      for (const [field, value] of Object.entries({ cachedReadTokens, cachedWriteTokens })) {
+        if (value === undefined || value === null) continue;
+        if (!Number.isFinite(value) || value < 0) throw new Error("Invalid ACP cache token usage.");
+        cache[field as keyof typeof cache] = value;
+      }
+      record.write({ type: "usage", machine: machine.name, provider: machineProvider(machine), inputTokens, outputTokens, ...cache });
     }
     let result: unknown;
     for (const line of output.trimEnd().split(/\r?\n/).reverse()) {
       try { result = JSON.parse(line); break; } catch {}
     }
-    if (typeof result !== "object" || result === null || Array.isArray(result)) throw new Error(`Could not read the ${machine.name}'s result.`);
+    if (typeof result !== "object" || result === null || Array.isArray(result)) {
+      record.write({
+        type: "diagnostic", machine: machine.name, text: "No complete JSON object result was found.",
+        stopReason: typeof response.stopReason === "string" ? response.stopReason.slice(0, 128) : undefined,
+        modelStopReasons: Array.isArray(response._meta?.modelStopReasons)
+          ? response._meta.modelStopReasons.filter((reason: unknown) => typeof reason === "string").slice(-32).map((reason: string) => reason.slice(0, 128)) : undefined,
+        outputBytes: Buffer.byteLength(output), outputTail: output.slice(-2048)
+      });
+      throw new Error(`Could not read the ${machine.name}'s result.`);
+    }
     status = "finished";
     return result as Record<string, unknown>;
   } catch (error) {

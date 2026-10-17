@@ -82,8 +82,13 @@ function onPiEvent(session, e) {
     const u = e.message.usage;
     turn.usage.inputTokens += u.input ?? 0;
     turn.usage.outputTokens += u.output ?? 0;
-    turn.usage.cachedReadTokens += u.cacheRead ?? 0;
-    turn.usage.cachedWriteTokens += u.cacheWrite ?? 0;
+    turn.hasUsage = true;
+    // A partial sum is not a complete measurement: keep missing cache usage unknown.
+    for (const [source, destination] of [['cacheRead', 'cachedReadTokens'], ['cacheWrite', 'cachedWriteTokens']]) {
+      if (u[source] === undefined || u[source] === null) turn.unknownCache.add(destination);
+      else turn.usage[destination] += u[source];
+    }
+    if (typeof e.message.stopReason === 'string') turn.modelStopReasons.push(e.message.stopReason);
   } else if (e.type === 'agent_end') {
     turn.done();
   }
@@ -97,10 +102,20 @@ function prompt(id, { sessionId, prompt: blocks }) {
   session.turn = {
     usage,
     cancelled: false,
+    hasUsage: false,
+    unknownCache: new Set(),
+    modelStopReasons: [],
     done() {
       session.turn = null;
-      usage.totalTokens = usage.inputTokens + usage.outputTokens + usage.cachedReadTokens + usage.cachedWriteTokens;
-      send({ id, result: { stopReason: this.cancelled ? 'cancelled' : 'end_turn', usage } });
+      for (const field of this.unknownCache) delete usage[field];
+      if (usage.cachedReadTokens !== undefined && usage.cachedWriteTokens !== undefined) {
+        usage.totalTokens = usage.inputTokens + usage.outputTokens + usage.cachedReadTokens + usage.cachedWriteTokens;
+      }
+      send({ id, result: {
+        stopReason: this.cancelled ? 'cancelled' : 'end_turn',
+        ...(this.hasUsage ? { usage } : {}),
+        _meta: { modelStopReasons: this.modelStopReasons }
+      } });
     },
     fail(message) { session.turn = null; send({ id, error: { code: -32603, message } }); },
   };

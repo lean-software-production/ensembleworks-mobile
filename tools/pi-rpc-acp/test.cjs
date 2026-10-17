@@ -10,14 +10,14 @@ const { once } = require('node:events');
 const delta = text => ({ type: 'message_update', assistantMessageEvent: { type: 'text_delta', delta: text } });
 const end = role => ({ type: 'message_end', message: { role } });
 
-async function stream(t, events) {
+async function stream(t, events, usageTurns = [{ input: 3, output: 4 }]) {
   const folder = mkdtempSync(join(tmpdir(), 'pi-acp-boundaries-'));
   const executable = join(folder, 'pi');
   writeFileSync(executable, `#!/usr/bin/env node
 const { createInterface } = require('node:readline');
 createInterface({ input: process.stdin }).on('line', line => {
   if (JSON.parse(line).type !== 'prompt') return;
-  for (const event of ${JSON.stringify([...events, { type: 'turn_end', message: { role: 'assistant', usage: { input: 3, output: 4 } } }, { type: 'agent_end' }])}) {
+  for (const event of ${JSON.stringify([...events, ...usageTurns.map(usage => ({ type: 'turn_end', message: { role: 'assistant', usage } })), { type: 'agent_end' }])}) {
     process.stdout.write(JSON.stringify(event) + '\\n');
   }
 });
@@ -57,15 +57,14 @@ createInterface({ input: process.stdin }).on('line', line => {
   await request('initialize', { protocolVersion: 1, clientCapabilities: {} });
   const { sessionId } = await request('session/new', { cwd: folder, mcpServers: [] });
   const response = await request('session/prompt', { sessionId, prompt: [{ type: 'text', text: 'Perform the task and report JSON.' }] });
-  assert.equal(response.usage.inputTokens, 3);
-  assert.equal(response.usage.outputTokens, 4);
+
   const text = messages.filter(message => message.params?.update?.sessionUpdate === 'agent_message_chunk')
     .map(message => message.params.update.content.text).join('');
-  return text;
+  return { text, response };
 }
 
 test('separates progress messages from a fragmented final JSON result', { timeout: 10000 }, async t => {
-  const text = await stream(t, [
+  const { text } = await stream(t, [
     delta('I’ll inspect the plan.'), end('assistant'), end('toolResult'),
     delta('The tests pass.'), end('assistant'),
     delta('{"task":'), delta('"Introduce tetromino definitions",'), delta('"tests":"npm test"}'), end('assistant')
@@ -75,11 +74,41 @@ test('separates progress messages from a fragmented final JSON result', { timeou
 });
 
 test('preserves existing newlines without adding blank lines', { timeout: 10000 }, async t => {
-  assert.equal(await stream(t, [delta('café checked\n'), end('assistant'), end('assistant'), delta('{"complete":false}\n'), end('assistant')]),
+  assert.equal((await stream(t, [delta('café checked\n'), end('assistant'), end('assistant'), delta('{"complete":false}\n'), end('assistant')])).text,
     'café checked\n{"complete":false}\n');
 });
 
 test('does not turn commentary containing JSON into a standalone result', { timeout: 10000 }, async t => {
-  const text = await stream(t, [delta('The answer might be {"complete":true}'), end('assistant')]);
+  const { text } = await stream(t, [delta('The answer might be {"complete":true}'), end('assistant')]);
   assert.throws(() => JSON.parse(text.trim()), SyntaxError);
+});
+
+
+test('aggregates reported cache usage and preserves explicit zero', { timeout: 10000 }, async t => {
+  const { response } = await stream(t, [], [
+    { input: 3, output: 4, cacheRead: 12, cacheWrite: 0 },
+    { input: 5, output: 6, cacheRead: 20, cacheWrite: 0 }
+  ]);
+  assert.deepEqual(response.usage, { inputTokens: 8, outputTokens: 10, cachedReadTokens: 32, cachedWriteTokens: 0, totalTokens: 50 });
+});
+
+test('does not report partial or missing cache measurements as complete totals', { timeout: 10000 }, async t => {
+  const { response } = await stream(t, [], [
+    { input: 3, output: 4, cacheRead: 12, cacheWrite: 0 },
+    { input: 5, output: 6, cacheWrite: 0 }
+  ]);
+  assert.deepEqual(response.usage, { inputTokens: 8, outputTokens: 10, cachedWriteTokens: 0 });
+});
+
+test('does not invent usage when no model turn reported it', { timeout: 10000 }, async t => {
+  const { response } = await stream(t, [], []);
+  assert.equal(response.usage, undefined);
+});
+
+test('retains the model stop reason separately from the ACP turn boundary', { timeout: 10000 }, async t => {
+  const { response } = await stream(t, [
+    { type: 'turn_end', message: { role: 'assistant', stopReason: 'length', usage: { input: 3, output: 4 } } }
+  ], []);
+  assert.equal(response.stopReason, 'end_turn');
+  assert.deepEqual(response._meta.modelStopReasons, ['length']);
 });

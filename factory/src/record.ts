@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 export const runsFolder = join(__dirname, "..", "runs");
 export type RunEvent = {
-  type: "run" | "machine" | "text" | "usage" | "steering";
+  type: "run" | "machine" | "text" | "usage" | "steering" | "diagnostic";
   time?: string;
   status?: string;
   machine?: string;
@@ -11,6 +11,13 @@ export type RunEvent = {
   provider?: string;
   inputTokens?: number;
   outputTokens?: number;
+  // Absent means the adapter did not report this counter for every model turn.
+  cachedReadTokens?: number;
+  cachedWriteTokens?: number;
+  stopReason?: string;
+  modelStopReasons?: string[];
+  outputBytes?: number;
+  outputTail?: string;
 };
 
 export function recordPath(name: string): string {
@@ -49,6 +56,8 @@ export class RecordDisplay {
       for (const line of lines) this.print(`${name.padEnd(12)} | ${line}`);
     } else if (event.type === "steering") {
       this.print(`${name.padEnd(12)} told ${JSON.stringify(event.text)}`);
+    } else if (event.type === "diagnostic") {
+      this.print(`${name.padEnd(12)} diagnostic: ${event.text} (${event.outputBytes} output bytes; stop ${event.stopReason ?? "unknown"})`);
     } else if (event.type === "machine") {
       if (event.status !== "running" && this.partial.get(name)) {
         this.print(`${name.padEnd(12)} | ${this.partial.get(name)}`);
