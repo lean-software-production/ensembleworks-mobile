@@ -11,6 +11,7 @@ RESULTS=ROOT/'docs/experiments/tetris-007/results'
 FIRST_TRIAL=1
 TRIALS=3
 COHORT=''
+CONFIGS=['E00','E01','E02','E03']
 RESUME=False
 HALT=__import__('threading').Event()
 MODEL_ERRORS=set()
@@ -115,25 +116,25 @@ def configuration(code, worktree):
     return code
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Trial numbers/count must be positive.')
     if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
-    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume
+    CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume
     if COHORT:RESULTS=ROOT/'docs/experiments/tetris-007/cohorts'/COHORT/'results'
-    report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT,'--worktrees',str(Path(a.worktrees).resolve())]
+    report_command=['python3',str(ROOT/'tools/experiments/report.py'),'--first-trial',str(FIRST_TRIAL),'--trials',str(TRIALS),'--cohort',COHORT,'--worktrees',str(Path(a.worktrees).resolve()),'--configs',*CONFIGS]
     RESULTS.mkdir(parents=True,exist_ok=True)
     lock=(RESULTS/'supervisor.lock').open('w')
     fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
     if not RESUME and list(RESULTS.glob('tetris-007-*/result.json')):raise RuntimeError('Existing trials detected; refusing to overwrite observations.')
     if RESUME:
-        for code in ['E00','E01','E02','E03']:
+        for code in CONFIGS:
             for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
                 if not (RESULTS/f'tetris-007-{code.lower()}-r{trial}'/'result.json').exists():raise RuntimeError('Resume requires existing result files for every trial.')
         if (RESULTS/'incident.json').exists():
             history=RESULTS/'incident-history';history.mkdir(exist_ok=True)
             (RESULTS/'incident.json').rename(history/f'incident-{time.time_ns()}.json')
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-        jobs=[pool.submit(configuration,c,Path(a.worktrees)/c) for c in ['E00','E01','E02','E03']]
+        jobs=[pool.submit(configuration,c,Path(a.worktrees)/c) for c in CONFIGS]
         pending=set(jobs)
         while pending:
             done,pending=concurrent.futures.wait(pending,timeout=30,return_when=concurrent.futures.FIRST_COMPLETED)

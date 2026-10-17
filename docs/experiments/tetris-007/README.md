@@ -65,3 +65,19 @@ The user reported another reset and explicitly requested continuation. The origi
 The supervisor's explicit `--resume` mode snapshots each prior result/record under `resume-history/`, appends intervention metadata, and retains cumulative usage and failure events. The old cohort incident is preserved under `incident-history/`; only new segment diagnostics count toward a new circuit-breaker activation. Each configuration gets one resume attempt in this invocation. There is no automatic retry. Active and elapsed timing continue to expose the interruption, so these are resumed exploratory observations, not uninterrupted trials.
 
 The explicit resume was attempted once on all four r5 trials. Every first model call returned an error with zero reported input/output, so the circuit breaker halted the cohort again. A single direct diagnostic using E00's isolated planner credential confirmed `Codex error: The usage limit has been reached`. This evidence identifies the factory credential's provider limit; it does not establish the status of the user's separate chat session. No product task advanced. Prior result snapshots, cumulative usage and resume metadata remain preserved. No further inference retries are scheduled.
+
+## E04: whole-plan doer
+
+E04 changes the implementation batch size from one task to the entire accepted 13-task plan. It retains E00's line graph, model/thinking profile, full plan-author/three-reviewer/synthesis checkpoint, duplicated instruction delivery and independent validator. The first doer call attempts all requirements together. One whole-product validator checks every task and the final integration/PTY/cleanup evidence. A retry returns the same complete work item for correction, with the existing three-attempt limit; a plan defect still follows the normal repair path. Only successful whole-plan validation permits a single product commit. The model planner then marks all 13 tasks complete, verifying the fixed work-item identity and commit evidence.
+
+The fixed work-item result is `Implement the complete 13-task plan.`. Task headings remain intact as acceptance sections; only commit/validation cadence is grouped. All parent markers stay unchecked during implementation. VERIFICATION.md must map all 13 tasks to check evidence. Preparation adapts operational machine instructions for authors/reviewers, doer, validator and planner so they agree on grouping; no acceptance clauses, seed requirements, model settings or line routes are removed. The same immutable pre-author plan and seed are copied into an empty product.
+
+Primary comparison: total recorded input/output and cache usage against E00, including all corrections, independent validation, review and recovery; also report calls, time, final acceptance and commit count. A first-attempt doer saving alone is not the criterion. A single larger batch may require expensive whole-product retries and removes intermediate validated commits. Historical E00 has usage-reset interruptions; compare as exploratory, not a controlled causal estimate. Existing external acceptance checker limitations (non-TTY colour measurement) remain explicit and need manual evidence review for every configuration.
+
+One fresh E04 trial is prepared in its own branch/worktree under `/workspaces/tetris-007-experiments/whole-plan/E04`, cohort `whole-plan-01`, run `tetris-007-e04-r1`. It is prepared, not started. Start explicitly with:
+
+```sh
+python3 tools/experiments/supervise.py --configs E04 --worktrees /workspaces/tetris-007-experiments/whole-plan --cohort whole-plan-01 --first-trial 1 --trials 1
+```
+
+Preflight its daemon before launch. The existing four-configuration results stay separate. E04's manifest and `launch.json` record the setup and pending state. Starting this command makes no additional control run. For a later simultaneous E00/E04 pair use new trial identities and the same shared runner revision in both.

@@ -9,6 +9,7 @@ RESULTS=BASE/'results'
 FIRST_TRIAL=1
 TRIALS=3
 COHORT=''
+CONFIGS=['E00','E01','E02','E03']
 WORKTREES=Path('/workspaces/tetris-007-experiments')
 
 def read_events(path):
@@ -46,7 +47,7 @@ def refresh():
     summary=[];callrows=[]
     incident_path=RESULTS/'incident.json'
     incident=json.loads(incident_path.read_text()) if incident_path.exists() else None
-    for code in ['E00','E01','E02','E03']:
+    for code in CONFIGS:
         worktree=WORKTREES/code
         for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
             name=f'tetris-007-{code.lower()}-r{trial}';folder=RESULTS/name;record=folder/'result.json'
@@ -69,7 +70,7 @@ def refresh():
             s['recorded_io']=s['input']+s['output'];summary.append(s)
     onepager=ROOT/'docs/tetris-007-experiments-one-pager.html'
     page=onepager.read_text()
-    for code in ['E00','E01','E02','E03']:
+    for code in CONFIGS:
         group=[s for s in summary if s['experiment']==code]
         running=sum(s['status'] in ['starting','running'] for s in group)
         finished=sum(s['status'] not in ['queued','starting','running'] for s in group)
@@ -88,7 +89,7 @@ def refresh():
     if incident:lines.insert(2, '\n**Halted: '+incident['reason']+'**\n')
     for s in summary:lines.append(f"| {s['experiment']} / {s['trial']} | {s['status']}{' (resumed)' if s.get('resume_count') else ''} | {s['tasks_complete']}/13 | {s['recorded_io']:,} | {s['cache_read_reported']:,} / {s['cache_read_reports']}/{s['usage_reports']} reports | {s['calls_started']} | {s['active_seconds']/60:.1f} |")
     lines+=['','Partial totals omit active calls. Cache totals include only reported fields; absent does not mean zero. Local machines also count as calls. All failures stay in the dataset.','', 'A lower total from a failed or incomplete game is not evidence of improved efficiency. Final quality verdict requires reviewing retained acceptance clauses and validator evidence.']
-    for code in ['E00','E01','E02','E03']:
+    for code in CONFIGS:
         done=[s for s in summary if s['experiment']==code and s['status'] not in ['queued','starting','running']]
         if len(done)==TRIALS and TRIALS>=3:
             vals=[s['recorded_io'] for s in done];eligible=sum(s['status']=='checks_passed_pending_review' for s in done)
@@ -102,9 +103,9 @@ def refresh():
     (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main>'+('<p><strong>'+html.escape(incident['reason'])+'</strong></p>' if incident else '')+queue_note+'<h1>Tetris 007 · Live experiments</h1><p>Four isolated configurations. One fresh trial each; earlier cohorts retained separately. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="' + str(RESULTS.relative_to(BASE)) + '/summary.json">Summary JSON</a> · <a href="' + str(RESULTS.relative_to(BASE)) + '/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default=str(WORKTREES));p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--cohort',default='');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default=str(WORKTREES));p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Positive trial numbers/count required')
     if a.cohort and not re.fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort')
-    FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;WORKTREES=Path(a.worktrees).resolve()
+    CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;WORKTREES=Path(a.worktrees).resolve()
     if COHORT:RESULTS=BASE/'cohorts'/COHORT/'results'
     refresh()
