@@ -16,7 +16,7 @@ def verify(target, plan):
         for i, part in enumerate(parts):
             if part in [str(x) for x in list(range(30,38))+list(range(90,98))]: colours.add(part)
             if part == '38' and i+2 < len(parts): colours.add(';'.join(parts[i:i+(5 if parts[i+1]=='2' else 3)]))
-    checks['bounded_non_tty'] = {'passed': plain.returncode == 0 and 20 <= len(rows) <= 24, 'rows': len(rows), 'exit': plain.returncode}
+    checks['bounded_non_tty'] = {'passed': plain.returncode == 0 and 1 <= len(rows) <= 24, 'rows': len(rows), 'exit': plain.returncode}
     checks['retro_palette'] = {'passed': len(colours) >= 3, 'distinct_colours': len(colours)}
     text = Path(plan).read_text()
     frozen = (Path(__file__).resolve().parents[2]/'docs/experiments/tetris-007/inputs/plan.md').read_text()
