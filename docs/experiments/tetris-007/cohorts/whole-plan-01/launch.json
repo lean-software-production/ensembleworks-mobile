@@ -1,0 +1,14 @@
+{
+  "experiment": "E04",
+  "cohort": "whole-plan-01",
+  "status": "prepared_not_started",
+  "run": "tetris-007-e04-r1",
+  "worktree": "/workspaces/tetris-007-experiments/whole-plan/E04",
+  "branch": "exp/007-whole-plan",
+  "config_commit": "f54254a1618b4ea95fe2ec13083523f3312a21b6",
+  "trial_count": 1,
+  "execution": "One complete-plan doer work item followed by whole-product validation; retry/replan routes retained.",
+  "input_hashes_match_control": true,
+  "model_profiles_match_control": true,
+  "start_command": "python3 tools/experiments/supervise.py --configs E04 --worktrees /workspaces/tetris-007-experiments/whole-plan --cohort whole-plan-01 --first-trial 1 --trials 1"
+}

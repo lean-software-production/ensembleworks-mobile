@@ -1,0 +1,10 @@
+{
+  "variant_checks": 2,
+  "supervisor_checks": 4,
+  "line_check": "accepted",
+  "fresh_target": true,
+  "same_seed_and_plan_hashes": true,
+  "same_models_as_E00": true,
+  "credentials_ignored": true,
+  "inference_started": false
+}
