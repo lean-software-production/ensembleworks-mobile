@@ -1,19 +1,9 @@
-# Task 12 findings and verification
+# Task 13 launch-to-exit verification
 
-- [x] Redirected input with small TTY output now uses the same dimension check as interactive redraw before writing a static frame; `test/session.test.js` checks 12×3, 50×2 and zero-size output without escapes, board overflow, timers or input listeners.
+- `node --test test/launch.test.js`: 1 passed. Injected TTY I/O, deterministic O/I/I/O source and fake 1000 ms interval through the exported `src/index.js` launch entry. Asserted timed fall, locking, one-row clear/100 points, blocked next spawn, game-over message, restart/reset, quit/resource cleanup, and all emitted frames exactly 24 rows and no wider than 50 columns.
+- `npm test`: 43 passed, 0 failed (complete automated suite).
+- `npm start` in a Python PTY sized 50×24: saw running controls, sent `p` and saw paused message, sent `q`; process exited 0 and showed cursor (`ESC[?25h`).
+- `node src/index.js > /tmp/tetris008-frame.txt`: non-TTY startup exited; 24 lines, maximum width 50.
+- `git diff --check -- README.md HANDOFF.md VERIFICATION.md test/launch.test.js`: clean.
 
-- [x] Redraw failures from input, timer and resize callbacks now trigger idempotent teardown before rethrowing; `test/session.test.js` injects each failure and checks raw mode, cursor, timer and listeners.
-- [x] Raw mode restores its original value, even when enabling raw mode mutates state then throws; session tests cover both preexisting raw mode and partial startup failure.
-- [x] Synchronous quit during input resume and synchronous output error during initial cursor-hide write abort startup without a late timer or attached listeners; session tests assert both paths.
-
-`node --test test/session.test.js`: 13 passed. `npm test`: 42 passed. `npm start` in a 50×24 Python PTY displayed controls, exited 0 on `q`, and emitted cursor-show. `git diff --check -- src/index.js test/session.test.js HANDOFF.md VERIFICATION.md`: clean.
-
-# Task 7 verification
-
-`src/model.js` clears complete rows after locking and before testing the next spawn, returning the clear count. `test/model.test.js` checks zero through four simultaneous clears (including nonadjacent rows), survivor order, top padding, dimensions, input immutability, and a blocked downward action completing a row and spawning once.
-
-- `node --test test/model.test.js`: 15 passed, 0 failed.
-- `npm test`: 18 passed, 0 failed.
-- `git diff --check -- src/model.js test/model.test.js HANDOFF.md VERIFICATION.md`: clean.
-
-Scoring remains task 8; terminal session work remains later tasks.
+Limitations: actual-command PTY smoke checks running/pause/quit, not game-over/restart; the injected launch-path regression checks the latter. No known unmet requirements.
