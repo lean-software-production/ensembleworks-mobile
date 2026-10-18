@@ -113,6 +113,14 @@ export function advanceDown(game, source) {
   };
 }
 
+// Restart is available only after game over. Seeded sources replay their
+// original sequence; injected sources may implement reset() as well.
+export function restartGame(game, source) {
+  if (game.status !== 'over') return game;
+  source.reset?.();
+  return createInitialGame({ source });
+}
+
 export function createInitialGame({ source = createPieceSource() } = {}) {
   return {
     board: Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null)),

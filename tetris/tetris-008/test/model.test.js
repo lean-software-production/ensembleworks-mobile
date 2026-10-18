@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, LINE_POINTS, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, clearCompletedRows, advanceDown } from '../src/model.js';
+import { SHAPES, TYPES, LINE_POINTS, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, clearCompletedRows, advanceDown, restartGame } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -298,6 +298,63 @@ test('blocked next spawn preserves settled cells and cannot draw again', () => {
   assert.equal(result.game.board.flat().filter(Boolean).length, 5);
   assert.strictEqual(advanceDown(result.game, source).game, result.game);
   assert.equal(draws, 2);
+});
+
+test('game over is inert, renders bounded controls, and restart resets seeded play', () => {
+  const source = createPieceSource(42);
+  const first = createInitialGame({ source });
+  const board = first.board.map(row => [...row]);
+  const active = { ...first.active, y: 1 };
+  // Obstruct the step while preserving the current active cells.
+  const [dx, dy] = active.cells.find(([, y]) => y === Math.max(...active.cells.map(cell => cell[1])));
+  board[active.y + dy + 1][active.x + dx] = 'J';
+  // Occupy the future spawn region without touching the current piece.
+  const nextType = source.next();
+  source.reset();
+  source.next();
+  const next = spawnPiece(nextType);
+  const spawnCell = next.cells.find(([x, y]) => !active.cells.some(([ax, ay]) => active.x + ax === next.x + x && active.y + ay === y));
+  assert.ok(spawnCell);
+  board[next.y + spawnCell[1]][next.x + spawnCell[0]] = 'T';
+  const game = { ...first, board, active, score: 300 };
+  const result = advanceDown(game, source);
+  assert.equal(result.blockedSpawn, true);
+  const over = result.game;
+  assert.equal(over.status, 'over');
+  assert.equal(over.active, null);
+  assert.equal(over.score, 300);
+  assert.equal(over.board[next.y + spawnCell[1]][next.x + spawnCell[0]], 'T');
+  assert.strictEqual(moveHorizontal(over, 1), over);
+  assert.strictEqual(rotateClockwise(over), over);
+  assert.strictEqual(stepDown(over).game, over);
+  assert.strictEqual(advanceDown(over, source).game, over);
+  assert.strictEqual(restartGame(game, source), game);
+  const frame = renderFrame(over).split('\n');
+  assert.equal(frame.length, 24);
+  assert.ok(frame.every(line => line.length <= 50));
+  assert.match(frame[23], /Game over.*R: restart.*Q: quit/);
+  const restarted = restartGame(over, source);
+  assert.deepEqual(restarted, first);
+  assert.equal(restarted.score, 0);
+  assert.equal(renderFrame(restarted).split('\n').length, 24);
+});
+
+test('clear opens occupied spawn before game-over verdict', () => {
+  let draws = 0;
+  const source = { next: () => ++draws === 1 ? 'I' : 'O' };
+  const start = createInitialGame({ source });
+  const board = start.board.map(row => [...row]);
+  board[0].fill('T');
+  for (let x = 0; x <= 3; x++) board[0][x] = null;
+  board[1][0] = 'J'; // blocks descent; locking I completes row 0
+  const game = { ...start, board, active: { ...start.active, x: 0 } };
+  assert.equal(canPlace(board, spawnPiece('O')), false);
+  const result = advanceDown(game, source);
+  assert.equal(result.cleared, 1);
+  assert.equal(result.blockedSpawn, false);
+  assert.equal(result.game.status, 'running');
+  assert.ok(canPlace(result.game.board, result.game.active));
+  assert.equal(result.game.score, 100);
 });
 
 test('launch seam accepts injected piece source without changing board', () => {
