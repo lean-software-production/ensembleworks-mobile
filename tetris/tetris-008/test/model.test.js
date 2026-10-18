@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, rotateClockwise } from '../src/model.js';
+import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -69,6 +69,61 @@ test('settled cells block movement while preserving board and active state', () 
   assert.deepEqual(game, snapshot);
   assert.equal(moveHorizontal(game, -1).active.x, 3);
   assert.equal(game.board[0][6], 'T');
+});
+
+test('downward primitive advances one row without touching settled cells or source', () => {
+  let draws = 0;
+  const game = createInitialGame({ source: { next: () => { draws++; return 'T'; } } });
+  const { game: advanced, blocked } = stepDown(game);
+  assert.equal(blocked, false);
+  assert.equal(advanced.active.y, game.active.y + 1);
+  assert.deepEqual(advanced.active.cells, game.active.cells);
+  assert.strictEqual(advanced.board, game.board);
+  assert.strictEqual(game.active.y, 0);
+  assert.equal(draws, 1);
+  assert.equal(advanced.score, game.score);
+});
+
+test('floor and settled obstruction stop repeated downward steps without locking', () => {
+  for (const type of TYPES) {
+    let game = createInitialGame({ source: { next: () => type } });
+    const board = game.board;
+    let steps = 0;
+    while (true) {
+      const result = stepDown(game);
+      if (result.blocked) {
+        assert.strictEqual(result.game, game);
+        break;
+      }
+      assert.equal(result.game.active.y, game.active.y + 1);
+      game = result.game;
+      steps++;
+      assert.ok(steps <= HEIGHT);
+    }
+    assert.ok(steps > 0);
+    assert.strictEqual(stepDown(game).game, game);
+    assert.ok(board.every(row => row.every(cell => cell === null)));
+    assert.strictEqual(game.board, board);
+  }
+  const start = createInitialGame({ source: { next: () => 'O' } });
+  start.board[4][start.active.x] = 'I';
+  const before = structuredClone(start);
+  let game = start;
+  for (let i = 0; i < 2; i++) {
+    const result = stepDown(game);
+    assert.equal(result.blocked, false);
+    game = result.game;
+  }
+  assert.equal(game.active.y, 2);
+  for (let i = 0; i < 3; i++) {
+    const result = stepDown(game);
+    assert.equal(result.blocked, true);
+    assert.strictEqual(result.game, game);
+  }
+  assert.deepEqual(start, before);
+  assert.strictEqual(game.board, start.board);
+  assert.equal(game.board[4][start.active.x], 'I');
+  assert.equal(game.board.flat().filter(Boolean).length, 1);
 });
 
 test('clockwise rotations preserve four cells and return to original geometry after four turns', () => {

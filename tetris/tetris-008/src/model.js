@@ -50,6 +50,15 @@ export function moveHorizontal(game, direction) {
   return canPlace(game.board, active) ? { ...game, active } : game;
 }
 
+// One-row primitive: blockage is reported without locking, clearing or drawing.
+// A rejected step retains the exact original game object.
+export function stepDown(game) {
+  if (game.status !== 'running' || !game.active) return { game, blocked: true };
+  const active = { ...game.active, y: game.active.y + 1 };
+  if (!canPlace(game.board, active)) return { game, blocked: true };
+  return { game: { ...game, active }, blocked: false };
+}
+
 // (x, y) -> (height - 1 - y, x) in the current local bounding box.
 // The anchor never shifts: invalid rotations have no wall kicks or floor kicks.
 // The square is invariant. Rejection returns the identical game object.
