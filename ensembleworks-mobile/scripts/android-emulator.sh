@@ -17,7 +17,7 @@ mkdir -p "$ANDROID_AVD_HOME"
 [[ -r /dev/kvm && -w /dev/kvm ]] || { echo 'KVM is not accessible' >&2; exit 1; }
 [[ -r /dev/video0 ]] || { echo 'Host webcam /dev/video0 is not accessible' >&2; exit 1; }
 [[ -d "$ANDROID_HOME/system-images/android-37.1/google_apis_ps16k/x86_64" ]] || {
-  echo 'Build the pinned SDK: flox build -d .. android-sdk' >&2; exit 1;
+  echo 'Install the pinned SDK: bash scripts/install-android-sdk.sh' >&2; exit 1;
 }
 emulator -accel-check
 emulator -webcam-list

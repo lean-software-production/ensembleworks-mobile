@@ -1,31 +1,31 @@
-# Android task-1 handoff
+# Android task-2 handoff
 
-Task 1 delivered the bounded composed-SDK experiment, not successful APK/boot
-proof. `docs/android-toolchain-attempt.md` records commands, failures and the
-explicit task-2 sdkmanager fallback decision. Do not extend the Flox SDK
-experiment in later tasks. No application/dependency/iOS changes were made.
+Task-2 gates and clean ARM64 release now pass. Owner replacement approval
+permits stable RN 0.88.0 and five Expo patches; prerelease override removed.
+Ledger and exact recipes: `docs/android-release-build.md`.
+Parent completion is for the planner; launch scenarios remain task 3.
 
-Sources: `../.flox/env/manifest.toml` and lock add Linux-only JDK 17.0.20.1+1;
-`../.flox/pkgs/android-sdk.nix` pins SDK metadata/licenses/archives;
-`scripts/android-emulator.sh` creates an isolated credential-free AVD.
-Flox expression files must be Git-tracked (staged here). SDK output is explicitly
-built by `flox activate -d .. -- flox build -d .. android-sdk`.
+Sources: `scripts/build-android.sh`, `scripts/install-android-sdk.sh`,
+`scripts/android-emulator.sh`; tests: `tests/*.test.ts` and Jest component suites.
+Linux Flox selects `~/Android/Sdk`, Node v24.21.0, JDK 17.0.20.1+1.
+Installer pins CLI 22.0, emulator 37.2.12, API37.1 ps16k Google APIs x86_64 r9
+and revision-checks SDK packages. Composed SDK experiment is historical.
+Darwin/iOS configuration/scripts unchanged; shared Expo/RN upgrades affect iOS.
+iOS was not rebuilt on this Linux host.
 
-Owner daemon restart resolved activation; FloxHub warning is informational.
-Do not repeat SDK experiments or sign in. `flox activate -d .. -- node --version` verifies v24.21.0.
+Run each with `flox activate -d .. --`: `npm ci`, `npm test`,
+`npm run check`, `npx expo-doctor`. Latest results: CI and 84 tests pass;
+TypeScript and Check pass; Doctor passes 20/20.
+Latest logs: `/tmp/ew-stable-*.log`.
 
-Repair verification: `timeout --kill-after=10 60 flox activate -d .. -- node --version`
-returns v24.21.0. `timeout --kill-after=10 180 flox activate -d .. -- npm test`
-passes (66 application and 18 component tests); latest recovery output is in
-`/tmp/ew-task1-current-test.log`. `timeout --kill-after=10 180 flox activate -d .. -- npm run check` fails
-six Expo freshness expectations after TypeScript passes (full diagnostics:
-`/tmp/ew-task1-current-check.log`). Preserve existing pins
-unless an observed Android failure justifies upgrading.
+Clean production recipe in report runs prebuild then `npm run build:android`
+with public deployment URL and `EW_ANDROID_ARCHITECTURES=arm64-v8a`; latest passes.
+Retained APK: `/home/stag/.local/share/ensembleworks-mobile/artifacts/iteration-004/production-arm64-release.apk`.
+Report records updated checksum, 18 ARM64 libraries, bundle and debug certificate.
+Generated native trees remain ignored. Build script clears host CPATH/include
+paths to avoid JDK/NDK JNI ABI mismatch.
 
-Clean prebuild passed; release failed requesting absent build-tools 36.0.0 in
-read-only SDK. KVM and Logitech webcam enumeration passed; GPU boot failed
-Vulkan/GLES/framebuffer initialization. No APK or media proof.
-Final expression adds 36.0.0 and corrects latest stable image to API 37.1
-Google APIs ps16k x86_64 r8; these corrections are syntax-checked, not rebuilt.
-Task 2 must close missing proofs with fallback. Emulator/ADB stopped; no Metro.
-Mac/iOS checks remain pending. Native trees stay ignored.
+Earlier fallback KVM/NVIDIA boot/webcam enumeration passed; PulseAudio failed.
+No emulator/Metro started this retry. Launch/screenshots remain task 3.
+Owner authentication, audio, physical Pixel and iOS remain unverified.
+Never inspect an authenticated owner AVD.

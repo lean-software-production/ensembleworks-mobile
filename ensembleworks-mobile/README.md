@@ -21,11 +21,11 @@ exactly. LiveKit React Native 3.0.0, LiveKit WebRTC 144.2.0, LiveKit client
 use. `react-dom` matches React for LiveKit's transitive component peer; this
 is not a web app. `package-lock.json` pins the resolved installation.
 
-`package.json` has one temporary npm override: `react-native: "$react-native"`.
-It lets npm accept the React Native release candidate where dependency peer ranges
-exclude prereleases by semver rule. Remove that override and move Expo/React Native
-to stable releases when React Native 0.88 and a compatible stable Expo SDK are
-available; do not add overrides or use `--force`/`--legacy-peer-deps`.
+React Native is pinned to stable 0.88.0 with Expo SDK 58. The temporary
+prerelease peer-range override has been removed; installation succeeds without
+it. Do not add overrides or use `--force`/`--legacy-peer-deps`.
+See [Android release evidence](docs/android-release-build.md) for the owner's
+upgrade approval and version ledger.
 
 `app.json` is the native configuration source. Plugins initialize LiveKit on both
 platforms and configure WebRTC. `index.ts` installs WebRTC globals. Camera and
