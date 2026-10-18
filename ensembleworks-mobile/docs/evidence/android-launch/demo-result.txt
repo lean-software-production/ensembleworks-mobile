@@ -1,0 +1,1 @@
+demo: emulator-5580; PID 2219 survived 20 seconds; crash buffer empty; screenshot /home/stag/src/lean-software-manufacturing/ensembleworks-mobile/ensembleworks-mobile/docs/evidence/android-launch/demo.png

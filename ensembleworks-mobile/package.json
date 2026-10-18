@@ -20,6 +20,7 @@
     "ios": "expo run:ios --device",
     "android": "expo run:android",
     "build:android": "bash scripts/build-android.sh",
+    "verify:android-emulator-launch": "bash scripts/verify-android-emulator-launch.sh",
     "prebuild": "expo prebuild",
     "verify:ios-27-simulator-launch": "bash scripts/verify-ios-27-simulator-launch.sh",
     "install:ios-device": "bash scripts/install-ios-device.sh",

@@ -21,6 +21,7 @@
     },
     "plugins": [
       "@livekit/react-native-expo-plugin",
+      "./plugins/withLiveKitJniKeepRules",
       ["@config-plugins/react-native-webrtc", {
         "cameraPermission": "Share your video with teammates in the ensembleWorks room.",
         "microphonePermission": "Share your voice with teammates in the ensembleWorks room."

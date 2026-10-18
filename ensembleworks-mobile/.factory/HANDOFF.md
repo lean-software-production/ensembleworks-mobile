@@ -1,31 +1,28 @@
-# Android task-2 handoff
+# Android task-3 handoff
 
-Task-2 gates and clean ARM64 release now pass. Owner replacement approval
-permits stable RN 0.88.0 and five Expo patches; prerelease override removed.
-Ledger and exact recipes: `docs/android-release-build.md`.
-Parent completion is for the planner; launch scenarios remain task 3.
+Task 3 launch acceptance now passes. Sources: `scripts/verify-android-emulator-launch.sh`,
+`scripts/android-emulator.sh`, `scripts/build-android.sh`, Android-only
+`plugins/withLiveKitJniKeepRules.js` registered in `app.json`.
+Tests: `tests/*.test.ts` and Jest component suites.
+Evidence/recipes: `docs/android-emulator-launch.md`, `docs/evidence/android-launch/`.
 
-Sources: `scripts/build-android.sh`, `scripts/install-android-sdk.sh`,
-`scripts/android-emulator.sh`; tests: `tests/*.test.ts` and Jest component suites.
-Linux Flox selects `~/Android/Sdk`, Node v24.21.0, JDK 17.0.20.1+1.
-Installer pins CLI 22.0, emulator 37.2.12, API37.1 ps16k Google APIs x86_64 r9
-and revision-checks SDK packages. Composed SDK experiment is historical.
-Darwin/iOS configuration/scripts unchanged; shared Expo/RN upgrades affect iOS.
-iOS was not rebuilt on this Linux host.
+Use `flox activate -d .. --` for commands. Linux uses Node v24.21.0,
+JDK 17 and fallback SDK in `~/Android/Sdk`.
+Run `timeout 3000 npm run verify:android-emulator-launch` (both modes), or
+`env ANDROID_LAUNCH_MODE=demo npm run verify:android-emulator-launch`.
+Verifier clean-builds x86_64 modes, owns port 5580, clears app state, and stops
+its emulator. Never inspect an authenticated owner AVD.
 
-Run each with `flox activate -d .. --`: `npm ci`, `npm test`,
-`npm run check`, `npx expo-doctor`. Latest results: CI and 84 tests pass;
-TypeScript and Check pass; Doctor passes 20/20.
-Latest logs: `/tmp/ew-stable-*.log`.
+WebRTC 144.2.0 startup SIGILL was a fatal JNI lookup trap: fresh main-buffer
+jni_zero diagnostic reported missing `livekit/org/jni_zero/JniInit`.
+Keep rules preserve WebRTC/JNI namespaces; minification remains enabled.
+Published 150.1.0 previously failed R8; restored 144.2.0. No dependency diff.
+Both final modes survive 20 seconds with empty crash buffers; screenshots inspected:
+production sign-in without demo label, demo explicitly labeled test adapter.
 
-Clean production recipe in report runs prebuild then `npm run build:android`
-with public deployment URL and `EW_ANDROID_ARCHITECTURES=arm64-v8a`; latest passes.
-Retained APK: `/home/stag/.local/share/ensembleworks-mobile/artifacts/iteration-004/production-arm64-release.apk`.
-Report records updated checksum, 18 ARM64 libraries, bundle and debug certificate.
-Generated native trees remain ignored. Build script clears host CPATH/include
-paths to avoid JDK/NDK JNI ABI mismatch.
-
-Earlier fallback KVM/NVIDIA boot/webcam enumeration passed; PulseAudio failed.
-No emulator/Metro started this retry. Launch/screenshots remain task 3.
-Owner authentication, audio, physical Pixel and iOS remain unverified.
-Never inspect an authenticated owner AVD.
+Final `npm test`: 84 tests pass; `npm run check`, shell syntax and invalid-mode
+checks pass. No emulators/Metro remain; ADB has no devices. KVM/GPU/webcam
+enumeration pass; PulseAudio initialization still fails, actual media unverified.
+iOS unchanged/unexecuted. Owner authentication/calls and Pixel execution pending.
+Task-2 retained ARM64 APK is untouched and lacks this fix; rebuild before device
+verification. Its location/build history is in `docs/android-release-build.md`.
