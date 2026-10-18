@@ -170,6 +170,7 @@ test('lock copies exactly four cells without changing unrelated settled cells', 
   assert.equal(locked.board.flat().filter(Boolean).length, 5);
   assert.equal(locked.board[10][0], 'I');
   assert.equal(game.board.flat().filter(Boolean).length, 1);
+  assert.strictEqual(lockPiece(locked), locked);
   for (const [dx, dy] of game.active.cells) assert.equal(locked.board[18 + dy][game.active.x + dx], 'O');
 });
 
@@ -189,7 +190,15 @@ test('downward action steps without drawing, then locks once and spawns without 
   assert.equal(result.game.board.flat().filter(Boolean).length, 4);
   assert.equal(result.game.active.type, 'T');
   assert.equal(result.game.active.y, 0);
+  assert.deepEqual(result.game.active, spawnPiece('T'));
+  for (const [dx, dy] of game.active.cells) {
+    assert.equal(result.game.board[game.active.y + dy][game.active.x + dx], 'O');
+  }
   assert.equal(game.board.flat().filter(Boolean).length, 0);
+  const nextStep = advanceDown(result.game, source);
+  assert.equal(nextStep.locked, false);
+  assert.equal(nextStep.game.active.y, 1);
+  assert.equal(draws, 2);
 });
 
 test('blocked next spawn preserves settled cells and cannot draw again', () => {
