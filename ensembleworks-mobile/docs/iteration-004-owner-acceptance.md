@@ -1,7 +1,9 @@
 # Iteration 004 — Android owner acceptance
 
-Factory launch verification is not a real call. **All owner checks are not
-attempted.** Iteration completion requires the owner to record these results.
+Factory launch verification is not a real call. The owner ran a first, partial
+session on 2026-10-18 (see [Owner session notes](#owner-session-2026-10-18)).
+**Iteration 004 is not accepted:** the microphone failed and the mobile
+participant was not visible on the desktop side.
 Iteration 003's [iOS checklist](iteration-003-owner-acceptance.md) remains pending
 for the next Mac session, independently of Android.
 
@@ -39,10 +41,10 @@ raw authenticated logs. Only the owner performs sign-in and session revocation.
 
 | Check | Status | Observations / optional safe screenshot |
 | --- | --- | --- |
-| In-app Access/GitHub sign-in; enter display name once; grant microphone/camera permissions; join | not attempted | — |
+| In-app Access/GitHub sign-in; enter display name once; grant microphone/camera permissions; join | passed | Signed in and joined the room in the windowed emulator. |
 | Integration view: authenticated session, logical room `team`, actual room `canvas-team` | not attempted | — |
-| Web teammate's name/video appears in grid; their audio is heard through host output | not attempted | — |
-| Teammate sees host-webcam mobile video and hears host microphone | not attempted | — |
+| Web teammate's name/video appears in grid; their audio is heard through host output | partial | The browser participant appeared in the mobile app. Their video and audio were not checked. Both sides used the same GitHub account. |
+| Teammate sees host-webcam mobile video and hears host microphone | failed | The host webcam worked in the emulator, but the mobile participant never appeared in the desktop app. The microphone did not work in the emulator; the same host microphone worked in the desktop app. |
 | Microphone off/on stops/restores audio heard by teammate | not attempted | — |
 | Camera off/on stops/restores video seen by teammate | not attempted | — |
 | Leave disconnects and teammate sees departure; rejoin works | not attempted | — |
@@ -54,5 +56,28 @@ stop and record only the non-secret symptom. Source feasibility in
 [the transport trace](android-native-session-transport.md) does not establish
 successful deployed authentication. Record the specific owner-approved resolution
 needed; do not copy session material or implement an unapproved workaround.
+
+## Owner session 2026-10-18
+
+The owner ran out of time after the first few checks. Unlisted checks are still
+not attempted.
+
+- **Camera:** the host webcam worked in the emulator.
+- **Microphone:** did not work in the emulator. It worked in the desktop app on
+  the same computer, so the host microphone is fine. This matches the
+  PulseAudio initialization failure from the factory's headless runs.
+- **Presence is one-sided:** a second browser joined with the same GitHub
+  account. The mobile app showed that browser participant joining, but the
+  desktop app never showed the mobile participant. Using one account on both
+  sides may cause this (for example, two participants with the same identity),
+  so it may not be a mobile defect.
+
+Follow-ups for the next run:
+
+1. Make emulator audio input work, or confirm it can't be done on this host,
+   before re-running the microphone checks.
+2. Re-run the presence check with a teammate on a different GitHub account. If
+   the desktop app still doesn't show the mobile participant, investigate the
+   mobile app's track publishing or participant identity.
 
 See [Pixel handoff](device-handoff.md) for iteration 005 and emulator limitations.
