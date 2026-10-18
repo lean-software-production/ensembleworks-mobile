@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, advanceDown } from '../src/model.js';
+import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, clearCompletedRows, advanceDown } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -180,11 +180,13 @@ test('downward action steps without drawing, then locks once and spawns without 
   let game = createInitialGame({ source });
   const first = advanceDown(game, source);
   assert.equal(first.locked, false);
+  assert.equal(first.cleared, 0);
   assert.equal(draws, 1);
   assert.equal(first.game.board.flat().filter(Boolean).length, 0);
   game = { ...first.game, active: { ...first.game.active, y: 18 } };
   const result = advanceDown(game, source);
   assert.equal(result.locked, true);
+  assert.equal(result.cleared, 0);
   assert.equal(result.blockedSpawn, false);
   assert.equal(draws, 2);
   assert.equal(result.game.board.flat().filter(Boolean).length, 4);
@@ -199,6 +201,49 @@ test('downward action steps without drawing, then locks once and spawns without 
   assert.equal(nextStep.locked, false);
   assert.equal(nextStep.game.active.y, 1);
   assert.equal(draws, 2);
+});
+
+test('compaction clears zero through four rows, preserving survivor order and input', () => {
+  for (let count = 0; count <= 4; count++) {
+    const board = Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null));
+    board[2][0] = 'I';
+    board[8][1] = 'T';
+    const fullRows = [3, 7, 12, 18].slice(0, count);
+    for (const y of fullRows) board[y].fill('O');
+    const snapshot = structuredClone(board);
+    const expectedSurvivors = board.filter((_, y) => !fullRows.includes(y));
+    const result = clearCompletedRows(board);
+    assert.equal(result.cleared, count);
+    assert.equal(result.board.length, HEIGHT);
+    assert.ok(result.board.every(row => row.length === WIDTH));
+    assert.deepEqual(result.board.slice(0, count), Array.from({ length: count }, () => Array(WIDTH).fill(null)));
+    assert.deepEqual(result.board.slice(count), expectedSurvivors);
+    assert.deepEqual(board, snapshot);
+    assert.notStrictEqual(result.board[HEIGHT - 1], board[HEIGHT - 1]);
+  }
+});
+
+test('blocked downward action locks, completes row, clears before next spawn', () => {
+  let draws = 0;
+  const source = { next: () => { draws++; return draws === 1 ? 'O' : 'I'; } };
+  const start = createInitialGame({ source });
+  const board = start.board.map(row => [...row]);
+  board[19].fill('T');
+  board[19][4] = board[19][5] = null;
+  board[18][0] = 'J';
+  const game = { ...start, board, active: { ...start.active, y: 18 } };
+  const result = advanceDown(game, source);
+  assert.equal(result.locked, true);
+  assert.equal(result.cleared, 1);
+  assert.equal(draws, 2);
+  assert.equal(result.blockedSpawn, false);
+  assert.deepEqual(result.game.active, spawnPiece('I'));
+  assert.equal(result.game.board[19][0], 'J');
+  assert.equal(result.game.board[19][4], 'O');
+  assert.equal(result.game.board[19][5], 'O');
+  assert.ok(result.game.board[18].every(cell => cell === null));
+  assert.equal(game.board[19][0], 'T');
+  assert.equal(result.game.board.length, HEIGHT);
 });
 
 test('blocked next spawn preserves settled cells and cannot draw again', () => {

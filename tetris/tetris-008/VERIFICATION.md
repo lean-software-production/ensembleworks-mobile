@@ -1,8 +1,9 @@
-# Task 6 verification
+# Task 7 verification
 
-`src/model.js` already implements `lockPiece` and `advanceDown`; this attempt preserved that behavior and tightened `test/model.test.js` assertions for exact settled coordinates, idempotent locking without an active piece, unchanged spawn coordinates, and no extra draw on the subsequent legal step.
+`src/model.js` clears complete rows after locking and before testing the next spawn, returning the clear count. `test/model.test.js` checks zero through four simultaneous clears (including nonadjacent rows), survivor order, top padding, dimensions, input immutability, and a blocked downward action completing a row and spawning once.
 
-- `node --test test/model.test.js`: 13 passed, 0 failed.
-- `npm test`: 16 passed, 0 failed.
+- `node --test test/model.test.js`: 15 passed, 0 failed.
+- `npm test`: 18 passed, 0 failed.
+- `git diff --check -- src/model.js test/model.test.js HANDOFF.md VERIFICATION.md`: clean.
 
-Line clearing and scoring are reserved for tasks 7 and 8. The static launch adapter is reserved for later session tasks.
+Scoring remains task 8; terminal session work remains later tasks.

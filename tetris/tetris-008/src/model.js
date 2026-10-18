@@ -81,19 +81,31 @@ export function lockPiece(game) {
   return { ...game, board, active: null };
 }
 
-// One downward game action. A successful step does not draw; a blocked step
-// locks exactly once and tests one new piece against the settled board.
-// Clearing and scoring will be inserted between locking and spawning later.
-export function advanceDown(game, source) {
-  if (game.status !== 'running' || !game.active) return { game, locked: false, blockedSpawn: false };
-  const step = stepDown(game);
-  if (!step.blocked) return { game: step.game, locked: false, blockedSpawn: false };
-  const locked = lockPiece(game);
-  const next = spawnPiece(source.next());
-  const blockedSpawn = !canPlace(locked.board, next);
+// Compact all completed rows together, preserving survivor order and inserting
+// fresh empty rows at the top. The input board is never mutated.
+export function clearCompletedRows(board) {
+  const survivors = board.filter(row => row.some(cell => cell === null));
+  const cleared = HEIGHT - survivors.length;
   return {
-    game: { ...locked, active: blockedSpawn ? null : next, status: blockedSpawn ? 'over' : 'running' },
+    board: [...Array.from({ length: cleared }, () => Array(WIDTH).fill(null)), ...survivors.map(row => [...row])],
+    cleared,
+  };
+}
+
+// One downward game action. A successful step does not draw; a blocked step
+// locks once, clears, then tests one new piece against the compacted board.
+export function advanceDown(game, source) {
+  if (game.status !== 'running' || !game.active) return { game, locked: false, cleared: 0, blockedSpawn: false };
+  const step = stepDown(game);
+  if (!step.blocked) return { game: step.game, locked: false, cleared: 0, blockedSpawn: false };
+  const locked = lockPiece(game);
+  const { board, cleared } = clearCompletedRows(locked.board);
+  const next = spawnPiece(source.next());
+  const blockedSpawn = !canPlace(board, next);
+  return {
+    game: { ...locked, board, active: blockedSpawn ? null : next, status: blockedSpawn ? 'over' : 'running' },
     locked: true,
+    cleared,
     blockedSpawn,
   };
 }
