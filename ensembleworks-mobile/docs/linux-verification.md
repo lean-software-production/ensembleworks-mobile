@@ -1,5 +1,10 @@
 # Credential-free verification
 
+Latest Android/Linux evidence: [iteration 004 factory report](iteration-004-factory-validation.md),
+[Android owner checklist](iteration-004-owner-acceptance.md), and
+[Pixel handoff](device-handoff.md). The historical result below is preserved;
+it is not Android or post-upgrade iOS execution evidence.
+
 Run from `ensembleworks-mobile/`. On the Mac use the repository-root flox
 environment without a login shell:
 

@@ -13,9 +13,9 @@ call. See the [owner acceptance checklist](docs/iteration-003-owner-acceptance.m
 
 ## Dependency baseline
 
-Expo SDK 58 pre-release (`expo` 58.0.6), React Native 0.88.0-rc.3, React
-19.3.0, React DOM 19.3.0, Expo Crypto 58.0.5, Expo Dev Client 58.0.11,
-Expo System UI 58.0.5, Jest Expo 58.0.8, and AsyncStorage 2.2.0 are pinned
+Expo SDK 58 (`expo` 58.0.14), React Native 0.88.0, React
+19.3.0, React DOM 19.3.0, Expo Crypto 58.0.7, Expo Dev Client 58.0.14,
+Expo System UI 58.0.6, Jest Expo 58.0.11, and AsyncStorage 2.2.0 are pinned
 exactly. LiveKit React Native 3.0.0, LiveKit WebRTC 144.2.0, LiveKit client
 2.22.3, LiveKit Expo plugin 1.0.3, and WebRTC config plugin 15.0.2 remain in
 use. `react-dom` matches React for LiveKit's transitive component peer; this
@@ -69,6 +69,72 @@ Tunnel only development code, never secrets. A Metro tunnel does not proxy the
 backend or bypass Cloudflare Access. Building and running Metro locally on the Mac
 is the more reliable first native smoke test.
 
+## Android on the owner's Linux host
+
+Use Arch Linux x86_64 with system Nix and Flox, JDK 17 from the repository's
+Linux-only Flox environment, accessible `/dev/kvm` and `/dev/video0`, host GPU
+drivers, and PipeWire/PulseAudio input/output. Flox bootstrap and the bounded
+composed-SDK experiment are recorded in
+[toolchain evidence](docs/android-toolchain-attempt.md). The chosen route is the
+Google SDK fallback in `~/Android/Sdk`: the Nix SDK could not initialize host
+GL/Vulkan and lacked a writable location for a requested build component.
+Do not retry that experiment or install another Node/system Android SDK.
+FloxHub's logged-out warning does not require sign-in for local activation.
+
+From this app directory, without a login shell:
+
+```sh
+flox activate -d .. -- node --version # v24.21.0
+flox activate -d .. -- bash scripts/install-android-sdk.sh
+flox activate -d .. -- npm ci
+flox activate -d .. -- npm test
+flox activate -d .. -- npm run check
+flox activate -d .. -- npx expo-doctor
+```
+
+The environment exports `JAVA_HOME`, `ANDROID_HOME=$HOME/Android/Sdk` and
+`ANDROID_SDK_ROOT`. Installer pins: command-line tools 22.0 (archive checksum
+verified), platform-tools 37.0.1, platforms 37.0 r2 and 37.1 r1, build-tools
+36.0.0 and 37.0.0, NDK 27.1.12297006, CMake 3.22.1, emulator 37.2.12,
+Google APIs API 37.1 ps16k x86_64 image r9. Revision drift fails closed;
+`sdkmanager` cannot select historical revisions for every package ID.
+
+Clean production release, embedded JavaScript, debug-keystore signing (not
+store signing), no Metro:
+
+```sh
+timeout --kill-after=30 2500 flox activate -d .. -- env \
+  EXPO_PUBLIC_APP_MODE=production \
+  EXPO_PUBLIC_DEPLOYMENT_URL=https://canvas-ew-lsp-001.ensembleworks.dev/ \
+  EW_ANDROID_ARCHITECTURES=arm64-v8a \
+  bash -c 'npx expo prebuild --clean --platform android && npm run build:android'
+```
+
+Output: `android/app/build/outputs/apk/release/app-release.apk` (ignored).
+`EW_ANDROID_ARCHITECTURES=x86_64` selects emulator-only output; unset it for
+prebuild's default architectures. Mode/URL are embedded at build time, not
+changed by installing or launching. `EXPO_PUBLIC_APP_MODE=demo` explicitly
+selects labeled demo; production never falls back. Native changes belong in
+`app.json`, plugins or dependencies. Build clears host JDK include paths to
+avoid a host/NDK JNI header conflict and has a 2400-second default bound.
+
+```sh
+# Automated credential-free check: builds both modes, boots, installs, waits
+# 20 seconds, checks crashes, captures screenshots, stops its own emulator.
+timeout --kill-after=30 3000 flox activate -d .. -- npm run verify:android-emulator-launch
+# Manual emulator (1800-second default bound; stop when finished):
+flox activate -d .. -- bash scripts/android-emulator.sh headless
+flox activate -d .. -- bash scripts/android-emulator.sh windowed
+```
+
+Both manual commands select the same Pixel 9 profile on port 5580, KVM/host GPU,
+front webcam and host audio input. Run one at a time. Do not reuse an authenticated
+AVD for factory checks. Windowed/media/audio acceptance remains owner-only;
+headless logs report PulseAudio initialization failure.
+See [factory report](docs/iteration-004-factory-validation.md),
+[owner checklist](docs/iteration-004-owner-acceptance.md), and
+[Pixel sideload handoff](docs/device-handoff.md).
+
 ## Mac: iOS 27 build, simulator launch, and future device work
 
 Prerequisites for the verified native build are macOS with **Xcode 27.0 (27A266a)**
@@ -100,7 +166,7 @@ signaling, or physical-device coverage.
 See [the native verification record](docs/ios-27-simulator-verification.md) for
 the exact observed result and generated scene-lifecycle evidence.
 
-### Physical-device preparation (iteration 004)
+### Physical iPhone preparation (historical / future Mac work)
 
 1. Fetch the factory's committed changes and enter `ensembleworks-mobile/`.
 2. Select Xcode and install the locked dependencies:
@@ -167,9 +233,8 @@ identifier in `app.json` before regenerating. The remaining device checks are
 real camera capture/outgoing video, signed installation, behavior while backgrounded
 or locked, and a call over another network; see the [device handoff](docs/device-handoff.md).
 After changing native dependencies or app plugins, regenerate and rebuild the
-native client; Metro reload alone is insufficient. Android is only scaffolded:
-with Android Studio/SDK and JDK 17 installed, `npm run android` builds locally;
-Android acceptance is out of scope.
+native client; Metro reload alone is insufficient. Android emulator factory
+verification is recorded separately above; real calls remain owner-only.
 
 ## Application ports and Linux adapter checks
 
