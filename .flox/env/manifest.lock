@@ -29,7 +29,7 @@
       "LANG": "en_US.UTF-8"
     },
     "hook": {
-      "on-activate": "if [ \"$(uname -s)-$(uname -m)\" = \"Linux-x86_64\" ]; then\n  export JAVA_HOME=\"$(dirname \"$(dirname \"$(readlink -f \"$(command -v javac)\")\")\")\"\n  export ANDROID_HOME=\"$FLOX_ENV_PROJECT/result-android-sdk/libexec/android-sdk\"\n  export ANDROID_SDK_ROOT=\"$ANDROID_HOME\"\n  export PATH=\"$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/22.0/bin:$PATH\"\nfi\n"
+      "on-activate": "if [ \"$(uname -s)-$(uname -m)\" = \"Linux-x86_64\" ]; then\n  export JAVA_HOME=\"$(dirname \"$(dirname \"$(readlink -f \"$(command -v javac)\")\")\")\"\n  export ANDROID_HOME=\"$HOME/Android/Sdk\"\n  export ANDROID_SDK_ROOT=\"$ANDROID_HOME\"\n  export PATH=\"$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/22.0/bin:$PATH\"\nfi\n"
     },
     "options": {
       "systems": [
