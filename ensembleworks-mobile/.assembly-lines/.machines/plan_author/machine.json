@@ -1,5 +1,5 @@
 {
   "role": "plan_author",
   "harness": "pi",
-  "model": "openrouter/openai/gpt-6-sol"
+  "model": "openrouter/openai/gpt-6.1-sol"
 }
