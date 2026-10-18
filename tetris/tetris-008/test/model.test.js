@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal } from '../src/model.js';
+import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, rotateClockwise } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -69,6 +69,42 @@ test('settled cells block movement while preserving board and active state', () 
   assert.deepEqual(game, snapshot);
   assert.equal(moveHorizontal(game, -1).active.x, 3);
   assert.equal(game.board[0][6], 'T');
+});
+
+test('clockwise rotations preserve four cells and return to original geometry after four turns', () => {
+  for (const type of TYPES) {
+    const start = createInitialGame({ source: { next: () => type } });
+    let game = { ...start, active: { ...start.active, x: 3, y: 5 } };
+    const original = game;
+    for (let i = 0; i < 4; i++) {
+      game = rotateClockwise(game);
+      assert.equal(game.active.cells.length, 4, type);
+      assert.equal(new Set(game.active.cells.map(cell => cell.join(','))).size, 4, type);
+      assert.ok(canPlace(game.board, game.active), type);
+      assert.strictEqual(game.board, start.board);
+    }
+    assert.deepEqual(game.active, original.active, type);
+    if (type === 'O') assert.strictEqual(game, original);
+  }
+});
+
+test('rotation rejects wall, floor and settled obstruction without kicks or mutation', () => {
+  const start = createInitialGame({ source: { next: () => 'I' } });
+  const vertical = rotateClockwise(start);
+  assert.ok(canPlace(vertical.board, vertical.active));
+  const cases = [
+    { ...vertical, active: { ...vertical.active, x: 7 } }, // horizontal needs four columns; shifting left would fit
+    { ...start, active: { ...start.active, y: HEIGHT - 1 } }, // vertical needs four rows
+    { ...start, board: start.board.map(row => [...row]) },
+  ];
+  cases[2].board[1][start.active.x] = 'O'; // target only, not the starting cells
+  for (const game of cases) {
+    assert.ok(canPlace(game.board, game.active));
+    const snapshot = structuredClone(game);
+    assert.strictEqual(rotateClockwise(game), game);
+    assert.deepEqual(game, snapshot);
+  }
+  assert.ok(canPlace(cases[0].board, { ...rotateClockwise(vertical).active, x: 6 }));
 });
 
 test('launch seam accepts injected piece source without changing board', () => {

@@ -1,7 +1,7 @@
 import { WIDTH, HEIGHT } from './render.js';
 
 // Local cell coordinates; each piece's bounding box is centered on spawn.
-// Rotations in later tasks use these coordinates around the box anchor.
+// Clockwise rotation turns the bounding box around its fixed top-left anchor.
 export const SHAPES = Object.freeze({
   I: [[0, 0], [1, 0], [2, 0], [3, 0]],
   O: [[0, 0], [1, 0], [0, 1], [1, 1]],
@@ -47,6 +47,17 @@ export function canPlace(board, piece) {
 export function moveHorizontal(game, direction) {
   if (game.status !== 'running' || !game.active || ![-1, 1].includes(direction)) return game;
   const active = { ...game.active, x: game.active.x + direction };
+  return canPlace(game.board, active) ? { ...game, active } : game;
+}
+
+// (x, y) -> (height - 1 - y, x) in the current local bounding box.
+// The anchor never shifts: invalid rotations have no wall kicks or floor kicks.
+// The square is invariant. Rejection returns the identical game object.
+export function rotateClockwise(game) {
+  if (game.status !== 'running' || !game.active || game.active.type === 'O') return game;
+  const height = Math.max(...game.active.cells.map(([, y]) => y)) + 1;
+  const cells = game.active.cells.map(([x, y]) => [height - 1 - y, x]);
+  const active = { ...game.active, cells };
   return canPlace(game.board, active) ? { ...game, active } : game;
 }
 
