@@ -1,0 +1,11 @@
+{
+  "experiment": "E07",
+  "cohort": "budgeted-batches-01",
+  "status": "prepared_not_started",
+  "run": "tetris-007-e07-r1",
+  "worktree": "/workspaces/tetris-007-experiments/budgeted-batches/E07",
+  "branch": "exp/007-budgeted-batches",
+  "config_commit": "9870becdfc4794f83631ac4ec527068891c448b9",
+  "trials": 1,
+  "inference_started": false
+}

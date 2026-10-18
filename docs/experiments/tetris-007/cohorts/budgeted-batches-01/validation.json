@@ -1,0 +1,12 @@
+{
+  "node_budget_and_planner_checks": 12,
+  "supervisor_checks": 6,
+  "variant_checks": 2,
+  "synthetic_large_plan_tasks": 10000,
+  "line_check": "accepted",
+  "protocol_v2_inputs_match_E05": true,
+  "models_match_E05": true,
+  "fresh_empty_product": true,
+  "no_record_or_inference": true,
+  "credentials_ignored": true
+}
