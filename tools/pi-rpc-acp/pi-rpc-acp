@@ -64,6 +64,10 @@ function onPiEvent(session, e) {
     }
     turn.hasText = false;
     turn.endsWithNewline = false;
+    // pi says why each message ended. Only the last one decides the turn,
+    // since pi may retry after a provider error.
+    turn.stopReason = e.message.stopReason;
+    turn.errorMessage = e.message.errorMessage;
   } else if (e.type === 'tool_execution_start') {
     const args = e.args ?? {};
     const file = args.path ? path.resolve(session.cwd, args.path) : null;
@@ -84,7 +88,11 @@ function onPiEvent(session, e) {
     turn.usage.outputTokens += u.output ?? 0;
     turn.usage.cachedReadTokens += u.cacheRead ?? 0;
     turn.usage.cachedWriteTokens += u.cacheWrite ?? 0;
-  } else if (e.type === 'agent_end') {
+  } else if (e.type === 'agent_settled') {
+    // agent_end only closes one attempt: pi may still retry after it.
+    // agent_settled means pi will do nothing more for this prompt.
+    if (!turn.cancelled && turn.stopReason === 'error') return turn.fail(`pi stopped with an error: ${turn.errorMessage ?? 'no details'}`);
+    if (!turn.cancelled && turn.stopReason === 'length') return turn.fail('pi ran out of output tokens');
     turn.done();
   }
 }
