@@ -13,12 +13,29 @@ cocoapods.pkg-path = "cocoapods"
 cocoapods.version = "1.16.2"
 cocoapods.systems = ["aarch64-darwin"]
 
+# Android only: never shadow the Mac's Xcode toolchain.
+jdk17.pkg-path = "jdk17"
+jdk17.version = "17.0.20.1+1"
+jdk17.systems = ["x86_64-linux"]
+
 # Metro's file watcher.
 watchman.pkg-path = "watchman"
 
 # CocoaPods refuses to run reliably without a UTF-8 locale.
 [vars]
 LANG = "en_US.UTF-8"
+
+# Build the pinned expression once with `flox build -d .. android-sdk`.
+# A missing result must not prevent activation (including that first build).
+[hook]
+on-activate = '''
+if [ "$(uname -s)-$(uname -m)" = "Linux-x86_64" ]; then
+  export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")")"
+  export ANDROID_HOME="$FLOX_ENV_PROJECT/result-android-sdk/libexec/android-sdk"
+  export ANDROID_SDK_ROOT="$ANDROID_HOME"
+  export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/22.0/bin:$PATH"
+fi
+'''
 
 [options]
 systems = ["aarch64-darwin", "aarch64-linux", "x86_64-linux"]

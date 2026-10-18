@@ -10,6 +10,13 @@
           "aarch64-darwin"
         ]
       },
+      "jdk17": {
+        "pkg-path": "jdk17",
+        "version": "17.0.20.1+1",
+        "systems": [
+          "x86_64-linux"
+        ]
+      },
       "nodejs": {
         "pkg-path": "nodejs_24",
         "version": "24.21.0"
@@ -20,6 +27,9 @@
     },
     "vars": {
       "LANG": "en_US.UTF-8"
+    },
+    "hook": {
+      "on-activate": "if [ \"$(uname -s)-$(uname -m)\" = \"Linux-x86_64\" ]; then\n  export JAVA_HOME=\"$(dirname \"$(dirname \"$(readlink -f \"$(command -v javac)\")\")\")\"\n  export ANDROID_HOME=\"$FLOX_ENV_PROJECT/result-android-sdk/libexec/android-sdk\"\n  export ANDROID_SDK_ROOT=\"$ANDROID_HOME\"\n  export PATH=\"$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/22.0/bin:$PATH\"\nfi\n"
     },
     "options": {
       "systems": [
@@ -60,6 +70,36 @@
       "priority": 5
     },
     {
+      "attr_path": "jdk17",
+      "broken": false,
+      "derivation": "/nix/store/agjy2lym7a1dfg6shx4sgcwcwmvq8mbk-openjdk-17.0.20.1+1.drv",
+      "description": "Open-source Java Development Kit",
+      "install_id": "jdk17",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "name": "openjdk-17.0.20.1+1",
+      "pname": "jdk17",
+      "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "rev_count": 1086391,
+      "rev_date": "2026-10-06T04:29:54Z",
+      "scrape_date": "2026-10-07T06:08:59.562120Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.0.20.1+1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/grwl3lbhaayijjlvlmkga3qkmfzf119a-openjdk-17.0.20.1+1-debug",
+        "out": "/nix/store/pv7qbhhif83n4a8gag71x444h17my5cp-openjdk-17.0.20.1+1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "nodejs_24",
       "broken": false,
       "derivation": "/nix/store/kfalw8dhzga1b294cr5zz1diwgkigrra-nodejs-24.21.0.drv",
@@ -79,6 +119,7 @@
       "unfree": false,
       "version": "24.21.0",
       "outputs_to_install": [
+        "out",
         "out"
       ],
       "outputs": {
@@ -108,6 +149,7 @@
       "unfree": false,
       "version": "24.21.0",
       "outputs_to_install": [
+        "out",
         "out"
       ],
       "outputs": {
@@ -137,6 +179,7 @@
       "unfree": false,
       "version": "24.21.0",
       "outputs_to_install": [
+        "out",
         "out"
       ],
       "outputs": {
