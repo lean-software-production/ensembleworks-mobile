@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise } from '../src/model.js';
+import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, advanceDown } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -160,6 +160,53 @@ test('rotation rejects wall, floor and settled obstruction without kicks or muta
     assert.deepEqual(game, snapshot);
   }
   assert.ok(canPlace(cases[0].board, { ...rotateClockwise(vertical).active, x: 6 }));
+});
+
+test('lock copies exactly four cells without changing unrelated settled cells', () => {
+  const game = createInitialGame({ source: { next: () => 'O' } });
+  game.board[10][0] = 'I';
+  const locked = lockPiece({ ...game, active: { ...game.active, y: 18 } });
+  assert.equal(locked.active, null);
+  assert.equal(locked.board.flat().filter(Boolean).length, 5);
+  assert.equal(locked.board[10][0], 'I');
+  assert.equal(game.board.flat().filter(Boolean).length, 1);
+  for (const [dx, dy] of game.active.cells) assert.equal(locked.board[18 + dy][game.active.x + dx], 'O');
+});
+
+test('downward action steps without drawing, then locks once and spawns without advancing', () => {
+  let draws = 0;
+  const source = { next: () => { draws++; return draws === 1 ? 'O' : 'T'; } };
+  let game = createInitialGame({ source });
+  const first = advanceDown(game, source);
+  assert.equal(first.locked, false);
+  assert.equal(draws, 1);
+  assert.equal(first.game.board.flat().filter(Boolean).length, 0);
+  game = { ...first.game, active: { ...first.game.active, y: 18 } };
+  const result = advanceDown(game, source);
+  assert.equal(result.locked, true);
+  assert.equal(result.blockedSpawn, false);
+  assert.equal(draws, 2);
+  assert.equal(result.game.board.flat().filter(Boolean).length, 4);
+  assert.equal(result.game.active.type, 'T');
+  assert.equal(result.game.active.y, 0);
+  assert.equal(game.board.flat().filter(Boolean).length, 0);
+});
+
+test('blocked next spawn preserves settled cells and cannot draw again', () => {
+  let draws = 0;
+  const source = { next: () => { draws++; return 'O'; } };
+  const start = createInitialGame({ source });
+  const game = { ...start, active: { ...start.active, y: 1 } };
+  game.board[3][game.active.x] = 'I';
+  const result = advanceDown(game, source);
+  assert.equal(result.locked, true);
+  assert.equal(result.blockedSpawn, true);
+  assert.equal(result.game.status, 'over');
+  assert.equal(result.game.active, null);
+  assert.equal(result.game.board[3][game.active.x], 'I');
+  assert.equal(result.game.board.flat().filter(Boolean).length, 5);
+  assert.strictEqual(advanceDown(result.game, source).game, result.game);
+  assert.equal(draws, 2);
 });
 
 test('launch seam accepts injected piece source without changing board', () => {

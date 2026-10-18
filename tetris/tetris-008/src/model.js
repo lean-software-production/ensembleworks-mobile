@@ -70,6 +70,34 @@ export function rotateClockwise(game) {
   return canPlace(game.board, active) ? { ...game, active } : game;
 }
 
+// Lock is a pure copy: the four active cells become settled without changing
+// the original board or unrelated cells.
+export function lockPiece(game) {
+  if (game.status !== 'running' || !game.active) return game;
+  const board = game.board.map(row => [...row]);
+  for (const [dx, dy] of game.active.cells) {
+    board[game.active.y + dy][game.active.x + dx] = game.active.type;
+  }
+  return { ...game, board, active: null };
+}
+
+// One downward game action. A successful step does not draw; a blocked step
+// locks exactly once and tests one new piece against the settled board.
+// Clearing and scoring will be inserted between locking and spawning later.
+export function advanceDown(game, source) {
+  if (game.status !== 'running' || !game.active) return { game, locked: false, blockedSpawn: false };
+  const step = stepDown(game);
+  if (!step.blocked) return { game: step.game, locked: false, blockedSpawn: false };
+  const locked = lockPiece(game);
+  const next = spawnPiece(source.next());
+  const blockedSpawn = !canPlace(locked.board, next);
+  return {
+    game: { ...locked, active: blockedSpawn ? null : next, status: blockedSpawn ? 'over' : 'running' },
+    locked: true,
+    blockedSpawn,
+  };
+}
+
 export function createInitialGame({ source = createPieceSource() } = {}) {
   return {
     board: Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null)),
