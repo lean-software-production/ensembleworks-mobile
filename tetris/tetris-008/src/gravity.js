@@ -23,6 +23,12 @@ export function createGravityController({ game, source, scheduler = globalThis, 
   return {
     get game() { return current; },
     start() { startTimer(); },
+    setGame(game) {
+      if (game === current) return;
+      current = game;
+      onChange(current);
+      if (current.status !== 'running') stopTimer();
+    },
     pause() {
       if (current.status !== 'running') return;
       stopTimer();
