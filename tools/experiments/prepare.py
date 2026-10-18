@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 BASE=Path('/workspaces/tetris-007-experiments')
 PACKET=ROOT/'docs/experiments/tetris-007/inputs'
-parser=argparse.ArgumentParser();parser.add_argument('--worktrees',default=str(BASE));parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04'],default=['E00','E01','E02','E03']);parser.add_argument('--cohort',default='');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--worktrees',default=str(BASE));parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06'],default=['E00','E01','E02','E03']);parser.add_argument('--cohort',default='');args=parser.parse_args()
 BASE=Path(args.worktrees).resolve()
 if args.first_trial<1 or args.trials<1:parser.error('Positive trial numbers/count required')
 if args.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',args.cohort):parser.error('Invalid cohort')
@@ -35,8 +35,21 @@ for code in dict.fromkeys(args.configs):
         if code=='E04':
             import importlib.util
             spec=importlib.util.spec_from_file_location('whole_plan',Path(__file__).with_name('whole-plan.py'));variant=importlib.util.module_from_spec(spec);spec.loader.exec_module(variant);variant.configure(target)
+        if code in ['E05','E06']:
+            import importlib.util,re
+            spec=importlib.util.spec_from_file_location('reviewed_batches',Path(__file__).with_name('reviewed-batches.py'));variant=importlib.util.module_from_spec(spec);spec.loader.exec_module(variant);variant.configure(target,whole=code=='E06')
+        profiles={m.parent.name:json.loads(m.read_text()) for m in (target/'.assembly-lines/.machines').glob('*/machine.json')}
         run.mkdir(parents=True)
-        shutil.copy2(PACKET/'plan.md',run/'plan.md')
+        if code in ['E05','E06']:
+            source=(PACKET/'plan.md').read_text()
+            catalogue=re.sub(r'(?m)^- \[ \] (\d+)\. (.+)$',lambda m:'### R'+m[1].zfill(2)+'. '+m[2],source)
+            catalogue=catalogue.replace('Every task below must produce a focused committable change in the target, including the automated checks described. Tasks remain unchecked until their changes have been committed.','R01–R13 below are the frozen acceptance catalogue, not execution tasks. The author proposes tasks and reviewed batch gates covering every clause. Bookkeeping records execution progress separately.')
+            (run/'plan.md').write_text(catalogue+'\n## Proposed execution plan\n\nThe plan author must propose executable tasks, reviewed batches and the batch-plan JSON block before review.\n')
+            packet=w/'docs/experiments/tetris-007/cohorts'/args.cohort/'inputs';packet.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(PACKET/'plan.md',packet/'original-acceptance.md')
+            (packet/'plan.md').write_text((run/'plan.md').read_text())
+            (packet/'seed.md').write_text((PACKET/'seed.md').read_text()+'\nFor this matched cohort, plain non-TTY output is permitted. Retro colours are checked in the interactive terminal and all seven tetromino render cases. Production lifecycle integration fixtures must be reachable through legal gameplay, without direct edits to settled-board or active-piece state to force game over.\n')
+        else:shutil.copy2(PACKET/'plan.md',run/'plan.md')
         subprocess.run([str(w/'bin/factory'),'--check-line','--target',str(target),'--line','efficient'],cwd=w,check=True)
     subprocess.run(['git','-C',str(w),'add','--',*[f'tetris/tetris-007-{code.lower()}-r{i}' for i in range(args.first_trial,args.first_trial+args.trials)]],check=True)
     subprocess.run(['git','-C',str(w),'commit','-m',f'Prepare {code} {args.cohort or "pilot"} fresh measured targets with frozen profiles'],check=True)
