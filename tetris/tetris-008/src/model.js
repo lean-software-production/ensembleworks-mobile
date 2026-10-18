@@ -92,8 +92,11 @@ export function clearCompletedRows(board) {
   };
 }
 
+// Points for 0/1/2/3/4 rows cleared by a single lock.
+export const LINE_POINTS = Object.freeze([0, 100, 300, 500, 800]);
+
 // One downward game action. A successful step does not draw; a blocked step
-// locks once, clears, then tests one new piece against the compacted board.
+// locks once, clears, scores once, then tests one new piece against the compacted board.
 export function advanceDown(game, source) {
   if (game.status !== 'running' || !game.active) return { game, locked: false, cleared: 0, blockedSpawn: false };
   const step = stepDown(game);
@@ -103,7 +106,7 @@ export function advanceDown(game, source) {
   const next = spawnPiece(source.next());
   const blockedSpawn = !canPlace(board, next);
   return {
-    game: { ...locked, board, active: blockedSpawn ? null : next, status: blockedSpawn ? 'over' : 'running' },
+    game: { ...locked, board, score: locked.score + LINE_POINTS[cleared], active: blockedSpawn ? null : next, status: blockedSpawn ? 'over' : 'running' },
     locked: true,
     cleared,
     blockedSpawn,

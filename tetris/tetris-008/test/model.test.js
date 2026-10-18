@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, clearCompletedRows, advanceDown } from '../src/model.js';
+import { SHAPES, TYPES, LINE_POINTS, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal, stepDown, rotateClockwise, lockPiece, clearCompletedRows, advanceDown } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -244,6 +244,43 @@ test('blocked downward action locks, completes row, clears before next spawn', (
   assert.ok(result.game.board[18].every(cell => cell === null));
   assert.equal(game.board[19][0], 'T');
   assert.equal(result.game.board.length, HEIGHT);
+});
+
+test('scoring awards each clear count once, accumulates and remains visible within 24 rows', () => {
+  assert.deepEqual(LINE_POINTS, [0, 100, 300, 500, 800]);
+  const source = { next: () => 'I' };
+  let accumulated = 0;
+  for (let count = 0; count <= 4; count++) {
+    const initial = createInitialGame({ source });
+    const board = initial.board.map(row => [...row]);
+    for (let y = HEIGHT - count; y < HEIGHT; y++) {
+      board[y].fill('T');
+      board[y][4] = null;
+    }
+    // A vertical I locks at the floor, filling exactly the chosen rows.
+    const active = { ...initial.active, x: 4, y: 16, cells: [[0, 0], [0, 1], [0, 2], [0, 3]] };
+    const game = { ...initial, board, active, score: accumulated };
+    const snapshot = structuredClone(game);
+    assert.equal(moveHorizontal(game, -1).score, accumulated);
+    if (count > 0) assert.strictEqual(moveHorizontal(game, -1), game); // settled-row collision
+    assert.equal(rotateClockwise(game).score, accumulated);
+    assert.equal(stepDown(game).game.score, accumulated);
+    const result = advanceDown(game, source);
+    assert.equal(result.cleared, count);
+    accumulated += LINE_POINTS[count];
+    assert.equal(result.game.score, accumulated);
+    assert.equal(game.score, snapshot.score);
+    assert.deepEqual(game, snapshot);
+    const frame = renderFrame(result.game).split('\n');
+    assert.equal(frame.length, 24);
+    assert.equal(frame[22], `Score: ${accumulated}`);
+    assert.ok(frame.every(line => line.length <= 50));
+    assert.equal(advanceDown(result.game, source).game.score, accumulated);
+  }
+  assert.equal(accumulated, 1700);
+  const large = renderFrame({ score: 999999999999999 });
+  assert.equal(large.split('\n').length, 24);
+  assert.ok(large.split('\n').every(line => line.length <= 50));
 });
 
 test('blocked next spawn preserves settled cells and cannot draw again', () => {
