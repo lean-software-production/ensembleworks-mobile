@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 BASE=Path('/workspaces/tetris-007-experiments')
 PACKET=ROOT/'docs/experiments/tetris-007/inputs'
-parser=argparse.ArgumentParser();parser.add_argument('--worktrees',default=str(BASE));parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06'],default=['E00','E01','E02','E03']);parser.add_argument('--cohort',default='');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--worktrees',default=str(BASE));parser.add_argument('--first-trial',type=int,default=1);parser.add_argument('--trials',type=int,default=3);parser.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06','E07'],default=['E00','E01','E02','E03']);parser.add_argument('--cohort',default='');args=parser.parse_args()
 BASE=Path(args.worktrees).resolve()
 if args.first_trial<1 or args.trials<1:parser.error('Positive trial numbers/count required')
 if args.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',args.cohort):parser.error('Invalid cohort')
@@ -35,12 +35,15 @@ for code in dict.fromkeys(args.configs):
         if code=='E04':
             import importlib.util
             spec=importlib.util.spec_from_file_location('whole_plan',Path(__file__).with_name('whole-plan.py'));variant=importlib.util.module_from_spec(spec);spec.loader.exec_module(variant);variant.configure(target)
-        if code in ['E05','E06']:
+        if code in ['E05','E06','E07']:
             import importlib.util,re
-            spec=importlib.util.spec_from_file_location('reviewed_batches',Path(__file__).with_name('reviewed-batches.py'));variant=importlib.util.module_from_spec(spec);spec.loader.exec_module(variant);variant.configure(target,whole=code=='E06')
+            module='budgeted-batches.py' if code=='E07' else 'reviewed-batches.py'
+            spec=importlib.util.spec_from_file_location('batch_variant',Path(__file__).with_name(module));variant=importlib.util.module_from_spec(spec);spec.loader.exec_module(variant)
+            if code=='E07':variant.configure(target)
+            else:variant.configure(target,whole=code=='E06')
         profiles={m.parent.name:json.loads(m.read_text()) for m in (target/'.assembly-lines/.machines').glob('*/machine.json')}
         run.mkdir(parents=True)
-        if code in ['E05','E06']:
+        if code in ['E05','E06','E07']:
             source=(PACKET/'plan.md').read_text()
             catalogue=re.sub(r'(?m)^- \[ \] (\d+)\. (.+)$',lambda m:'### R'+m[1].zfill(2)+'. '+m[2],source)
             catalogue=catalogue.replace('Every task below must produce a focused committable change in the target, including the automated checks described. Tasks remain unchecked until their changes have been committed.','R01–R13 below are the frozen acceptance catalogue, not execution tasks. The author proposes tasks and reviewed batch gates covering every clause. Bookkeeping records execution progress separately.')

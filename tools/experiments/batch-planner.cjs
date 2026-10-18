@@ -18,13 +18,18 @@ function context(prompt){const marker='\nRun context:\n';const start=prompt.last
 function git(target,...args){return cp.execFileSync('git',['-C',target,...args],{encoding:'utf8'}).trim();}
 function run(c){
  assert(path.isAbsolute(c.plan)&&path.isAbsolute(c.target),'Absolute paths required');const dir=path.dirname(c.plan);const review=JSON.parse(fs.readFileSync(path.join(dir,'plan-review.json'),'utf8'));assert(review.status==='accepted'&&review.decision?.satisfied===true,'Plan must be independently accepted.');
+ const budgetPath=path.join(c.target,'.assembly-lines/batch-budget.json');const budget=fs.existsSync(budgetPath)?JSON.parse(fs.readFileSync(budgetPath,'utf8')):null;
+ const policy=budget?require('./batch-budget.cjs'):null;
  const contract=readContract(fs.readFileSync(c.plan,'utf8')),hash=crypto.createHash('sha256').update(JSON.stringify(contract)).digest('hex');const file=path.join(dir,'batch-state.json');
  let s=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{version:1,contract_hash:hash,done:[],active:null,commits:[]};
+ if(budget){policy.validate(budget,contract.tasks);const budgetHash=crypto.createHash('sha256').update(JSON.stringify(budget)).digest('hex');assert(!s.budget_hash||s.budget_hash===budgetHash,'Budget changed during measured execution');s.budget_hash=budgetHash;}
  assert(s.contract_hash===hash,'Reviewed batch contract changed during execution; preserve state and request explicit repair.');
  const committed=c.committed?JSON.parse(c.committed):null;
  if(committed){
   const receipt=JSON.parse(c.commit_receipt||'{}');assert(s.active,'No selected batch for committed work');assert(committed.task===s.active.work_item&&receipt.task===s.active.work_item&&receipt.status==='committed'&&receipt.validation?.satisfied===true,'Accepted commit receipt does not match selected batch');assert(git(c.target,'rev-parse','HEAD')===receipt.commit&&git(c.target,'log','-1','--format=%s')===s.active.work_item,'Git receipt mismatch');
-  assert(JSON.stringify(committed.task_ids)===JSON.stringify(s.active.task_ids),'Doer result must identify exact selected task IDs');for(const id of s.active.task_ids){assert(!s.done.includes(id),'Duplicate task completion');s.done.push(id);}s.commits.push({task_ids:s.active.task_ids,commit:receipt.commit,work_item:s.active.work_item});s.active=null;
+  assert(JSON.stringify(committed.task_ids)===JSON.stringify(s.active.task_ids),'Doer result must identify exact selected task IDs');for(const id of s.active.task_ids){assert(!s.done.includes(id),'Duplicate task completion');s.done.push(id);}let measured;
+  if(budget){const record=path.join(dir,'record.jsonl');const events=fs.existsSync(record)?fs.readFileSync(record,'utf8').split('\n').slice(0,-1).filter(Boolean).map(JSON.parse):[];measured=policy.measure(events,s.active.selected_at);}
+  s.commits.push({task_ids:s.active.task_ids,commit:receipt.commit,work_item:s.active.work_item,estimated:s.active.budget?.estimated,measured});s.active=null;
  }
  if(s.active){atomic(file,s);return{complete:false,batch:s.active};} // Retry/resume keeps selection fixed.
  const batch=contract.batches.find(b=>b.task_ids.some(id=>!s.done.includes(id)));
@@ -35,9 +40,11 @@ function run(c){
  // hard boundaries remain intact where the plan offers no reviewed split point.
  const mode=path.basename(c.target).includes('e06')?'whole':'adaptive';
  if(mode==='whole')assert(contract.batches.length===1,'Whole-plan comparison requires exactly one batch.');
- if(mode==='adaptive'&&remaining.length>4){const candidates=remaining.slice(0,4).filter(id=>batch.split_after.includes(id));if(candidates.length)selected=remaining.slice(0,remaining.indexOf(candidates.at(-1))+1);}
+ if(!budget&&mode==='adaptive'&&remaining.length>4){const candidates=remaining.slice(0,4).filter(id=>batch.split_after.includes(id));if(candidates.length)selected=remaining.slice(0,remaining.indexOf(candidates.at(-1))+1);}
+ const selection=budget?policy.select(remaining,batch,contract.tasks,budget,s.commits):null;
+ if(selection)selected=selection.task_ids;
  const work_item=`Batch ${batch.id}: ${selected.join(',')}`;
- s.active={id:batch.id,title:batch.title,work_item,task_ids:selected,requirements:[...new Set(selected.flatMap(id=>contract.tasks.find(t=>t.id===id).requirements))],acceptance:selected.map(id=>({task_id:id,checks:contract.tasks.find(t=>t.id===id).acceptance})),reason:batch.reason,contract_hash:hash};atomic(file,s);return{complete:false,batch:s.active};
+ s.active={selected_at:new Date().toISOString(),budget:selection,id:batch.id,title:batch.title,work_item,task_ids:selected,requirements:[...new Set(selected.flatMap(id=>contract.tasks.find(t=>t.id===id).requirements))],acceptance:selected.map(id=>({task_id:id,checks:contract.tasks.find(t=>t.id===id).acceptance})),reason:batch.reason,contract_hash:hash};atomic(file,s);return{complete:false,batch:s.active};
 }
 function serve(){const send=x=>process.stdout.write(JSON.stringify({jsonrpc:'2.0',...x})+'\n');require('node:readline').createInterface({input:process.stdin}).on('line',line=>{let m;try{m=JSON.parse(line);if(m.method==='initialize')send({id:m.id,result:{protocolVersion:1,agentCapabilities:{},authMethods:[]}});else if(m.method==='session/new')send({id:m.id,result:{sessionId:'batch-planner'}});else if(m.method==='session/prompt'){const result=run(context(m.params.prompt.map(x=>x.text||'').join('\n')));send({method:'session/update',params:{sessionId:'batch-planner',update:{sessionUpdate:'agent_message_chunk',content:{type:'text',text:JSON.stringify(result)+'\n'}}}});send({id:m.id,result:{stopReason:'end_turn',usage:{inputTokens:0,outputTokens:0,cachedReadTokens:0,cachedWriteTokens:0}}});}else if(m.id!==undefined)send({id:m.id,error:{code:-32601,message:'Unsupported method'}});}catch(e){send({id:m?.id??null,error:{code:-32602,message:e.message}});}});}
 if(require.main===module)serve();module.exports={readContract,run,context};

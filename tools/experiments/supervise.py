@@ -42,6 +42,22 @@ def summarize(es):
 def repeated_whole_plan_commits(subjects):
     return subjects.count('Implement the complete 13-task plan.')>1
 
+def budget_overrun(es, active, timestamp):
+    if not active or not active.get('budget'):return None
+    limits=active['budget']['limits'];start=active['selected_at'];running={};minutes={'doer':0.,'validator':0.};tokens=0
+    for e in es:
+        machine=e.get('machine')
+        if machine not in minutes or e.get('time','')<start:continue
+        if e['type']=='machine':
+            t=datetime.fromisoformat(e['time'].replace('Z','+00:00'))
+            if e.get('status')=='running':running[machine]=t
+            elif machine in running:minutes[machine]+=(t-running.pop(machine)).total_seconds()/60
+        elif e['type']=='usage':tokens+=e.get('inputTokens',0)+e.get('outputTokens',0)
+    for machine,t in running.items():minutes[machine]+=(timestamp-t).total_seconds()/60
+    values={'implementation_minutes':minutes['doer'],'validation_minutes':minutes['validator'],'input_output_tokens':tokens}
+    exceeded={k:{'observed':v,'limit':limits[k]} for k,v in values.items() if v>limits[k]}
+    return exceeded or None
+
 def configuration(code, worktree):
     config=RESULTS/f'{code}.json'; state={'experiment':code,'worktree':str(worktree),'status':'running','started':now(),'trials':[]};atomic(config,state)
     for trial in range(FIRST_TRIAL,FIRST_TRIAL+TRIALS):
@@ -66,7 +82,7 @@ def configuration(code, worktree):
             out.mkdir(parents=True,exist_ok=True)
             shutil.copytree(worktree/'docs/experiments/tetris-007/inputs',out/'inputs',dirs_exist_ok=True)
             record['input_hashes']={str(p.relative_to(out/'inputs')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'inputs').rglob('*') if p.is_file()}
-        if code in ['E05','E06']:
+        if code in ['E05','E06','E07']:
             packet=worktree/'docs/experiments/tetris-007/cohorts'/COHORT/'inputs'
             shutil.copytree(packet,out/'inputs-v2',dirs_exist_ok=True)
             record['execution_input_hashes']={str(p.relative_to(packet)):hashlib.sha256(p.read_bytes()).hexdigest() for p in packet.rglob('*') if p.is_file()}
@@ -98,6 +114,13 @@ def configuration(code, worktree):
                     subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
                     record['intervention']='Stopped after provider errors in two configurations; cohort circuit breaker.'
                     continue
+                if code=='E07' and (run/'batch-state.json').exists():
+                    selected=json.loads((run/'batch-state.json').read_text()).get('active')
+                    exceeded=budget_overrun(es,selected,datetime.now(timezone.utc))
+                    if exceeded:
+                        subprocess.run([str(worktree/'bin/factory'),'stop',name],cwd=worktree,env=env,capture_output=True,timeout=30)
+                        atomic(RESULTS/'incident.json',{'status':'halted','reason':'E07 active batch resource overrun; unvalidated work preserved for explicit reviewed fallback recovery.','exceeded':exceeded})
+                        raise RuntimeError('Active batch exceeded its time/token envelope; stopped without completing partial work.')
                 if code=='E04':
                     subjects=git(worktree,'log','--format=%s',record['pre_run_commit']+'..HEAD').splitlines()
                     if repeated_whole_plan_commits(subjects):
@@ -111,7 +134,7 @@ def configuration(code, worktree):
             record['factory_status']=latest['status']; record['status']=latest['status'];record['usage']=summarize(es)
             if latest.get('text'):record['failure']=latest['text']
             if latest['status']=='finished':
-                check=subprocess.run(['python3',str(ROOT/'tools/experiments/check-batch-product.py') if code in ['E05','E06'] else str(ROOT/'tools/experiments/check-product.py'),str(target),str(run/'plan.md')],text=True,capture_output=True,timeout=240)
+                check=subprocess.run(['python3',str(ROOT/'tools/experiments/check-batch-product.py') if code in ['E05','E06','E07'] else str(ROOT/'tools/experiments/check-product.py'),str(target),str(run/'plan.md')],text=True,capture_output=True,timeout=240)
                 (out/'acceptance.json').write_text(check.stdout)
                 record['acceptance_passed']=check.returncode==0
                 record['status']='checks_passed_pending_review' if check.returncode==0 else 'acceptance_failed'
@@ -132,7 +155,7 @@ def configuration(code, worktree):
     return code
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--parallelism',type=int,choices=range(1,5),default=4);p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');p.add_argument('--resume-reason',default=RESUME_REASON);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--parallelism',type=int,choices=range(1,5),default=4);p.add_argument('--worktrees',default='/workspaces/tetris-007-experiments');p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06','E07'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');p.add_argument('--resume',action='store_true');p.add_argument('--resume-reason',default=RESUME_REASON);a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Trial numbers/count must be positive.')
     if a.cohort and not __import__('re').fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort name.')
     CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;RESUME=a.resume;RESUME_REASON=a.resume_reason

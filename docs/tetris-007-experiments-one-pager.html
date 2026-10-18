@@ -309,8 +309,9 @@ footer p { margin:0; }
           <tr data-experiment="E02"><th scope="row" class="row-id">E02</th><td><strong>Single instruction delivery.</strong> Remove duplicate machine instructions from the runner.</td><td>Lower repeated input; preserve isolation and run context.</td><td><span class="badge">13/13 · acceptance_failed</span><span class="result-slot">1,135,358 reported I/O · 67 calls · tested, inconclusive</span></td></tr>
           <tr data-experiment="E03"><th scope="row" class="row-id">E03</th><td><strong>Local bookkeeping planner.</strong> Update the exact committed task deterministically; retain the model author.</td><td>Lower post-commit planner usage without wrong completion.</td><td><span class="badge">13/13 · acceptance_failed</span><span class="result-slot">562,760 reported I/O · 54 calls · tested, inconclusive</span></td></tr>
           <tr data-experiment="E04"><th scope="row" class="row-id">E04</th><td><strong>Whole-plan doer.</strong> Implement all 13 tasks in one work item, then validate the complete product before one commit.</td><td>Reduce handoffs and repeated context. Count whole-product retries, review and recovery; preserve every acceptance check.</td><td><span class="badge">13/13 · acceptance_failed</span><span class="result-slot">319,998 reported I/O · 19 calls · tested, inconclusive</span></td></tr>
-          <tr data-experiment="E05"><th scope="row" class="row-id">E05</th><td><strong>Reviewed adaptive batches.</strong> Author proposes tasks, batch gates and permitted splits; three reviewers assess them. Ordinary code selects/completes batches.</td><td>Combine cohesive batches, concise instructions, single instruction delivery, receipts and strict independent validation.</td><td><span class="badge">Preparing</span><span class="result-slot">Matched protocol-v2 pair with E06 · no results yet</span></td></tr>
-          <tr data-experiment="E06"><th scope="row" class="row-id">E06</th><td><strong>Matched whole-plan comparison.</strong> Same combined improvements, acceptance catalogue and model profile; exactly one full-product batch.</td><td>Compare reviewed multi-batch execution with one whole-plan work item under the same revised evaluation rules.</td><td><span class="badge">Preparing</span><span class="result-slot">One fresh trial · input/output/cache/acceptance pending</span></td></tr>
+          <tr data-experiment="E05"><th scope="row" class="row-id">E05</th><td><strong>Reviewed adaptive batches.</strong> Author proposes tasks, batch gates and permitted splits; three reviewers assess them. Ordinary code selects/completes batches.</td><td>Combine cohesive batches, concise instructions, single instruction delivery, receipts and strict independent validation.</td><td><span class="badge">1/1 recorded</span><span class="result-slot">Matched protocol-v2 pair with E06 · no results yet</span></td></tr>
+          <tr data-experiment="E06"><th scope="row" class="row-id">E06</th><td><strong>Matched whole-plan comparison.</strong> Same combined improvements, acceptance catalogue and model profile; exactly one full-product batch.</td><td>Compare reviewed multi-batch execution with one whole-plan work item under the same revised evaluation rules.</td><td><span class="badge">1/1 recorded</span><span class="result-slot">One fresh trial · input/output/cache/acceptance pending</span></td></tr>
+          <tr data-experiment="E07"><th scope="row" class="row-id">E07</th><td><strong>Resource-budget batches.</strong> Large reviewed defaults and fallback splits; select the largest prefix fitting effort/token/context estimates.</td><td>Recover whole-plan reuse for small plans while bounding each selected unit for large plans. Calibrate later time/token estimates from completed batches.</td><td><span class="badge">Prepared · not run</span><span class="result-slot">Synthetic selector checks passed; product comparison pending</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -377,7 +378,84 @@ footer p { margin:0; }
 
 
 
-<!-- maintenance-summary --><aside class="callout"><strong>Maintenance 2026-10-17T23:26:12.665537+00:00:</strong> All five hypotheses have completed independently checked observations. All products finish 13 tasks; strict frozen acceptance remains failed (plain non-TTY policy conflict, plus E00 task-boundary drift). E02 correction was revalidated; E04 finished with one accepted commit after three doer/validator attempts. Results are exploratory and do not establish causal savings. <a href="experiments/tetris-007/results.html">Combined ledger and local check-ins</a>.</aside><!-- /maintenance-summary -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- maintenance-summary --><aside class="callout"><strong>Maintenance 2026-10-18T10:14:58.256516+00:00:</strong> All five hypotheses have completed independently checked observations. All products finish 13 tasks; strict frozen acceptance remains failed (plain non-TTY policy conflict, plus E00 task-boundary drift). E02 correction was revalidated; E04 finished with one accepted commit after three doer/validator attempts. Results are exploratory and do not establish causal savings. <a href="experiments/tetris-007/results.html">Combined ledger and local check-ins</a>.</aside><!-- /maintenance-summary -->
 </main>
 </body>
 </html>

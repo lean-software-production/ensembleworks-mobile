@@ -59,7 +59,7 @@ def refresh():
             coverage=lambda k:sum(e.get(k) is not None for e in us)
             plan=worktree/'factory/runs'/name/'plan.md'
             complete=len(re.findall(r'^- \[[xX]\] \d+\.',plan.read_text(),re.M)) if plan.exists() else 0
-            if code in ['E05','E06'] and (worktree/'factory/runs'/name/'batch-state.json').exists():
+            if code in ['E05','E06','E07'] and (worktree/'factory/runs'/name/'batch-state.json').exists():
                 bs=json.loads((worktree/'factory/runs'/name/'batch-state.json').read_text())
                 contract=json.loads(re.search(r'```batch-plan\s*\n([\s\S]*?)\n```',plan.read_text())[1])
                 complete=sum(all(t['id'] in bs.get('done',[]) for t in contract['tasks'] if req in t['requirements']) for req in [f'R{i:02d}' for i in range(1,14)])
@@ -108,7 +108,7 @@ def refresh():
     (BASE/'results.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="30"><title>Tetris 007 live experiments</title>'+style+'<main>'+('<p><strong>'+html.escape(incident['reason'])+'</strong></p>' if incident else '')+queue_note+'<h1>Tetris 007 · Live experiments</h1><p><a href="maintenance/timer.json">30-minute maintenance timer</a> · <a href="maintenance/latest.json">latest check-in</a></p><p>Isolated configurations. One fresh trial each; earlier cohorts retained separately. <a href="../../tetris-007-experiments-one-pager.html">Protocol</a></p><small>Updated '+payload['updated']+'</small><div class="scroll"><table><thead><tr><th>Trial</th><th>Status</th><th>Tasks</th><th>Recorded I/O</th><th>Cache read</th><th>Calls</th><th>Active min</th></tr></thead><tbody>'+rows+'</tbody></table></div><p>Partial totals omit active calls. Missing cache reports are unknown. Failed runs remain in the dataset; lower usage from incomplete work is not a saving. Automated passes await acceptance/evidence review.</p><p><a href="' + str(RESULTS.relative_to(BASE)) + '/summary.json">Summary JSON</a> · <a href="' + str(RESULTS.relative_to(BASE)) + '/calls.csv">Per-call and phase CSV</a> · <a href="README.md">Execution details</a></p></main></html>')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--worktrees',default=str(WORKTREES));p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--worktrees',default=str(WORKTREES));p.add_argument('--first-trial',type=int,default=1);p.add_argument('--trials',type=int,default=3);p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06','E07'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',default='');a=p.parse_args()
     if a.first_trial<1 or a.trials<1:p.error('Positive trial numbers/count required')
     if a.cohort and not re.fullmatch(r'[a-zA-Z0-9-]+',a.cohort):p.error('Invalid cohort')
     CONFIGS=list(dict.fromkeys(a.configs));FIRST_TRIAL=a.first_trial;TRIALS=a.trials;COHORT=a.cohort;WORKTREES=Path(a.worktrees).resolve()

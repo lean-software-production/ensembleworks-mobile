@@ -66,6 +66,15 @@ class CohortTests(unittest.TestCase):
         self.assertFalse(s.repeated_whole_plan_commits(['Implement the complete 13-task plan.','Prepare E04']))
         self.assertTrue(s.repeated_whole_plan_commits(['Implement the complete 13-task plan.']*2))
 
+    def test_budget_guard_counts_active_time_and_reported_tokens_without_context_claims(self):
+        from datetime import datetime,timezone
+        active={'selected_at':'2026-10-18T10:00:00.000Z','budget':{'limits':{'implementation_minutes':30,'validation_minutes':15,'input_output_tokens':100}}}
+        events=[{'type':'machine','machine':'doer','status':'running','time':'2026-10-18T10:00:00.000Z'},{'type':'usage','machine':'doer','inputTokens':80,'outputTokens':30,'time':'2026-10-18T10:01:00.000Z'}]
+        exceeded=s.budget_overrun(events,active,datetime(2026,10,18,10,31,tzinfo=timezone.utc))
+        self.assertEqual(set(exceeded),{'implementation_minutes','input_output_tokens'})
+        self.assertEqual(exceeded['implementation_minutes']['observed'],31)
+        self.assertIsNone(s.budget_overrun([],None,datetime.now(timezone.utc)))
+
     def test_unterminated_record_is_not_misread(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp);(p/'record.jsonl').write_text('{"type":"run","status":"running"}\n{"type":')

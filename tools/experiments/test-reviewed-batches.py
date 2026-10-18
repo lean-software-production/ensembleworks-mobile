@@ -16,4 +16,11 @@ class ReviewedBatchesTests(unittest.TestCase):
      text=(target/f'.assembly-lines/.machines/{name}/AGENTS.md').read_text();self.assertIn('batch-plan',text);self.assertIn('R01–R13',text)
      self.assertEqual('EXACTLY ONE batch' in text,whole)
     self.assertIn('active.work_item',(target/'.assembly-lines/.machines/doer/AGENTS.md').read_text())
+ def test_budget_variant_replaces_count_policy_with_reviewed_estimates(self):
+  spec=importlib.util.spec_from_file_location('budgeted',Path(__file__).with_name('budgeted-batches.py'));b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
+  with tempfile.TemporaryDirectory() as tmp:
+   target=Path(tmp)/'tetris/game';target.mkdir(parents=True);shutil.copytree(ROOT/'docs/experiments/tetris-007/inputs/assembly-lines',target/'.assembly-lines');b.configure(target)
+   for name in ['plan_author','plan_reviewer_opus','plan_reviewer_gemini','plan_reviewer_astra','plan_synthesiser']:
+    text=(target/f'.assembly-lines/.machines/{name}/AGENTS.md').read_text();self.assertIn('NO task-count cap',text);self.assertNotIn('prefix of <=4',text);self.assertIn('implementation_minutes',text)
+   config=json.loads((target/'.assembly-lines/batch-budget.json').read_text());self.assertEqual(config['context_reserve'],.25)
 if __name__=='__main__':unittest.main()

@@ -61,6 +61,6 @@ def main(args):
         state.update(status='blocked',reason=str(error));save();raise
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',required=True);p.add_argument('--worktrees',required=True,type=Path);p.add_argument('--first-trial',type=int,required=True);p.add_argument('--suite-log',type=Path,required=True);p.add_argument('--smoke-result',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--configs',nargs='+',choices=['E00','E01','E02','E03','E04','E05','E06','E07'],default=['E00','E01','E02','E03']);p.add_argument('--cohort',required=True);p.add_argument('--worktrees',required=True,type=Path);p.add_argument('--first-trial',type=int,required=True);p.add_argument('--suite-log',type=Path,required=True);p.add_argument('--smoke-result',type=Path,required=True);a=p.parse_args()
     if not re.fullmatch(r'[a-zA-Z0-9-]+',a.cohort) or a.first_trial<1:p.error('Invalid cohort or trial')
     main(a)
