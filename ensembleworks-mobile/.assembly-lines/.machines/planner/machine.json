@@ -1,4 +1,5 @@
 {
   "role": "planner",
-  "harness": ".assembly-lines/.machines/planner/harness"
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6-sol"
 }

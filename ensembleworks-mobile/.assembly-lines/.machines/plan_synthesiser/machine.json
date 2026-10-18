@@ -1,0 +1,5 @@
+{
+  "role": "plan_synthesiser",
+  "harness": "claude",
+  "model": "claude-opus-5-5"
+}

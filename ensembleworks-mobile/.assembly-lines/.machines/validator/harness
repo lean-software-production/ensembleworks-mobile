@@ -1,3 +1,0 @@
-#!/bin/sh
-# The validator reviews with a stronger model than Pi's default.
-exec pi --provider openai-codex --model gpt-6.1-sol "$@"

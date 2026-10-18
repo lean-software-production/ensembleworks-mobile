@@ -1,0 +1,12 @@
+# Claude Code keeps its login, history and account state here.
+*
+!.gitignore
+!AGENTS.md
+!machine.json
+!CLAUDE.md
+auth.json
+.credentials.json
+sessions/
+logs/
+history.jsonl
+models.json
