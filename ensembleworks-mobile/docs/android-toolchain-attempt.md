@@ -198,6 +198,26 @@ Fresh host checks used the prescribed non-login Flox invocation:
 These checks do not close the missing APK/GPU boot proof. No code or test was
 changed in this evidence-only repair.
 
+### Current recovery verification
+
+The next recovery attempt inspected the committed report, emulator script and
+outstanding repository-root manifest/lock/expression changes; it preserved them.
+No SDK experiment, native generation, code/test edit or dependency change was
+made. Fresh checks on this host:
+
+| Command | Exit / observation |
+| --- | --- |
+| `timeout --kill-after=10 60 flox activate -d .. -- node --version` | 0, `v24.21.0` |
+| `timeout --kill-after=10 180 flox activate -d .. -- npm test` | 0, 66 application tests plus 18 component tests in 7 suites |
+| `timeout --kill-after=10 180 flox activate -d .. -- npm run check` | 1, TypeScript passes; same six dependency mismatches listed below |
+| `flox activate -d .. -- git diff --check` | 0 |
+
+Full test and failure output was inspected in
+`/tmp/ew-task1-current-test.log` and `/tmp/ew-task1-current-check.log`.
+These results do not establish an APK or GPU boot. No emulator, simulator,
+ADB server or Metro process was started during this recovery. The task-2
+fallback decision remains unchanged; no parent task state was modified.
+
 ### Other verification limitations
 
 Expo's freshness check currently expects `expo ~58.0.14`,
