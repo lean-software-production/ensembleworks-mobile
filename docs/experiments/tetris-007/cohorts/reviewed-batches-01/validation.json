@@ -1,0 +1,11 @@
+{
+  "batch_planner_tests": 6,
+  "supervisor_tests": 5,
+  "variant_tests": 1,
+  "whole_plan_legacy_tests": 2,
+  "factory_source_changed": false,
+  "line_checks": "both accepted",
+  "seed_and_catalogue_hashes_equal": true,
+  "model_profiles_equal": true,
+  "inference_started": false
+}
