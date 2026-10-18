@@ -2,7 +2,7 @@
 
 ## Goal
 
-Advance the [ensembleWorks Mobile vision](../docs/vision.md) by building the shared-room calling experience with application behavior that can be verified in the Linux Codespace through ports and adapters.
+Advance the [ensembleWorks Mobile vision](../vision.md) by building the shared-room calling experience with application behavior that can be verified in the Linux Codespace through ports and adapters.
 
 The intended production experience is that a person signs in through Cloudflare Access and joins the ensembleWorks room from an iPhone, seeing and hearing web teammates. This iteration implements and tests the application flow and UI using explicit test doubles for external services and native capabilities. Iteration 002 will establish real sign-in, native media compatibility, and a physical phone-to-web call.
 
@@ -30,7 +30,7 @@ Source inspection of `lean-software-production/ensembleworks` at commit `94b8d84
 - A missing media configuration returns `{ enabled: false }`.
 - The proxy configuration routes `/livekit` to the self-hosted LiveKit server and documents Cloudflare Access protection of signaling as well as the web/API routes.
 
-These are repository findings, not verification of the authenticated deployed instance. Use them to define the token adapter's expected contract now; confirm the deployed contract and room in iteration 002. The existing [native Access investigation](../docs/native-access-integration.md) records the remaining integration questions.
+These are repository findings, not verification of the authenticated deployed instance. Use them to define the token adapter's expected contract now; confirm the deployed contract and room in iteration 002. The existing [native Access investigation](../native-access-integration.md) records the remaining integration questions.
 
 ## Technical approach
 
@@ -89,7 +89,7 @@ Real Cloudflare login/session transport and physical iPhone-to-web verification 
 
 ## References
 
-- [Vision](../docs/vision.md)
+- [Vision](../vision.md)
 - [Existing token endpoint](https://github.com/lean-software-production/ensembleworks/blob/94b8d84df6691d3999d8e0cfa7aa37629e923c52/server/src/features/av.ts)
 - [Web room and identity handling](https://github.com/lean-software-production/ensembleworks/blob/94b8d84df6691d3999d8e0cfa7aa37629e923c52/client/src/identity.ts)
 - [LiveKit proxy configuration](https://github.com/lean-software-production/ensembleworks/blob/94b8d84df6691d3999d8e0cfa7aa37629e923c52/deploy/Caddyfile)

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Advance the [ensembleWorks Mobile vision](../docs/vision.md) by replacing the unresolved production mode with real adapters. A person signs in through the normal Cloudflare Access login inside the app and joins the deployed team room from the iOS 27 simulator, seeing and hearing a web teammate.
+Advance the [ensembleWorks Mobile vision](../vision.md) by replacing the unresolved production mode with real adapters. A person signs in through the normal Cloudflare Access login inside the app and joins the deployed team room from the iOS 27 simulator, seeing and hearing a web teammate.
 
 Iterations [001](001-join-existing-room.md) and [002](002-upgrade-to-expo-58.md) established the application behavior against test doubles and a native shell that launches on iOS 27. Nothing has yet talked to the deployed backend with a real session. This iteration removes that unknown before any signing or device work.
 
@@ -23,7 +23,7 @@ The deployed web app is https://canvas-ew-lsp-001.ensembleworks.dev/.
 Observed on 8 October 2026 unless stated otherwise.
 
 - The Access login page for the deployment offers one sign-in method, GitHub.
-- Unauthenticated requests to `/`, `/api/av/token`, and `/livekit/` return HTTP 302 to Cloudflare Access rather than JSON or a WebSocket upgrade. See the [native Access investigation](../docs/native-access-integration.md), recorded on 3 October 2026.
+- Unauthenticated requests to `/`, `/api/av/token`, and `/livekit/` return HTTP 302 to Cloudflare Access rather than JSON or a WebSocket upgrade. See the [native Access investigation](../native-access-integration.md), recorded on 3 October 2026.
 - React Native 0.88.0-rc.3's `RCTWebSocketModule.mm` still builds the WebSocket handshake's cookie header from `NSHTTPCookieStorage.sharedHTTPCookieStorage`, mapping `wss` to `https` for the lookup. `livekit-client` 2.22.3 opens signaling with the global `WebSocket` and no custom headers. A correctly scoped Access cookie in the shared native store should therefore reach both native `fetch` and LiveKit signaling. This is a reading of the source, not an observed connection.
 - A `WKWebView` keeps its own cookie store. Showing the login page in a web view does not by itself put the session in the shared native store.
 - Expo 58.0.6 lists `react-native-webview` 14.0.1 as its compatible version. Its `sharedCookiesEnabled` option is the first candidate for moving cookies between the web view and the shared store. Whether it carries the HttpOnly Access cookie is unverified.
@@ -105,10 +105,10 @@ Signed installation on a physical iPhone, camera capture and outgoing video, cal
 
 ## References
 
-- [Vision](../docs/vision.md)
+- [Vision](../vision.md)
 - [Iteration 001](001-join-existing-room.md) and [iteration 002](002-upgrade-to-expo-58.md)
-- [Native Access investigation](../docs/native-access-integration.md)
-- [Device handoff](../docs/device-handoff.md)
-- [iOS 27 native verification](../docs/ios-27-simulator-verification.md)
+- [Native Access investigation](../native-access-integration.md)
+- [Device handoff](../device-handoff.md)
+- [iOS 27 native verification](../ios-27-simulator-verification.md)
 - [Existing token endpoint](https://github.com/lean-software-production/ensembleworks/blob/94b8d84df6691d3999d8e0cfa7aa37629e923c52/server/src/features/av.ts)
 - [LiveKit React Native quickstart](https://docs.livekit.io/transport/sdk-platforms/react-native/)
