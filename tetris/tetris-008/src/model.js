@@ -34,6 +34,22 @@ export function spawnPiece(type) {
   return { type, x: Math.floor((WIDTH - width) / 2), y: 0, cells: cells.map(cell => [...cell]) };
 }
 
+// Placement checks only settled cells: the moving piece never blocks itself.
+export function canPlace(board, piece) {
+  return piece.cells.every(([dx, dy]) => {
+    const x = piece.x + dx;
+    const y = piece.y + dy;
+    return x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT && board[y][x] === null;
+  });
+}
+
+// Rejected moves return the original state, including its board and active piece.
+export function moveHorizontal(game, direction) {
+  if (game.status !== 'running' || !game.active || ![-1, 1].includes(direction)) return game;
+  const active = { ...game.active, x: game.active.x + direction };
+  return canPlace(game.board, active) ? { ...game, active } : game;
+}
+
 export function createInitialGame({ source = createPieceSource() } = {}) {
   return {
     board: Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null)),

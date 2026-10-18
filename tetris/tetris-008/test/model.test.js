@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame } from '../src/model.js';
+import { SHAPES, TYPES, createPieceSource, spawnPiece, createInitialGame, canPlace, moveHorizontal } from '../src/model.js';
 import { renderFrame, WIDTH, HEIGHT } from '../src/render.js';
 import { start } from '../src/index.js';
 
@@ -36,6 +36,39 @@ test('seeded source replays and exercises every piece; injected source selects s
     assert.equal((frame.match(/<>/g) ?? []).length, 4);
     assert.ok(frame.split('\n').every(line => line.length <= 50));
   }
+});
+
+test('horizontal moves use one-cell steps and do not collide with the active piece', () => {
+  const game = createInitialGame({ source: { next: () => 'O' } });
+  const left = moveHorizontal(game, -1);
+  assert.equal(left.active.x, game.active.x - 1);
+  assert.equal(moveHorizontal(left, 1).active.x, game.active.x);
+  assert.equal(canPlace(game.board, game.active), true);
+  assert.equal(game.active.x, 4);
+  assert.strictEqual(left.board, game.board);
+});
+
+test('walls reject repeated movement without changing state', () => {
+  for (const type of TYPES) {
+    for (const direction of [-1, 1]) {
+      let game = createInitialGame({ source: { next: () => type } });
+      for (let i = 0; i < WIDTH * 2; i++) game = moveHorizontal(game, direction);
+      const edge = game;
+      for (let i = 0; i < WIDTH * 2; i++) assert.strictEqual(moveHorizontal(game, direction), edge);
+      assert.ok(edge.active.cells.every(([dx]) => edge.active.x + dx >= 0 && edge.active.x + dx < WIDTH));
+    }
+  }
+});
+
+test('settled cells block movement while preserving board and active state', () => {
+  const game = createInitialGame({ source: { next: () => 'O' } });
+  game.board[0][6] = 'T';
+  const snapshot = structuredClone(game);
+  assert.equal(canPlace(game.board, { ...game.active, x: 5 }), false);
+  assert.strictEqual(moveHorizontal(game, 1), game);
+  assert.deepEqual(game, snapshot);
+  assert.equal(moveHorizontal(game, -1).active.x, 3);
+  assert.equal(game.board[0][6], 'T');
 });
 
 test('launch seam accepts injected piece source without changing board', () => {
