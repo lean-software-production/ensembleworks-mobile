@@ -9,7 +9,11 @@ export function render(state, { color = false } = {}) {
   for (let y = 0; y < HEIGHT; y++) {
     rows.push(paint('|', 36) + grid[y].map(type => type ? paint('[]', PALETTE[type]) : '  ').join('') + paint('|', 36));
   }
-  rows.push(border, paint(`Score: ${state.score} | ${state.status}`, 93), paint('Model: left/right, rotate, down; no keys', 36));
+  const score = String(state.score);
+  const displayScore = score.length > 16 ? score.slice(0, 13) + '...' : score;
+  const status = state.status === 'game-over' ? 'GAME OVER' : state.status;
+  const controls = state.status === 'game-over' ? 'Model: restart; no keys' : 'Model: left/right, rotate, down; no keys';
+  rows.push(border, paint(`Score: ${displayScore} | ${status}`, 93), paint(controls, 36));
   // No trailing newline: exactly 24 visible rows, even on a 24-row terminal.
   return rows.join('\n');
 }

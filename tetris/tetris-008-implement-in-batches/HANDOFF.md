@@ -1,11 +1,11 @@
-# B01 handoff
+# B02 handoff
 
-Source: `src/model.js` owns 10×20 settled identity grid, separate active geometry, shared placement, horizontal movement, clockwise rotation and nonlocking descent. `src/render.js` is pure; `src/main.js` prints a single bounded snapshot and exits. Recovered existing B01 files and verified all six regressions. Unrelated workspace modifications were left alone.
+Implemented T06–T09 in `src/model.js`: `lockPiece` consumes active cells once; `advance` moves OR locks→clears→scores→spawns; `clearLines` preserves survivor order. Scores 0/100/300/500/800 for 0–4 lines. Blocked spawn sets `game-over`, active=null, without overwriting settled cells. Gameplay becomes inert. `restart` resets the same state and consumes the next source piece, without rewinding. Sources live in a WeakMap; cloned fixtures must pass an explicit source to progression/restart.
 
-Geometry: I rotates in 4×4, O in 2×2 (invariant), others in 3×3; no kicks. Spawn boxes centered at y=0. Rejection preserves state. Successful actions replace only active piece. `stepDown` returns `{moved, blocked}` without locking or consuming generation. `createState(next)` accepts an injected type source; `pieceSource(random)` accepts injected randomness. State includes zero score and running status for progression integration.
+`src/render.js` preserves seven colours and exact 24 rows; game-over and restart model guidance replace existing status text. Scores longer than 16 characters are abbreviated. Launch remains a noninteractive snapshot with truthful `no keys` guidance. README documents APIs and choices.
 
-Verification: `node --test test/foundation.test.js` and `npm test`; tests cover all seven types, ANSI palette/reset output, exact 24-row frames without trailing newline, actual non-TTY npm launch, rotation collisions, both walls, settled obstacles, and repeated nonlocking descent. See `VERIFICATION.md`.
+Verification: `node --test test/lifecycle.test.js` 8/8; full `npm test` 14/14 after final code changes. Actual `npm start --silent` plain capture: 24 rows, max 40 columns, no ANSI. Requirement/check mapping is in `VERIFICATION.md`; B01 regressions retained. No interrupted target work or plan defects found; unrelated workspace changes untouched.
 
-Finding resolved: last row now truthfully lists model actions and `no keys`; exact pure-render/launch assertions replace the placeholder check. Snapshot labels require 40 columns. Focused/full suites each passed all six tests; independent npm capture confirmed 24 rows and plain output.
+B03 recipe in `test/lifecycle.test.js`: inject constant O source; move each of five pieces to x=0,2,4,6,8 and descend/advance to clear two lines (300). Ten subsequent central O locks cause game over; restart resets. All transitions are legal gameplay; carry this into actual production-entry integration, not direct board edits.
 
-Remaining: B02 implements lock→clear→score→spawn/game-over and restart. B03 owns timers/input/resize/cleanup and true interactive rendering. Its production lifecycle fixture must reach clears/game-over through legal inputs/ticks; no lifecycle fixture exists yet. Verify seven colours interactively and actual npm start PTY quit/termios then. Current launch acquires no terminal resources and exits immediately. No plan defects found.
+Remaining: T10–T13 scheduler/pause, input, terminal ownership/resize/cleanup, production lifecycle regression, actual npm-start PTY quit/termios checks and interactive seven-colour verification. No validation or commit claimed.

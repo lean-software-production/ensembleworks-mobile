@@ -24,8 +24,11 @@ export function spawn(type) {
   const size = type === 'I' ? 4 : type === 'O' ? 2 : 3;
   return { type, x: Math.floor((WIDTH - size) / 2), y: 0, cells: SHAPES[type].map(c => [...c]) };
 }
+const sources = new WeakMap();
 export function createState(next = pieceSource()) {
-  return { board: Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null)), active: spawn(next()), score: 0, status: 'running' };
+  const state = { board: Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(null)), active: spawn(next()), score: 0, status: 'running' };
+  sources.set(state, next);
+  return state;
 }
 export function cellsOf(piece) {
   return piece.cells.map(([x,y]) => [x + piece.x, y + piece.y]);
@@ -39,17 +42,62 @@ function place(state, candidate) {
   return true;
 }
 export function moveHorizontal(state, direction) {
+  if (state.status !== 'running' || !state.active) return false;
   if (direction !== -1 && direction !== 1) throw new RangeError('Direction must be -1 or 1');
   return place(state, { ...state.active, x: state.active.x + direction });
 }
 export function rotate(state) {
+  if (state.status !== 'running' || !state.active) return false;
   const p = state.active;
   const size = p.type === 'I' ? 4 : p.type === 'O' ? 2 : 3;
   const cells = p.type === 'O' ? p.cells : p.cells.map(([x,y]) => [size - 1 - y, x]);
   return place(state, { ...p, cells });
 }
+export const LINE_POINTS = Object.freeze([0, 100, 300, 500, 800]);
+
+// Consume the active piece so repeated direct locks cannot duplicate it.
+export function lockPiece(state) {
+  if (state.status !== 'running' || !state.active || !canPlace(state.board, state.active)) return false;
+  for (const [x, y] of cellsOf(state.active)) state.board[y][x] = state.active.type;
+  state.active = null;
+  return true;
+}
+
+export function clearLines(board) {
+  const remaining = board.filter(row => row.some(cell => cell === null));
+  const cleared = HEIGHT - remaining.length;
+  board.splice(0, board.length,
+    ...Array.from({ length: cleared }, () => Array(WIDTH).fill(null)), ...remaining);
+  return cleared;
+}
+
+// Shared gravity/soft-drop transition: move OR lock -> clear -> score -> spawn.
+export function advance(state, next = sources.get(state)) {
+  const result = { moved: false, locked: false, cleared: 0, points: 0 };
+  if (state.status !== 'running' || !state.active) return result;
+  if (stepDown(state).moved) return { ...result, moved: true };
+  if (!lockPiece(state)) return result;
+  result.locked = true;
+  result.cleared = clearLines(state.board);
+  result.points = LINE_POINTS[result.cleared];
+  state.score += result.points;
+  const candidate = spawn(next());
+  if (canPlace(state.board, candidate)) state.active = candidate;
+  else state.status = 'game-over';
+  return result;
+}
+
+// Keep the injected source stream; restart consumes one fresh piece, not a rewind.
+export function restart(state, next = sources.get(state)) {
+  const fresh = createState(next);
+  Object.assign(state, fresh);
+  sources.set(state, next);
+  return state;
+}
+
 // Does not lock, score, or consume a piece, even when blocked.
 export function stepDown(state) {
+  if (state.status !== 'running' || !state.active) return { moved: false, blocked: true };
   const moved = place(state, { ...state.active, y: state.active.y + 1 });
   return { moved, blocked: !moved };
 }

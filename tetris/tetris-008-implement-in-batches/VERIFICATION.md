@@ -16,4 +16,17 @@ Requirement evidence in `test/foundation.test.js`:
 | R04 | All seven complete four-rotation cycles, O invariance, legal distinct geometry, wall/floor/settled rejection preserving entire state. |
 | R05 | Exact single-row descent, first-obstruction stopping at floor/settled cells, repeated blocked actions, unchanged grid and one generation call. |
 
-B01 delivers a snapshot executable and model primitives, not interactive play. R06–R13 remain unimplemented. PTY quit/termios, interactive seven-colour inspection, live frame redraw and production legal-gameplay lifecycle checks are deferred to the session batch, where terminal resources actually exist. No validation or commit is claimed.
+## B02 evidence
+
+Performed after B02 source changes: `node --test test/lifecycle.test.js` passed 8/8 focused tests; `npm test` passed the full 14/14 suite. `npm start --silent` captured successfully; independent Python inspection found 24 rows, maximum 40 columns, no ANSI in plain output.
+
+| Completed scope | Actual checks in `test/lifecycle.test.js` |
+| --- | --- |
+| R06 | Direct lock copies four identities and preserves unrelated cells; repeated direct lock is inert; successful descent does not lock; obstructed progression consumes exactly one next piece at its unchanged spawn coordinates. |
+| R07 | 0–4 clears; nonadjacent rows; stable survivor order; independent empty top rows; 10×20 dimensions; actual locks completing 0–4 rows. |
+| R08 | Every points-table entry, accumulation to 1100, no movement/rejection/rotation/zero-clear points; huge-score ANSI/plain frames remain 24 rows and at most 40 columns. |
+| R09 | Blocked spawn preserves cells, leaves no active overlap, freezes gameplay and generation; restart resets board/score/active/status; full top-row clear precedes spawn decision; running/game-over frames and model-action guidance remain bounded. |
+
+The legal fixture test uses only horizontal moves, nonlocking descent and progression: O pieces at x=0,2,4,6,8 clear two lines for 300 points; ten central O locks then end play; restart returns a fresh game. This is model-level evidence and a B03 recipe, not a production-entry lifecycle claim. Boundary unit fixtures separately construct boards as allowed by the plan.
+
+R10–R13 remain unimplemented: startup is still a one-frame snapshot. PTY quit/termios, interactive seven-colour inspection, live redraw and production legal-gameplay lifecycle checks remain B03 work, where terminal resources will exist. No plan defects found; no validation or commit is claimed.
