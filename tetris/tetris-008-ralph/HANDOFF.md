@@ -1,11 +1,11 @@
 # Handoff
 
-B11/T11 recovered input/session work retained. `src/input.js` now consumes ESC intermediate bytes (20–2F) through their final byte (30–7E), across chunks, without dispatching embedded q/p/r. Existing CSI/SS3 and OSC/DCS/SOS/PM/APC suppression remains intact with constant-size state.
+B12/T12 implemented in `src/main.js`: in-place home/clear redraw, dimension-aware warnings and resize recovery; one idempotent teardown for quit, signals, stream end/errors and guarded input/timer/render failures. Restores prior raw mode and cursor, pauses stdin, removes listeners and disposes the sole gravity scheduler. Non-TTY remains one plain frame without listeners/timers.
 
-`test/input.test.js` covers packed, every two-chunk split and bytewise ESC intermediate sequences, working ordinary keys afterward, and production-adapter game/timer/raw/listener preservation. Existing legal soft-drop stacking reaches game over and restart without state edits. Arrows, p pause/resume, r restart, q/Ctrl-C quit remain advertised; no hard drop.
+`src/render.js` exports measured minimum 63×24: running controls are 63 columns, not the prior handoff's 60. Warning truncates to available width minus one; zero dimensions emit no visible text. Frame/palette/gameplay rules unchanged.
 
-Verification: `node --test test/input.test.js` passed 4/4; final `npm test` passed 48/48 including bounded non-TTY actual launch and palette/frame regressions. Actual `npm start` Python PTY at 24x80 ignored packed/split ESC ( q and ESC # p, then accepted arrows/pause/resume/quit; exit 0, cursor restored, exact termios equality (6155 bytes). `VERIFICATION.md` maps R01–R11 evidence.
+`test/terminal.test.js` checks bounds/redraw/resize, tiny dimensions, signals, stream failures, scheduled callback failure and idempotent cleanup. Focused `node --test test/terminal.test.js test/input.test.js` passed 7/7; final `npm test` passed 51/51 after code changes. `VERIFICATION.md` maps R01–R12 evidence.
 
-No observed plan defects. Prior target work and unrelated workspace changes preserved. No commits or downstream validation performed.
+Actual npm start PTY recipe: openpty, TIOCSWINSZ 80×24, launch npm with slave streams/new process session, send down/pause, resize 8×3 then 80×24 with SIGWINCH, exit q or group SIGTERM. Both verified warning/cursor and exact before/after termios equality (4100 bytes each); quit exit 0, SIGTERM npm exit -15. Initial PTY caught live stdin after quit; unconditional pause fixed it.
 
-Remaining T12: dimension/resize handling and signal/handled-failure cleanup. Remaining T13: legal production clear/score lifecycle, documentation and interactive seven-colour evidence. Current controls require 60 columns; dimension enforcement remains unimplemented.
+No observed plan defects; no commits or downstream validation performed. Remaining T13: concise project documentation, legal production fall/lock/clear/score/game-over/restart/quit regression and interactive all-seven-colour evidence. SIGKILL cannot restore terminal state. Prior batches/unrelated workspace work preserved.

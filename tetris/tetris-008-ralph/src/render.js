@@ -5,6 +5,7 @@ export const PALETTE = Object.freeze({
   I: 96, O: 93, T: 95, S: 92, Z: 91, J: 94, L: 33,
 });
 export const FRAME_ROWS = 24;
+export const FRAME_COLUMNS = 63;
 
 // No terminal I/O or state mutation. No final newline: a 24-row terminal
 // must not scroll into a 25th row after the controls.

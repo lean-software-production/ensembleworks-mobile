@@ -79,6 +79,15 @@ R01–R08 evidence only. Interactive colour observation, playable session, termi
 - Plain and ANSI-stripped running/paused/game-over frames remain exactly 24 rows without trailing newline. Paused status and resume control replace existing rows. Full suite initially caught an obsolete exact control label in `test/model.test.js`; updated expectation and reran successfully.
 - This is session-level evidence, not production interactive lifecycle evidence. Input wiring, PTY quit/termios checks and final legal-gameplay launch regression remain T11–T13.
 
+## R12 — B12 / T12
+
+- `src/main.js` owns home/clear redraw, cursor/raw mode, stream and signal listeners, resize and guarded input/timer callbacks. Idempotent teardown removes listeners, disposes gravity, pauses stdin and restores prior raw mode/cursor. Stream, rendering and scheduled callback failures use the same cleanup. Unrecoverable OS termination (SIGKILL) cannot be handled.
+- `src/render.js` exports the measured minimum **63 columns × 24 rows** (supersedes the earlier handoff's incorrect 60-column estimate). Smaller terminals receive one truncated warning, no full frame; zero-sized terminals receive no visible text. Suitable resize restores the frame. Plain non-TTY output remains one bounded preview with no timer.
+- `node --test test/terminal.test.js test/input.test.js`: 7/7 passed. `test/terminal.test.js` covers replacement frames, visible bounds, tiny dimensions, resize recovery, quit/signals/end/errors, idempotent cleanup, write failure and scheduled callback failure. Existing input tests retain legal gameplay and restart coverage.
+- Final `npm test` after all code edits: **51/51 passed**, including actual non-TTY npm launch, palette and previous model regressions.
+- Actual `npm start` PTY checks: Python `pty.openpty`, size via `TIOCSWINSZ`, launch with slave stdin/stdout/stderr and a new session; feed down/pause, shrink to 8×3 and send SIGWINCH, restore 80×24 and send SIGWINCH, then q or process-group SIGTERM. Both runs captured 4100 bytes, fitting warning and cursor restoration, with exact `termios.tcgetattr` equality before/after. Quit exited 0; group SIGTERM ended npm with -15 while the game restored the terminal. Initial PTY quit exposed stdin remaining live; unconditional stdin pause fixed it and both checks were rerun successfully.
+- No observed plan defects. T13's full legal production clear/score lifecycle and interactive seven-colour evidence remain pending; this batch does not claim those checks.
+
 ## R11 — B11 / T11
 
 - Latest intermediate-byte finding fix: `src/input.js` consumes ESC intermediates through their final byte across chunks. `test/input.test.js` adds packed/every-split/bytewise ESC ( q, ESC # p, space-r and multiple-intermediate regressions; production adapter preserves game, timer, raw mode and listener state, and subsequent normal keys work.
