@@ -1,8 +1,8 @@
 export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
 
-// Local spawn coordinates; x grows right, y grows down. Future rotations
-// can operate on a copy without changing these shared definitions.
+// Local spawn coordinates; x grows right, y grows down. Rotation works
+// on copies without changing these shared definitions.
 export const SHAPES = Object.freeze(Object.fromEntries(Object.entries({
   I: [[0, 0], [1, 0], [2, 0], [3, 0]],
   O: [[0, 0], [1, 0], [0, 1], [1, 1]],
@@ -67,6 +67,22 @@ export function moveHorizontal(game, direction) {
 
 export const moveLeft = game => moveHorizontal(game, -1);
 export const moveRight = game => moveHorizontal(game, 1);
+
+// Clockwise in a fixed local square: (x, y) -> (size - 1 - y, x).
+// I uses 4×4, other non-square pieces use 3×3. O is unchanged.
+// The origin never moves; no wall kicks or geometry normalization.
+export function rotateClockwise(game) {
+  if (game.status !== 'running' || !game.active) return false;
+  if (game.active.type === 'O') return true;
+  const size = game.active.type === 'I' ? 4 : 3;
+  const candidate = {
+    ...game.active,
+    cells: game.active.cells.map(([x, y]) => [size - 1 - y, x]),
+  };
+  if (!canPlace(game.board, candidate)) return false;
+  game.active = candidate;
+  return true;
+}
 
 export function createGame(nextPiece = createPieceSource()) {
   return {

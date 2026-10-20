@@ -22,4 +22,12 @@
 - `test/movement.test.js` exercises all seven types: one-column left/right movement, overlap with the active piece's former cells (no self-collision), unchanged settled board, repeated movement to both walls, and exact state/reference preservation on rejection.
 - Settled obstacles block both directions for every type. Shared `canPlace` additionally rejects top/floor bounds; invalid directions, paused/game-over states and absent active pieces cannot move.
 
-R01–R03 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+## R04 — B04 / T04
+
+- Focused `node --test test/rotation.test.js`: 4 passed, 0 failed.
+- Final `npm test`: 12 passed, 0 failed, preserving all earlier checks including actual non-TTY `npm start` and 24-row/palette regressions.
+- `test/rotation.test.js` verifies the exact clockwise fixed-square transform (4×4 I, 3×3 others), unchanged O, four distinct cells after every turn and complete four-turn restoration for all seven types. Shared definitions, origin, board and score remain unchanged.
+- Enumerated legal placements in all non-square orientations exercise left/right wall and floor rejection. Settled-cell obstacles test every non-square orientation. Rejections preserve complete state and active reference; paused/game-over and missing-active cases reject safely.
+- No kicks: `src/model.js` documents the transform and delegates placement to the existing shared predicate. Input wiring remains T11 scope.
+
+R01–R04 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
