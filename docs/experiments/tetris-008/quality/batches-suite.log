@@ -1,0 +1,31 @@
+
+> terminal-tetris@1.0.0 test
+> node --test test/*.test.js
+
+✔ R01: pure empty frame and actual bounded npm launch (307.401978ms)
+✔ R02: seven deterministic valid centered spawns and retro palette (4.805244ms)
+✔ R03: horizontal movement, both walls, settled collisions, no self collision (4.502449ms)
+✔ R04: four rotations restore every geometry; O is invariant (2.709792ms)
+✔ R04: wall, floor and settled rotation rejection preserves exact state (2.759844ms)
+✔ R05: down moves one row, stops at first obstruction without locks or generation (2.575144ms)
+✔ R06: separate lock copies exactly four identities, preserves others and cannot repeat (9.001895ms)
+✔ R06: move does not lock; obstruction locks once and spawns without advancing (4.594247ms)
+✔ R07: zero through four clears, nonadjacent compaction, stable rows and independent empty rows (4.181195ms)
+✔ R07/R08: actual locks complete 0–4 rows and score once, including accumulation (5.801774ms)
+✔ R08: movement and rejection never score; huge scores fit status width and 24 rows (2.256901ms)
+✔ R09: obstructed spawn preserves settled cells; game-over actions inert; restart fresh (2.891789ms)
+✔ R09: clearing happens before spawn decision, opening formerly blocked space (0.478364ms)
+✔ B03 legal fixture: O placements clear two lines, then central stacking reaches game over (3.517426ms)
+✔ R10/R11: clock, chunk decoder, pause, grounded progression and fresh intervals (26.798567ms)
+✔ R12: redraw, resize, interruption, partial setup failure and idempotent cleanup (2.290857ms)
+✔ R11: decoder handles split sequences and multiple actions (0.283158ms)
+✔ R11/R12: unknown CSI/SS3 is inert at every split; pending escapes cannot swallow Ctrl-C (17.84095ms)
+✔ R13: actual production entry legal lifecycle in controlled process (169.34744ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1145.483435

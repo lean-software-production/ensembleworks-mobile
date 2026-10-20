@@ -1,0 +1,47 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "accepted",
+  "findings": [],
+  "changes": "Revised plan collaboration contracts and batch rationales; grouped T01–T05, T06–T09, and T10–T13 to keep timer and terminal ownership together. Preserved all R01–R13 clauses and frozen task definitions; verified ordered coverage, dependencies, and empty split points. No completion state changed.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "Plan revision 1 is ready to implement. The frozen T01–T13 tasks match experiment.json exactly; three ordered batches (T01–T05, T06–T09, T10–T13) cover every task once, depend only on earlier batches and have no split points. The grouping keeps the placement check, the lock/clear/score/spawn sequence and timer-with-terminal ownership together. The contracts cover the order of a lock, controllable time, input and randomness, the 24-row budget, seven-colour styling, legal-input lifecycle tests and real launch checks without adding scope.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan collaboration contracts and batch rationales; grouped T01–T05, T06–T09, and T10–T13 to keep timer and terminal ownership together. Preserved all R01–R13 clauses and frozen task definitions; verified ordered coverage, dependencies, and empty split points. No completion state changed."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "The plan preserves all R01–R13 clauses and frozen T01–T13 task definitions, defines clear collaboration contracts for deterministic gameplay transitions, retro ANSI seven-colour rendering within the 24-row frame budget, and legal-input lifecycle testing, and groups the tasks into three cohesive batches (T01–T05, T06–T09, T10–T13) with unified timer and terminal session ownership.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan collaboration contracts and batch rationales; grouped T01–T05, T06–T09, and T10–T13 to keep timer and terminal ownership together. Preserved all R01–R13 clauses and frozen task definitions; verified ordered coverage, dependencies, and empty split points. No completion state changed."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Plan satisfies the seed and preserves all frozen tasks exactly. Cohesive ordered batches, explicit collaboration contracts, deterministic testing, bounded frames, terminal cleanup, and actual launch verification provide adequate acceptance coverage. No findings.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan collaboration contracts and batch rationales; grouped T01–T05, T06–T09, and T10–T13 to keep timer and terminal ownership together. Preserved all R01–R13 clauses and frozen task definitions; verified ordered coverage, dependencies, and empty split points. No completion state changed."
+      }
+    }
+  },
+  "previousReports": {},
+  "decision": {
+    "satisfied": true,
+    "summary": "All three reviews identify episode 1, round 1, revision 1 and report no findings. Approve the existing frozen task contracts and ordered batches T01–T05, T06–T09, and T10–T13, with earlier-batch dependencies and no split points. The grouping preserves placement checks, lock/clear/score/spawn transitions, and unified timer/terminal ownership at independently testable boundaries. Preserve the reviewed batch-plan JSON unchanged; its exact task definitions are not reproduced in the supplied reports.",
+    "findings": [],
+    "dispositions": []
+  }
+}

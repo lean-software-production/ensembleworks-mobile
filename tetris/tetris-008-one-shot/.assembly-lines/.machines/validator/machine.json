@@ -1,0 +1,6 @@
+{
+  "role": "plan_validator",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/pi-once.cjs",
+  "model": "openai-codex/gpt-6.1-sol:high",
+  "adapter": "pi"
+}

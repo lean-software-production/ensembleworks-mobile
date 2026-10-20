@@ -1,0 +1,94 @@
+{
+  "id": "tetris-008-ralph",
+  "mode": "ralph",
+  "status": "interrupted",
+  "target": "/workspaces/ensembleworks-mobile/tetris/tetris-008-ralph",
+  "run": "/workspaces/ensembleworks-mobile/factory/runs/tetris-008-ralph",
+  "initial_plan_hash": "3455de83888d18fddf14547bb949113202d4f532a64dbab440a737d765300a19",
+  "config_hashes": {
+    "experiment.json": "518aa234d45fd7b4860dd9d83ebc539a2b876802febedd22447b43f01e93994c",
+    ".machines/planner/AGENTS.md": "e75f24855bfa390bd3b0602bc51d9a80f4e1f3bf4cc25b4de4846d21812800de",
+    ".machines/planner/machine.json": "3135c0b414469ab99af6c6c365cee74dafaf9e757379b18eeaea9d23b5c4c4ba",
+    ".machines/planner/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_reviewer_opus/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+    ".machines/plan_reviewer_opus/machine.json": "9421b829d05140a6e768965dd9971c1e9b0c2739fa74ae0d578112f3d1e673bc",
+    ".machines/plan_reviewer_opus/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_reviewer_gemini/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+    ".machines/plan_reviewer_gemini/machine.json": "249d79ebf40a6d41b2422342fabeaf6c121b8fb872eb19ca73d288a3553705fc",
+    ".machines/plan_reviewer_gemini/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_author/AGENTS.md": "2385d8fddbab8050dc4e8770ede939465c763358d04ec30a4ce01c28875a7f93",
+    ".machines/plan_author/machine.json": "4e53f57d3ccac967df85be022142acae30485560d667d0b9cf15182807e6c285",
+    ".machines/plan_author/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_synthesiser/AGENTS.md": "6172532d40e2182c67e70182ddb06f4396d75ef41cc71be1f0c56f437dbbd3e6",
+    ".machines/plan_synthesiser/machine.json": "08e400b1d50e65c3dac379943e5e69372d1276c34c905be18bb40616266e7dc5",
+    ".machines/plan_synthesiser/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_gate/AGENTS.md": "94981d08865442c27f89dbc7833075e526d8f2935ace4458e3c75700f405baec",
+    ".machines/plan_gate/gate.cjs": "1ec7c5c9f00383f4f222f36cc4a658164a0c6408f4e343f17f81724d5435ec0b",
+    ".machines/plan_gate/machine.json": "0f22ab62357e8a17e8cfe4b927ce3440fe21f4eb3a1ac8ec12b25129e56fa19a",
+    ".machines/plan_gate/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/doer/AGENTS.md": "deac834dff8b171ca6f18e11ad01ca11f51e7b9e0b4971b34027c774a218c994",
+    ".machines/doer/machine.json": "5d51aeac4dd7e48649037404de57c7581f826122274e5861807b678bcbb8d03e",
+    ".machines/doer/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/plan_reviewer_astra/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+    ".machines/plan_reviewer_astra/machine.json": "d7441a4ae40d22761796a6087a65f5fa3207a78d12be1152ea107b2fb0aefbbb",
+    ".machines/plan_reviewer_astra/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    ".machines/validator/AGENTS.md": "59aaad2de080c76263539106e30b0cdb63d49a0262cc66ba1cc9713cf0893e5e",
+    ".machines/validator/machine.json": "1a9c4f3a32a1df01c239bf7709b24771ec5397c740aa0c12448058be5a72dfdf",
+    ".machines/validator/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+    "implement-reviewed-ralph.dot": "939f0385ac1599ba77d3c622460431a64e192793d6873a2c0f120bb40e794d0d"
+  },
+  "metrics": {
+    "input": 519599,
+    "output": 58991,
+    "io": 578590,
+    "cache_read": 1862032,
+    "cache_write": 17688,
+    "cache_read_reports": 33,
+    "usage_reports": 34,
+    "model_calls": 24,
+    "doer_calls": 10,
+    "validator_calls": 9,
+    "phases": {
+      "gate": {
+        "input": 0,
+        "output": 0,
+        "calls": 1
+      },
+      "plan_review": {
+        "input": 58344,
+        "output": 16508,
+        "calls": 5
+      },
+      "bookkeeping": {
+        "input": 0,
+        "output": 0,
+        "calls": 10
+      },
+      "implementation": {
+        "input": 219057,
+        "output": 24908,
+        "calls": 10
+      },
+      "validation": {
+        "input": 242198,
+        "output": 17575,
+        "calls": 9
+      }
+    }
+  },
+  "started": "2026-10-20T09:47:20.275114+00:00",
+  "elapsed_seconds": 2608.9,
+  "tasks_done": 9,
+  "commits": 9,
+  "line": "implement-reviewed-ralph",
+  "failure": "User approved stopping stalled T10 doer and advancing to one-shot; no worker output since 2026-10-20T10:10:10.578Z. Preserve partial work and costs; no acceptance or efficiency claim.",
+  "finished": "2026-10-20T10:30:49.183153+00:00",
+  "last_call_usage_unknown": true,
+  "interventions": [
+    {
+      "time": "2026-10-20T10:30:48.431623+00:00",
+      "action": "user-approved stop after stalled doer",
+      "usage_unknown": true
+    }
+  ]
+}

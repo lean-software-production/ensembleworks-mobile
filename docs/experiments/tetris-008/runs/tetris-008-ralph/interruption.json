@@ -1,0 +1,8 @@
+{
+  "observed_at": "2026-10-20T10:30:48.431623+00:00",
+  "reason": "User approved stopping stalled T10 doer and advancing to one-shot; no worker output since 2026-10-20T10:10:10.578Z. Preserve partial work and costs; no acceptance or efficiency claim.",
+  "last_event": "2026-10-20T10:10:10.578Z",
+  "task": "T10",
+  "last_call_usage_unknown": true,
+  "user_authorized": true
+}

@@ -1,0 +1,34 @@
+
+> terminal-tetris@1.0.0 test
+> node --test test/*.test.js && python3 test/pty.py
+
+✔ R01 R12 actual npm start non-TTY exits with one bounded plain frame (364.718306ms)
+✔ R13 actual entry: legal fall -> lock -> double clear/300 -> gameover -> restart -> quit (133.682906ms)
+✔ R01 R02: seven valid centered spawns, seeded generation, 24-row pure frames and palette (5.953075ms)
+✔ R03 R05: movement, both walls, settled obstacles and blocked primitive does not lock (5.623348ms)
+✔ R04: rotation cycles and rejected wall/floor/settled rotations preserve state (9.227448ms)
+✔ R06: separate lock, one next piece and no same-action fall (2.622398ms)
+✔ R07: zero through four, nonadjacent clears, stable order and dimensions (3.865498ms)
+✔ R07 R08: lock clears 1–4, scoring once, accumulation and no movement points (1.019709ms)
+✔ R09: blocked spawn, inert over state, restart, clear before spawn (8.815606ms)
+✔ R11 decoder handles combined/split arrows, unknown CSI and keys (7.976089ms)
+✔ R11 unsupported Alt/SS3 never dispatches trailing bindings across chunk boundaries (4.263021ms)
+✔ R11 session ignores combined and split unsupported Alt/SS3 then accepts valid controls (45.386092ms)
+✔ R10 R11 R12: fake time, input, pause/resume, gameover, restart, resize and cleanup (15.528831ms)
+✔ R12 interruption, handled write failure, non-TTY and tiny dimensions (4.071313ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1133.236731
+PTY npm start: I ANSI 96 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: O ANSI 93 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: T ANSI 95 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: S ANSI 92 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: Z ANSI 91 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: J ANSI 94 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: L ANSI 33 quit raw/cursor/termios restored; 9 bounded frames
+PTY npm start: O ANSI 93 SIGINT raw/cursor/termios restored; 9 bounded frames

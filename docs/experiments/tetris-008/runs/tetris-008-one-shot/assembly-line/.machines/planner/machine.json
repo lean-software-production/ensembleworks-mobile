@@ -1,0 +1,4 @@
+{
+  "role": "planner",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/tetris-008-planner.cjs"
+}

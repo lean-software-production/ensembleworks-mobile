@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@1.0.0 test\n> node --test test/*.test.js\n\n\u2714 R01: pure empty frame and actual bounded npm launch (157.601835ms)\n\u2714 R02: seven deterministic valid centered spawns and retro palette (2.429491ms)\n\u2714 R03: horizontal movement, both walls, settled collisions, no self collision (2.623294ms)\n\u2714 R04: four rotations restore every geometry; O is invariant (0.924223ms)\n\u2714 R04: wall, floor and settled rotation rejection preserves exact state (1.86266ms)\n\u2714 R05: down moves one row, stops at first obstruction without locks or generation (0.717859ms)\n\u2714 R06: separate lock copies exactly four identities, preserves others and cannot repeat (2.23437ms)\n\u2714 R06: move does not lock; obstruction locks once and spawns without advancing (1.049621ms)\n\u2714 R07: zero through four clears, nonadjacent compaction, stable rows and independent empty rows (1.021902ms)\n\u2714 R07/R08: actual locks complete 0\u20134 rows and score once, including accumulation (2.126547ms)\n\u2714 R08: movement and rejection never score; huge scores fit status width and 24 rows (0.908539ms)\n\u2714 R09: obstructed spawn preserves settled cells; game-over actions inert; restart fresh (0.582434ms)\n\u2714 R09: clearing happens before spawn decision, opening formerly blocked space (0.168887ms)\n\u2714 B03 legal fixture: O placements clear two lines, then central stacking reaches game over (0.929193ms)\n\u2714 R10/R11: clock, chunk decoder, pause, grounded progression and fresh intervals (6.434508ms)\n\u2714 R12: redraw, resize, interruption, partial setup failure and idempotent cleanup (1.365667ms)\n\u2714 R11: decoder handles split sequences and multiple actions (0.218987ms)\n\u2714 R11/R12: unknown CSI/SS3 is inert at every split; pending escapes cannot swallow Ctrl-C (9.317928ms)\n\u2714 R13: actual production entry legal lifecycle in controlled process (56.77016ms)\n\u2139 tests 19\n\u2139 suites 0\n\u2139 pass 19\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 461.375793\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": true,
+      "scope": "Actual PTY launch; seven-piece palette coverage requires independent validator evidence review.",
+      "distinct_colours": 3
+    },
+    "tasks_complete": {
+      "passed": true,
+      "done": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13"
+      ],
+      "task_count": 13
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": "[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m          \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0 | running\u001b[0m\r\n\u001b[36mArrows:move/turn p:pause r:retry q:quit\u001b[0m\u001b[H\u001b[2J\u001b[36m+--------------------+\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m          \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0 | running\u001b[0m\r\n\u001b[36mArrows:move/turn p:pause r:retry q:quit\u001b[0m\u001b[H\u001b[2J\u001b[36m+--------------------+\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m          \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0 | paused\u001b[0m\r\n\u001b[36mArrows:move/turn p:pause r:retry q:quit\u001b[0m\u001b[H\u001b[2J\u001b[36m+--------------------+\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m          \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m      \u001b[94m[]\u001b[0m            \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m|\u001b[0m                    \u001b[36m|\u001b[0m\r\n\u001b[36m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0 | running\u001b[0m\r\n\u001b[36mArrows:move/turn p:pause r:retry q:quit\u001b[0m\u001b[0m\u001b[?25h"
+    },
+    "documentation": {
+      "passed": true
+    },
+    "commit_receipts": {
+      "passed": true
+    },
+    "catalogue_preserved": {
+      "passed": true,
+      "missing": []
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "protocol": "v2 matched E05/E06; plain non-TTY allowed, interactive colours required; no retroactive change to original trials."
+}

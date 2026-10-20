@@ -1,0 +1,6 @@
+{
+  "role": "plan_reviewer",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/pi-once.cjs",
+  "model": "openai-codex/gpt-6-astra:high",
+  "adapter": "pi"
+}

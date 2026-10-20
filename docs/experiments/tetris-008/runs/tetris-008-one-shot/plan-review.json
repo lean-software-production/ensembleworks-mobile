@@ -1,0 +1,75 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "accepted",
+  "findings": [],
+  "changes": "Revised plan contracts covering gameplay choices, model/render/session ownership, deterministic verification, seed obligations, and boundary examples. Clarified single-batch rationale and execution order; preserved frozen T01–T13 definitions, R01–R13 catalogue, and completion state. Verified exact task equality and one ordered unsplit batch.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "The plan keeps the frozen T01–T13 tasks exactly and puts them in one ordered, unsplit B01 batch. Its contracts for the model, renderer, session and verification are coherent and cover the seed's colour, plain-output, 24-row and legal-lifecycle requirements. There are no blockers and two suggestions: a documented seed seam at the real entry point, and handling Ctrl-C as the raw-mode byte as well as SIGINT.",
+      "findings": [
+        {
+          "id": "S-ENTRY-SEED",
+          "issue": "The plan says the piece source is seeded or injected, but not how the actual entry point used in T13 receives that seed while plain npm start stays random. Without it, the legal line-clear-then-game-over regression may slide into a model-only simulation.",
+          "section": "Design and collaboration contracts — Verification inputs/outputs",
+          "severity": "suggestion",
+          "recommendation": "Allow one documented test-only input that the entry point reads (for example a TETRIS_SEED environment variable or an injected stream) without changing default npm start behaviour, and record the sequence used in the T13 report."
+        },
+        {
+          "id": "S-RAW-CTRLC",
+          "issue": "'Interruption handled by the session' is ambiguous. In raw mode, Ctrl-C arrives as the byte \\x03 rather than SIGINT, so a decoder that ignores unknown keys would leave the user unable to interrupt.",
+          "section": "Design and collaboration contracts — Minimal gameplay choices / Session ownership",
+          "severity": "suggestion",
+          "recommendation": "State that both raw-mode \\x03 and SIGINT/SIGTERM lead to the same idempotent cleanup, and cover both in the T12 interruption checks (for example, feed '\\x03' and assert raw mode is off, the cursor is shown and no timers or listeners remain)."
+        }
+      ],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan contracts covering gameplay choices, model/render/session ownership, deterministic verification, seed obligations, and boundary examples. Clarified single-batch rationale and execution order; preserved frozen T01–T13 definitions, R01–R13 catalogue, and completion state. Verified exact task equality and one ordered unsplit batch."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "Plan approved without findings: R01-R13 and frozen T01-T13 tasks are preserved verbatim in a single unsplit batch B01 with clear model, presentation, session, and verification contracts matching all seed requirements.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan contracts covering gameplay choices, model/render/session ownership, deterministic verification, seed obligations, and boundary examples. Clarified single-batch rationale and execution order; preserved frozen T01–T13 definitions, R01–R13 catalogue, and completion state. Verified exact task equality and one ordered unsplit batch."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Plan satisfies the seed and preserves the frozen catalogue and tasks exactly. The single unsplit batch has coherent ownership, ordering, and verification contracts. No files changed or implementation tests run.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Revised plan contracts covering gameplay choices, model/render/session ownership, deterministic verification, seed obligations, and boundary examples. Clarified single-batch rationale and execution order; preserved frozen T01–T13 definitions, R01–R13 catalogue, and completion state. Verified exact task equality and one ordered unsplit batch."
+      }
+    }
+  },
+  "previousReports": {},
+  "decision": {
+    "satisfied": true,
+    "summary": "All review contexts match episode 1, round 1, revision 1. Approve the unchanged frozen T01–T13 contracts and single ordered, unsplit B01 batch. All reviewers confirm preservation and coherent ownership. Exact task definitions were not supplied, so no replacement batch JSON is fabricated.",
+    "findings": [],
+    "dispositions": [
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "S-ENTRY-SEED",
+        "status": "accepted_limitation",
+        "reason": "The reported contract already provides seeded or injected verification. A particular entry-point seed mechanism is an optional clarification, not a reported missing requirement; prescribing one would expand the frozen acceptance contracts."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "S-RAW-CTRLC",
+        "status": "accepted_limitation",
+        "reason": "Raw Ctrl-C handling is not explicit, but reviewers report coherent session cleanup and legal-lifecycle coverage without blockers. The suggested additional interruption cases are useful advice, not grounds to expand the frozen T12 acceptance contract."
+      }
+    ]
+  }
+}

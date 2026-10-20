@@ -1,0 +1,6 @@
+{
+  "role": "plan_reviewer",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/pi-once.cjs",
+  "model": "openrouter/google/gemini-4-argon:high",
+  "adapter": "pi"
+}

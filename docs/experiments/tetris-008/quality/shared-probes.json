@@ -1,0 +1,331 @@
+{
+  "scope": "Post-run shared probes; products unchanged. Injected scheduler, raw-mode and EOF probes are adapter robustness checks; real Writable errors use actual Node streams. Do not turn counts into an overall quality score.",
+  "observations": [
+    {
+      "mode": "ralph",
+      "checks": [
+        {
+          "id": "model_movement_rotation_and_render",
+          "category": "baseline",
+          "passed": true,
+          "piece_types": 7
+        },
+        {
+          "id": "stable_multirow_clearing",
+          "category": "baseline",
+          "passed": true,
+          "clear_counts": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "id": "normal_keys",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "unknown_csi",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "unknown_control_strings",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "unknown_escape_intermediates",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "ctrl_c_pending_escape",
+          "category": "input",
+          "passed": false,
+          "evidence": "sequence=\"\\u001b\\u0003\" split=0 actions=[]\n+ actual - expected\n\n+ []\n- [\n-   'quit'\n- ]\n"
+        },
+        {
+          "id": "normal_quit_cleanup",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "preserve_existing_raw_mode",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "input_eof_cleanup",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "preserve_unrelated_listeners",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "stale_gravity_after_quit",
+          "category": "injected_scheduler",
+          "passed": true
+        },
+        {
+          "id": "bounded_non_tty",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "legal_gameplay_invariants",
+          "category": "baseline",
+          "passed": true,
+          "actions": 1500,
+          "restarts": 3,
+          "piece_types_observed": [
+            "I",
+            "O",
+            "T",
+            "S",
+            "Z",
+            "J",
+            "L"
+          ]
+        },
+        {
+          "id": "import_entry_without_output",
+          "category": "importability",
+          "passed": true
+        },
+        {
+          "id": "delayed_writable_error_after_quit",
+          "category": "real_writable",
+          "passed": false,
+          "evidence": "node:events:505\n    throw er; // Unhandled 'error' event\n    ^\n\nError: post-quit asynchronous output failure\n    at Timeout._onTimeout (file:///workspaces/ensembleworks-mobile/tools/experiments/tetris-008-quality.mjs:85:85)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)\nEmitted 'error' event on Writable instance at:\n    at emitErrorNT (node:internal/streams/destroy:170:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:129:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n\nNode.js v24.21.0\n\n\n1 !== 0\n"
+        }
+      ]
+    },
+    {
+      "mode": "one-shot",
+      "checks": [
+        {
+          "id": "model_movement_rotation_and_render",
+          "category": "baseline",
+          "passed": true,
+          "piece_types": 7
+        },
+        {
+          "id": "stable_multirow_clearing",
+          "category": "baseline",
+          "passed": true,
+          "clear_counts": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "id": "normal_keys",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "unknown_csi",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "unknown_control_strings",
+          "category": "input",
+          "passed": false,
+          "evidence": "sequence=\"\\u001b]0;q\\u0007\" split=0 actions=[\"quit\"]\n+ actual - expected\n\n+ [\n+   'quit'\n+ ]\n- []\n"
+        },
+        {
+          "id": "unknown_escape_intermediates",
+          "category": "input",
+          "passed": false,
+          "evidence": "sequence=\"\\u001b(q\" split=0 actions=[\"quit\"]\n+ actual - expected\n\n+ [\n+   'quit'\n+ ]\n- []\n"
+        },
+        {
+          "id": "ctrl_c_pending_escape",
+          "category": "input",
+          "passed": false,
+          "evidence": "sequence=\"\\u001b\\u0003\" split=0 actions=[]\n+ actual - expected\n\n+ []\n- [\n-   'quit'\n- ]\n"
+        },
+        {
+          "id": "normal_quit_cleanup",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "preserve_existing_raw_mode",
+          "category": "terminal",
+          "passed": false,
+          "evidence": "pre-existing raw mode must be restored\n\nfalse !== true\n"
+        },
+        {
+          "id": "input_eof_cleanup",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "preserve_unrelated_listeners",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "stale_gravity_after_quit",
+          "category": "injected_scheduler",
+          "passed": false,
+          "evidence": "a canceled callback mutated the game after quit\n+ actual - expected\n\n+ '{\"board\":[[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null]],\"active\":{\"type\":\"O\",\"x\":4,\"y\":1,\"cells\":[[0,0],[1,0],[0,1],[1,1]]},\"score\":0,\"over\":false,\"paused\":false}'\n- '{\"board\":[[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],"
+        },
+        {
+          "id": "bounded_non_tty",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "legal_gameplay_invariants",
+          "category": "baseline",
+          "passed": true,
+          "actions": 1500,
+          "restarts": 3,
+          "piece_types_observed": [
+            "I",
+            "O",
+            "T",
+            "S",
+            "Z",
+            "J",
+            "L"
+          ]
+        },
+        {
+          "id": "import_entry_without_output",
+          "category": "importability",
+          "passed": false,
+          "evidence": "import produced 575 bytes of terminal output\n\n575 !== 0\n"
+        },
+        {
+          "id": "delayed_writable_error_after_quit",
+          "category": "real_writable",
+          "passed": false,
+          "evidence": "node:events:505\n    throw er; // Unhandled 'error' event\n    ^\n\nError: post-quit asynchronous output failure\n    at Timeout._onTimeout (file:///workspaces/ensembleworks-mobile/tools/experiments/tetris-008-quality.mjs:85:85)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)\nEmitted 'error' event on Writable instance at:\n    at emitErrorNT (node:internal/streams/destroy:170:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:129:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n\nNode.js v24.21.0\n\n\n1 !== 0\n"
+        }
+      ]
+    },
+    {
+      "mode": "implement-in-batches",
+      "checks": [
+        {
+          "id": "model_movement_rotation_and_render",
+          "category": "baseline",
+          "passed": true,
+          "piece_types": 7
+        },
+        {
+          "id": "stable_multirow_clearing",
+          "category": "baseline",
+          "passed": true,
+          "clear_counts": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "id": "normal_keys",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "unknown_csi",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "unknown_control_strings",
+          "category": "input",
+          "passed": false,
+          "evidence": "sequence=\"\\u001b]0;q\\u0007\" split=0 actions=[\"quit\"]\n+ actual - expected\n\n+ [\n+   'quit'\n+ ]\n- []\n"
+        },
+        {
+          "id": "unknown_escape_intermediates",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "ctrl_c_pending_escape",
+          "category": "input",
+          "passed": true
+        },
+        {
+          "id": "normal_quit_cleanup",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "preserve_existing_raw_mode",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "input_eof_cleanup",
+          "category": "terminal",
+          "passed": false,
+          "evidence": "EOF left a gravity timer running\n\n1 !== 0\n"
+        },
+        {
+          "id": "preserve_unrelated_listeners",
+          "category": "terminal",
+          "passed": true
+        },
+        {
+          "id": "stale_gravity_after_quit",
+          "category": "injected_scheduler",
+          "passed": false,
+          "evidence": "a canceled callback mutated the game after quit\n+ actual - expected\n\n+ '{\"board\":[[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null]],\"active\":{\"type\":\"O\",\"x\":4,\"y\":1,\"cells\":[[0,0],[1,0],[0,1],[1,1]]},\"score\":0,\"status\":\"running\"}'\n- '{\"board\":[[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null],[null,nul"
+        },
+        {
+          "id": "bounded_non_tty",
+          "category": "baseline",
+          "passed": true
+        },
+        {
+          "id": "legal_gameplay_invariants",
+          "category": "baseline",
+          "passed": true,
+          "actions": 1500,
+          "restarts": 3,
+          "piece_types_observed": [
+            "I",
+            "O",
+            "T",
+            "S",
+            "Z",
+            "J",
+            "L"
+          ]
+        },
+        {
+          "id": "import_entry_without_output",
+          "category": "importability",
+          "passed": false,
+          "evidence": "import produced 565 bytes of terminal output\n\n565 !== 0\n"
+        },
+        {
+          "id": "delayed_writable_error_after_quit",
+          "category": "real_writable",
+          "passed": false,
+          "evidence": "node:events:505\n    throw er; // Unhandled 'error' event\n    ^\n\nError: post-quit asynchronous output failure\n    at Timeout._onTimeout (file:///workspaces/ensembleworks-mobile/tools/experiments/tetris-008-quality.mjs:85:85)\n    at listOnTimeout (node:internal/timers:685:17)\n    at process.processTimers (node:internal/timers:618:7)\nEmitted 'error' event on Writable instance at:\n    at emitErrorNT (node:internal/streams/destroy:170:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:129:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n\nNode.js v24.21.0\n\n\n1 !== 0\n"
+        }
+      ]
+    }
+  ]
+}

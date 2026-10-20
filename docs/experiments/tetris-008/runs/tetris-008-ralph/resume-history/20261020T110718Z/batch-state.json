@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "contract_hash": "6b6d8149b31969462dec05d8a3af199510ed7bd01588c004188f68eed375ef36",
+  "done": [
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07",
+    "T08",
+    "T09"
+  ],
+  "active": {
+    "selected_at": "2026-10-20T10:09:51.977Z",
+    "budget": null,
+    "id": "B10",
+    "title": "Execution group 10",
+    "work_item": "Batch B10: T10",
+    "task_ids": [
+      "T10"
+    ],
+    "requirements": [
+      "R10"
+    ],
+    "acceptance": [
+      {
+        "task_id": "T10",
+        "checks": [
+          "Introduce a controllable scheduler that drives the existing downward/lock action at a documented fixed interval. Add pause/resume and display its state using the existing status rows.",
+          "Acceptance/automated checks with a fake clock: no fall before the interval; one expected action per tick; grounded pieces lock and progress; pause and game over stop advancement; resume/restart do not accumulate duplicate timers or catch-up falls; all displayed states remain bounded."
+        ]
+      }
+    ],
+    "reason": "Reviewed execution unit for the fixed task sequence.",
+    "contract_hash": "6b6d8149b31969462dec05d8a3af199510ed7bd01588c004188f68eed375ef36"
+  },
+  "commits": [
+    {
+      "task_ids": [
+        "T01"
+      ],
+      "commit": "35892f223ff6901c4d69d8448a58212f14a5cef7",
+      "work_item": "Batch B01: T01"
+    },
+    {
+      "task_ids": [
+        "T02"
+      ],
+      "commit": "49deefc13c0a6f96b3c0c893435a4f33c923c09f",
+      "work_item": "Batch B02: T02"
+    },
+    {
+      "task_ids": [
+        "T03"
+      ],
+      "commit": "258d03ba9eb1b9efa02a9de2997efd23712d63af",
+      "work_item": "Batch B03: T03"
+    },
+    {
+      "task_ids": [
+        "T04"
+      ],
+      "commit": "b360c22baf9fe96b53e3fcecb012389628f797db",
+      "work_item": "Batch B04: T04"
+    },
+    {
+      "task_ids": [
+        "T05"
+      ],
+      "commit": "b566d123f6ef0ab23b595c8ca99084516893fc9f",
+      "work_item": "Batch B05: T05"
+    },
+    {
+      "task_ids": [
+        "T06"
+      ],
+      "commit": "409617684a81367f3eaafe43cb6d9165a81df46d",
+      "work_item": "Batch B06: T06"
+    },
+    {
+      "task_ids": [
+        "T07"
+      ],
+      "commit": "a3ca328ec65f68666ac1e9851db2dc907e678ce1",
+      "work_item": "Batch B07: T07"
+    },
+    {
+      "task_ids": [
+        "T08"
+      ],
+      "commit": "f40a87cbe0c3267be1ed8c19c2a8d7485368cc75",
+      "work_item": "Batch B08: T08"
+    },
+    {
+      "task_ids": [
+        "T09"
+      ],
+      "commit": "cbf4a8f1354f7715de67259c49b8518a5f06ec1f",
+      "work_item": "Batch B09: T09"
+    }
+  ]
+}

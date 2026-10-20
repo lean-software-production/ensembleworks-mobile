@@ -1,0 +1,88 @@
+{
+  "episode": 1,
+  "round": 1,
+  "revision": 1,
+  "status": "accepted",
+  "findings": [],
+  "changes": "Updated plan collaboration contracts, boundary examples, singleton batch rationales and revision notes. Clarified model/render/session ownership, controllable time/randomness/I/O, colour coverage and legal lifecycle testing. Validated frozen tasks unchanged and exactly 13 ordered singleton batches; preserved all acceptance clauses and completion state.",
+  "reports": {
+    "plan_reviewer_opus": {
+      "summary": "The plan matches the frozen T01–T13 tasks exactly, with 13 ordered singleton batches, empty split points and all of R01–R13 covered. Its collaboration contracts cover the gameplay order, timing and input ownership, a single teardown path, the 24-row frame, seven-colour checks and a legal-input play-through. No blockers. Three suggestions cover raw-mode Ctrl-C, how tests inject controls into the real launch path, and npm's start banner pushing the frame past 24 rows.",
+      "findings": [
+        {
+          "id": "S-CTRLC-RAW",
+          "issue": "In raw mode, Ctrl-C arrives as byte 0x03 and does not raise SIGINT. Under T11's rule that unknown keys cause no state change, it could be dropped silently. R12's interruption tests using a fake process signal would then pass while a real Ctrl-C is ignored.",
+          "section": "Collaboration contracts: Input → session → terminal",
+          "severity": "suggestion",
+          "recommendation": "State that T11 decodes 0x03 (and any chosen quit key) into the same interruption/quit teardown T12 owns. T12 tests should cover both the 0x03 byte and the process signal path, e.g. feeding '\\x03' restores raw mode and cursor exactly once."
+        },
+        {
+          "id": "S-LAUNCH-SEAM",
+          "issue": "T13 needs the real entry point with controlled terminal I/O, fake ticks and controlled piece order. T12 makes non-TTY startup print a plain frame and exit. A test that spawns the process with piped stdio would take the non-TTY path and never play, and a real child process cannot use a fake clock. The plan says tests 'can supply' streams and clocks but does not say how they reach the real launch path.",
+          "section": "Collaboration contracts: Unit fixtures → production regression / Time/randomness/I/O boundaries",
+          "severity": "suggestion",
+          "recommendation": "Describe a minimal shared seam: the npm start script calls the same exported start/session function that T13 calls with injected TTY-like streams, clock and piece source, and the TTY check uses the injected stream's isTTY. Separately, the PTY smoke test exercises the unmodified `npm start`."
+        },
+        {
+          "id": "S-NPM-PREAMBLE",
+          "issue": "`npm start` prints banner lines ('> pkg start', '> node ...') before the game output. If frames are drawn relative to the current cursor, a 24-row frame scrolls in a 24-row terminal even though the renderer's own row count passes.",
+          "section": "Collaboration contracts: Renderer → terminal; T12/T13 verification",
+          "severity": "suggestion",
+          "recommendation": "State that interactive frames are drawn at a fixed position (cursor home/clear or alternate screen), so earlier output cannot push the frame past 24 rows. T13's PTY smoke test should run the actual `npm start` in a 24-row PTY and confirm the top border is still visible."
+        }
+      ],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan collaboration contracts, boundary examples, singleton batch rationales and revision notes. Clarified model/render/session ownership, controllable time/randomness/I/O, colour coverage and legal lifecycle testing. Validated frozen tasks unchanged and exactly 13 ordered singleton batches; preserved all acceptance clauses and completion state."
+      }
+    },
+    "plan_reviewer_gemini": {
+      "summary": "The plan is coherent, complete, and ready for execution. It preserves the R01-R13 acceptance catalogue and frozen T01-T13 task definitions in 13 ordered singleton batches (B01-B13) with split_after:[], while establishing clear model/renderer/session contracts, deterministic lock-clear-score-spawn ordering, 24-row frame bounds, retro ANSI colour requirements, and legal-input lifecycle verification.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan collaboration contracts, boundary examples, singleton batch rationales and revision notes. Clarified model/render/session ownership, controllable time/randomness/I/O, colour coverage and legal lifecycle testing. Validated frozen tasks unchanged and exactly 13 ordered singleton batches; preserved all acceptance clauses and completion state."
+      }
+    },
+    "plan_reviewer_astra": {
+      "summary": "Plan satisfies the seed and controlled-study constraints. Frozen tasks and all requirement mappings are preserved; thirteen ordered singleton batches have coherent contracts and verification boundaries. No findings.",
+      "findings": [],
+      "review": {
+        "episode": 1,
+        "round": 1,
+        "revision": 1,
+        "changes": "Updated plan collaboration contracts, boundary examples, singleton batch rationales and revision notes. Clarified model/render/session ownership, controllable time/randomness/I/O, colour coverage and legal lifecycle testing. Validated frozen tasks unchanged and exactly 13 ordered singleton batches; preserved all acceptance clauses and completion state."
+      }
+    }
+  },
+  "previousReports": {},
+  "decision": {
+    "satisfied": true,
+    "summary": "Accept the reviewed plan unchanged. All reviewers assessed episode 1, round 1, revision 1 and confirmed the frozen tasks, requirement coverage and thirteen ordered singleton batches. The suggestions identify execution risks, not demonstrated contradictions or missing required acceptance.",
+    "findings": [],
+    "dispositions": [
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "S-CTRLC-RAW",
+        "status": "accepted_limitation",
+        "reason": "The report confirms a single interruption teardown owner but identifies an unverified raw-byte path. Retain this as an execution risk under existing interruption requirements; do not add mandatory tests or alter frozen acceptance."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "S-LAUNCH-SEAM",
+        "status": "accepted_limitation",
+        "reason": "The reviewed contracts already provide controllable I/O, time and piece order. Their precise connection to the launch path remains an implementation choice; the report establishes no contradiction requiring a plan revision."
+      },
+      {
+        "reviewer": "plan_reviewer_opus",
+        "id": "S-NPM-PREAMBLE",
+        "status": "accepted_limitation",
+        "reason": "The npm-banner scenario is a conditional terminal-layout risk, not evidence that the reviewed frame contract fails. Existing terminal-fit requirements remain binding without mandating a particular drawing mechanism or adding acceptance checks."
+      }
+    ]
+  }
+}

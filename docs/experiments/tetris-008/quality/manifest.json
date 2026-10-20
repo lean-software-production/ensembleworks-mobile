@@ -1,0 +1,65 @@
+{
+  "reviewed_at": "2026-10-20T12:08:41.464254+00:00",
+  "node_version": "v24.21.0",
+  "method": "Post-hoc source review plus identical interface-adapted probes and real 80x24 PTY probes; no model calls, no product edits. Probe selection followed source inspection and is not a blinded or pre-registered benchmark.",
+  "scope_limits": [
+    "Source LOC and native test counts are context, not quality scores.",
+    "Canceled-callback, pre-existing raw-mode and EOF checks use injected adapters; do not confuse them with ordinary launch regressions.",
+    "Delayed-output probe uses real asynchronous Node Writable errors in isolated child processes.",
+    "Actual PTY probes reproduce control-sequence findings through unchanged production entry points.",
+    "One output per line, different generated designs and correction histories; no causal claim that a policy produces better code."
+  ],
+  "observations": [
+    {
+      "mode": "ralph",
+      "source_files": 5,
+      "source_lines": 380,
+      "source_bytes": 14920,
+      "original_suite_tests": 53,
+      "final_product_commit": "a3a245a53f5c013cfd3831759fb69b6bf3d41a25",
+      "source_sha256": {
+        "tetris/tetris-008-ralph/src/input.js": "ca032eb69a2fbb7016dd48fea3093cda180b610c37e59f4aa3d55e4f67f33838",
+        "tetris/tetris-008-ralph/src/main.js": "9521ab0454c8b3f993623cef1c20a26a2ca68e76a7ceadf9e7ab90bbc1a85614",
+        "tetris/tetris-008-ralph/src/model.js": "8f2733baae32c20dee81a27abe0d938d97c38136427d999e515ac2c889eae060",
+        "tetris/tetris-008-ralph/src/render.js": "3884dff92f8d4ba65d2d067b300261887762f3d9fdc046f3e527a94e63bf74fb",
+        "tetris/tetris-008-ralph/src/session.js": "aa30d40c4dcbaa38474897822de777470b29160a2e58d78b4afdf8460f7e221e"
+      },
+      "source_matches_measured_commit": true
+    },
+    {
+      "mode": "one-shot",
+      "source_files": 5,
+      "source_lines": 168,
+      "source_bytes": 7969,
+      "original_suite_tests": 14,
+      "final_product_commit": "a3d8ffbd868e88c2bfe9acb5d686f3671e430925",
+      "source_sha256": {
+        "tetris/tetris-008-one-shot/src/input.js": "98368207171024e1462d7d4564ab389f25a08293635ec43eeeda96f4f327e441",
+        "tetris/tetris-008-one-shot/src/main.js": "f2e60f0ec6c09079ee9ad3ec129d6ae349726484a0c0cb2bbae2939e990fda80",
+        "tetris/tetris-008-one-shot/src/model.js": "f031a3cdc682842b49695de72e13c20a09e940c12bb94cf6b7ea8b07bfca4073",
+        "tetris/tetris-008-one-shot/src/render.js": "10cc56189a479e1e94221360f533434eaf1afb49d452c279a032510c1e36a25b",
+        "tetris/tetris-008-one-shot/src/session.js": "9bbce6377c92ce43c633bbeea6ae235ed3db88fb6a3e05966e72830216f3af79"
+      },
+      "source_matches_measured_commit": true
+    },
+    {
+      "mode": "implement-in-batches",
+      "source_files": 4,
+      "source_lines": 233,
+      "source_bytes": 10356,
+      "original_suite_tests": 19,
+      "final_product_commit": "1094715c01bb21e76abdf14dbc597f740a7c6121",
+      "source_sha256": {
+        "tetris/tetris-008-implement-in-batches/src/main.js": "780c36de16f88f5cc765ae9d7a0093e073a37ef19393bca7c23c524ee1a86f34",
+        "tetris/tetris-008-implement-in-batches/src/model.js": "b923b2dd771d95ee375a461125a316b55bc02faaff03a0e1de6934f38ad3ff8c",
+        "tetris/tetris-008-implement-in-batches/src/render.js": "2518906022c9962fd31e18cf39febc3316a2269513e0786ed2a1b754aeb16978",
+        "tetris/tetris-008-implement-in-batches/src/session.js": "1b99fe4586b0ce40717484ac1a6c4f7bf4b8d15e59a72d809ba7407e51c97370"
+      },
+      "source_matches_measured_commit": true
+    }
+  ],
+  "probe_sha256": {
+    "tools/experiments/tetris-008-quality.mjs": "e71efba516268869ee4330736b058d51c0f0b98d9f1365ff76437712c4552b10",
+    "tools/experiments/tetris-008-quality-pty.py": "28f863f18b86f777f4f56c2bd05d1b0df42e18b0d93508a9d6d6c8bb6eb09c3a"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "checks": {
+    "suite": {
+      "passed": true,
+      "output": "\n> terminal-tetris@1.0.0 test\n> node --test test/*.test.js && python3 test/pty.py\n\n\u2714 R01 R12 actual npm start non-TTY exits with one bounded plain frame (146.761615ms)\n\u2714 R13 actual entry: legal fall -> lock -> double clear/300 -> gameover -> restart -> quit (68.460197ms)\n\u2714 R01 R02: seven valid centered spawns, seeded generation, 24-row pure frames and palette (4.032759ms)\n\u2714 R03 R05: movement, both walls, settled obstacles and blocked primitive does not lock (0.507961ms)\n\u2714 R04: rotation cycles and rejected wall/floor/settled rotations preserve state (1.463744ms)\n\u2714 R06: separate lock, one next piece and no same-action fall (0.687844ms)\n\u2714 R07: zero through four, nonadjacent clears, stable order and dimensions (1.122028ms)\n\u2714 R07 R08: lock clears 1\u20134, scoring once, accumulation and no movement points (0.624012ms)\n\u2714 R09: blocked spawn, inert over state, restart, clear before spawn (0.486674ms)\n\u2714 R11 decoder handles combined/split arrows, unknown CSI and keys (1.521469ms)\n\u2714 R11 unsupported Alt/SS3 never dispatches trailing bindings across chunk boundaries (0.752056ms)\n\u2714 R11 session ignores combined and split unsupported Alt/SS3 then accepts valid controls (15.390668ms)\n\u2714 R10 R11 R12: fake time, input, pause/resume, gameover, restart, resize and cleanup (5.006428ms)\n\u2714 R12 interruption, handled write failure, non-TTY and tiny dimensions (1.098783ms)\n\u2139 tests 14\n\u2139 suites 0\n\u2139 pass 14\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 413.586996\nPTY npm start: I ANSI 96 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: O ANSI 93 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: T ANSI 95 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: S ANSI 92 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: Z ANSI 91 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: J ANSI 94 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: L ANSI 33 quit raw/cursor/termios restored; 9 bounded frames\nPTY npm start: O ANSI 93 SIGINT raw/cursor/termios restored; 9 bounded frames\n"
+    },
+    "bounded_non_tty": {
+      "passed": true,
+      "rows": 24,
+      "exit": 0
+    },
+    "retro_palette": {
+      "passed": true,
+      "scope": "Actual PTY launch; seven-piece palette coverage requires independent validator evidence review.",
+      "distinct_colours": 3
+    },
+    "tasks_complete": {
+      "passed": true,
+      "done": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13"
+      ],
+      "task_count": 13
+    },
+    "accepted_plan": {
+      "passed": true
+    },
+    "actual_npm_start_pty": {
+      "passed": true,
+      "launched": true,
+      "exit": 0,
+      "termios_restored": true,
+      "output_tail": "\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0  RUNNING\u001b[0m\r\n\u001b[96mArrows: move/up rotate/down drop | p pause | q quit\u001b[0m\u001b[H\u001b[2J\u001b[94m+--------------------+\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0  RUNNING\u001b[0m\r\n\u001b[96mArrows: move/up rotate/down drop | p pause | q quit\u001b[0m\u001b[H\u001b[2J\u001b[94m+--------------------+\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0  PAUSED\u001b[0m\r\n\u001b[96mArrows: move/up rotate/down drop | p pause | q quit\u001b[0m\u001b[H\u001b[2J\u001b[94m+--------------------+\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m\u001b[94m[]\u001b[0m . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . .\u001b[94m[]\u001b[0m . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m|\u001b[0m . . . . . . . . . .\u001b[94m|\u001b[0m\r\n\u001b[94m+--------------------+\u001b[0m\r\n\u001b[93mScore: 0  RUNNING\u001b[0m\r\n\u001b[96mArrows: move/up rotate/down drop | p pause | q quit\u001b[0m\u001b[0m\u001b[?25h\u001b[?1049l"
+    },
+    "documentation": {
+      "passed": true
+    },
+    "commit_receipts": {
+      "passed": true
+    },
+    "catalogue_preserved": {
+      "passed": true,
+      "missing": []
+    }
+  },
+  "scope": "Launch, final suite, palette, completion and documentation presence. Gameplay contracts rely on frozen per-task criteria and independent factory validators; PTY input dispatch here is a smoke check.",
+  "protocol": "v2 matched E05/E06; plain non-TTY allowed, interactive colours required; no retroactive change to original trials."
+}

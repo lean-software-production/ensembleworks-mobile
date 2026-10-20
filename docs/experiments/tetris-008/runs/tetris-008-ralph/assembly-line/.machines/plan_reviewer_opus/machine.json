@@ -1,0 +1,6 @@
+{
+  "role": "plan_reviewer",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/pi-once.cjs",
+  "model": "openrouter/anthropic/claude-opus-5.5:high",
+  "adapter": "pi"
+}

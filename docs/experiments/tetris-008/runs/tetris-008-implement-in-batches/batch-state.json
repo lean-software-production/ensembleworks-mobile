@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "contract_hash": "1fc29811dd56abd01357f621c400433af82bda93147f6dc34932e8fcbdcfe95f",
+  "done": [
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07",
+    "T08",
+    "T09",
+    "T10",
+    "T11",
+    "T12",
+    "T13"
+  ],
+  "active": null,
+  "commits": [
+    {
+      "task_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05"
+      ],
+      "commit": "6ba36f6f14766b79f0815dbfb31ccf8c443fc31d",
+      "work_item": "Batch B01: T01,T02,T03,T04,T05"
+    },
+    {
+      "task_ids": [
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "commit": "1431af278b7ee601482f114c934872231dda5051",
+      "work_item": "Batch B02: T06,T07,T08,T09"
+    },
+    {
+      "task_ids": [
+        "T10",
+        "T11",
+        "T12",
+        "T13"
+      ],
+      "commit": "1094715c01bb21e76abdf14dbc597f740a7c6121",
+      "work_item": "Batch B03: T10,T11,T12,T13"
+    }
+  ]
+}

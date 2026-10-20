@@ -1,0 +1,63 @@
+{
+  "reviewed_at": "2026-10-20T11:27:26.672377+00:00",
+  "scope": "All external acceptance checks, task/commit coverage, existing commit objects and preserved frozen configuration; independent validators supply per-unit gameplay judgment. Test counts are not quality scores.",
+  "observations": [
+    {
+      "id": "tetris-008-ralph",
+      "accepted": true,
+      "tasks_complete": 13,
+      "accepted_commits": 13,
+      "final_commit": "a3a245a53f5c013cfd3831759fb69b6bf3d41a25",
+      "external_checks_passed": [
+        "suite",
+        "bounded_non_tty",
+        "retro_palette",
+        "tasks_complete",
+        "accepted_plan",
+        "actual_npm_start_pty",
+        "documentation",
+        "commit_receipts",
+        "catalogue_preserved"
+      ],
+      "io_lower_bound": true
+    },
+    {
+      "id": "tetris-008-one-shot",
+      "accepted": true,
+      "tasks_complete": 13,
+      "accepted_commits": 1,
+      "final_commit": "a3d8ffbd868e88c2bfe9acb5d686f3671e430925",
+      "external_checks_passed": [
+        "suite",
+        "bounded_non_tty",
+        "retro_palette",
+        "tasks_complete",
+        "accepted_plan",
+        "actual_npm_start_pty",
+        "documentation",
+        "commit_receipts",
+        "catalogue_preserved"
+      ],
+      "io_lower_bound": false
+    },
+    {
+      "id": "tetris-008-implement-in-batches",
+      "accepted": true,
+      "tasks_complete": 13,
+      "accepted_commits": 3,
+      "final_commit": "1094715c01bb21e76abdf14dbc597f740a7c6121",
+      "external_checks_passed": [
+        "suite",
+        "bounded_non_tty",
+        "retro_palette",
+        "tasks_complete",
+        "accepted_plan",
+        "actual_npm_start_pty",
+        "documentation",
+        "commit_receipts",
+        "catalogue_preserved"
+      ],
+      "io_lower_bound": false
+    }
+  ]
+}

@@ -1,0 +1,380 @@
+{
+  "version": 1,
+  "created": "2026-10-20T09:46:41.962400+00:00",
+  "order": [
+    "ralph",
+    "one-shot",
+    "implement-in-batches"
+  ],
+  "attempt_limit": 5,
+  "plan_round_limit": 5,
+  "trial_timeout_minutes": 90,
+  "checkout_commit": "5a08708a0b6fead1bec62618ff531baa41c96e45",
+  "runner_hashes": {
+    "tools/experiments/tetris-008.py": "c4602fb3eba32bf1b2df984d66cc7ec698bfc37c26f302c153953a21a57fd747",
+    "tools/experiments/tetris-008-planner.cjs": "cff923c3938d97d5cac55868bca9909cb23150249ea3a55659115c856e3edb36",
+    "factory/src/engine.ts": "141657d278a807cdc8a021ad7963157aea401a2049f968f18c8f1a2ca692a994",
+    "factory/src/prompts.ts": "666f5b51272719687290f499f930a7956d317d59337b74c4a34669e78dd4f0e1",
+    "factory/src/acp.ts": "135e540cec518c2d3844ef268aff1b6e3321d73356340dbbcff8eac3d52e1470"
+  },
+  "shared_input_hashes": {
+    "original-acceptance.md": "25934aff06e1a175834cca9981bb646ebacb631f041741cb9aadaf76cf5032b1",
+    "seed.md": "daf4b5854dcb2a25bac3f3a54c3b1b6593b029546eca822907647b728c342293",
+    "tasks.json": "02fda62ff4d46e60a96365bcb45bfea473358831efd268827129d2a4969afa99"
+  },
+  "models": {
+    "planner": "ordinary code",
+    "plan_reviewer_opus": "openrouter/anthropic/claude-opus-5.5:high",
+    "plan_reviewer_gemini": "openrouter/google/gemini-4-argon:high",
+    "plan_author": "openai-codex/gpt-6.1-sol:medium",
+    "plan_synthesiser": "openai-codex/gpt-6.1-sol:medium",
+    "plan_gate": "ordinary code",
+    "doer": "openai-codex/gpt-6.1-sol:low",
+    "plan_reviewer_astra": "openai-codex/gpt-6-astra:high",
+    "validator": "openai-codex/gpt-6.1-sol:high"
+  },
+  "runs": [
+    {
+      "id": "tetris-008-ralph",
+      "mode": "ralph",
+      "status": "accepted",
+      "target": "/workspaces/ensembleworks-mobile/tetris/tetris-008-ralph",
+      "run": "/workspaces/ensembleworks-mobile/factory/runs/tetris-008-ralph",
+      "initial_plan_hash": "3455de83888d18fddf14547bb949113202d4f532a64dbab440a737d765300a19",
+      "config_hashes": {
+        "experiment.json": "518aa234d45fd7b4860dd9d83ebc539a2b876802febedd22447b43f01e93994c",
+        ".machines/planner/AGENTS.md": "e75f24855bfa390bd3b0602bc51d9a80f4e1f3bf4cc25b4de4846d21812800de",
+        ".machines/planner/machine.json": "3135c0b414469ab99af6c6c365cee74dafaf9e757379b18eeaea9d23b5c4c4ba",
+        ".machines/planner/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_opus/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+        ".machines/plan_reviewer_opus/machine.json": "9421b829d05140a6e768965dd9971c1e9b0c2739fa74ae0d578112f3d1e673bc",
+        ".machines/plan_reviewer_opus/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_gemini/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+        ".machines/plan_reviewer_gemini/machine.json": "249d79ebf40a6d41b2422342fabeaf6c121b8fb872eb19ca73d288a3553705fc",
+        ".machines/plan_reviewer_gemini/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_author/AGENTS.md": "2385d8fddbab8050dc4e8770ede939465c763358d04ec30a4ce01c28875a7f93",
+        ".machines/plan_author/machine.json": "4e53f57d3ccac967df85be022142acae30485560d667d0b9cf15182807e6c285",
+        ".machines/plan_author/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_synthesiser/AGENTS.md": "6172532d40e2182c67e70182ddb06f4396d75ef41cc71be1f0c56f437dbbd3e6",
+        ".machines/plan_synthesiser/machine.json": "08e400b1d50e65c3dac379943e5e69372d1276c34c905be18bb40616266e7dc5",
+        ".machines/plan_synthesiser/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_gate/AGENTS.md": "94981d08865442c27f89dbc7833075e526d8f2935ace4458e3c75700f405baec",
+        ".machines/plan_gate/gate.cjs": "1ec7c5c9f00383f4f222f36cc4a658164a0c6408f4e343f17f81724d5435ec0b",
+        ".machines/plan_gate/machine.json": "0f22ab62357e8a17e8cfe4b927ce3440fe21f4eb3a1ac8ec12b25129e56fa19a",
+        ".machines/plan_gate/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/doer/AGENTS.md": "deac834dff8b171ca6f18e11ad01ca11f51e7b9e0b4971b34027c774a218c994",
+        ".machines/doer/machine.json": "5d51aeac4dd7e48649037404de57c7581f826122274e5861807b678bcbb8d03e",
+        ".machines/doer/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_astra/AGENTS.md": "d81c1d566b01dc1aae059887307415ca2a8f1737e073265778b194df979ef6cb",
+        ".machines/plan_reviewer_astra/machine.json": "d7441a4ae40d22761796a6087a65f5fa3207a78d12be1152ea107b2fb0aefbbb",
+        ".machines/plan_reviewer_astra/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/validator/AGENTS.md": "59aaad2de080c76263539106e30b0cdb63d49a0262cc66ba1cc9713cf0893e5e",
+        ".machines/validator/machine.json": "1a9c4f3a32a1df01c239bf7709b24771ec5397c740aa0c12448058be5a72dfdf",
+        ".machines/validator/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        "implement-reviewed-ralph.dot": "939f0385ac1599ba77d3c622460431a64e192793d6873a2c0f120bb40e794d0d"
+      },
+      "metrics": {
+        "input": 885067,
+        "output": 100693,
+        "io": 985760,
+        "cache_read": 3877392,
+        "cache_write": 17688,
+        "cache_read_reports": 50,
+        "usage_reports": 52,
+        "model_calls": 36,
+        "doer_calls": 16,
+        "validator_calls": 15,
+        "phases": {
+          "gate": {
+            "input": 0,
+            "output": 0,
+            "calls": 2
+          },
+          "plan_review": {
+            "input": 58344,
+            "output": 16508,
+            "calls": 5
+          },
+          "bookkeeping": {
+            "input": 0,
+            "output": 0,
+            "calls": 15
+          },
+          "implementation": {
+            "input": 374872,
+            "output": 46605,
+            "calls": 16
+          },
+          "validation": {
+            "input": 451851,
+            "output": 37580,
+            "calls": 15
+          }
+        }
+      },
+      "started": "2026-10-20T09:47:20.275114+00:00",
+      "elapsed_seconds": 3723.0,
+      "tasks_done": 13,
+      "commits": 13,
+      "line": "implement-reviewed-ralph",
+      "last_call_usage_unknown": true,
+      "interventions": [
+        {
+          "time": "2026-10-20T10:30:48.431623+00:00",
+          "action": "user-approved stop after stalled doer",
+          "usage_unknown": true
+        }
+      ],
+      "segments": [
+        {
+          "started": "2026-10-20T09:47:20.275114+00:00",
+          "finished": "2026-10-20T10:30:49.183153+00:00"
+        },
+        {
+          "started": "2026-10-20T11:07:18.905154+00:00",
+          "finished": "2026-10-20T11:25:52.962776+00:00"
+        }
+      ],
+      "resumes": [
+        {
+          "requested_at": "2026-10-20T11:07:18.792347+00:00",
+          "previous_status": "interrupted",
+          "previous_failure": "User approved stopping stalled T10 doer and advancing to one-shot; no worker output since 2026-10-20T10:10:10.578Z. Preserve partial work and costs; no acceptance or efficiency claim.",
+          "preserved_task": "Batch B10: T10",
+          "preserved_done": [
+            "T01",
+            "T02",
+            "T03",
+            "T04",
+            "T05",
+            "T06",
+            "T07",
+            "T08",
+            "T09"
+          ],
+          "attempt_limit_per_invocation": 5,
+          "reason": "User requested completing the same Ralph observation after batches finished; preserve prior usage, work and acceptance."
+        }
+      ],
+      "wall_elapsed_seconds": 5912.7,
+      "failure": null,
+      "finished": "2026-10-20T11:25:52.962776+00:00"
+    },
+    {
+      "id": "tetris-008-one-shot",
+      "mode": "one-shot",
+      "status": "accepted",
+      "target": "/workspaces/ensembleworks-mobile/tetris/tetris-008-one-shot",
+      "run": "/workspaces/ensembleworks-mobile/factory/runs/tetris-008-one-shot",
+      "initial_plan_hash": "b7b110970343217d7a4f2b6c36dea69f1dbdc7f82263fda27ae995d80c4d368e",
+      "config_hashes": {
+        "experiment.json": "c3313c88fc3ef66bcb584732ca1657ddd07d7124436866f5f1d11cde61fe30a7",
+        ".machines/planner/AGENTS.md": "e75f24855bfa390bd3b0602bc51d9a80f4e1f3bf4cc25b4de4846d21812800de",
+        ".machines/planner/machine.json": "3135c0b414469ab99af6c6c365cee74dafaf9e757379b18eeaea9d23b5c4c4ba",
+        ".machines/planner/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_opus/AGENTS.md": "46e14ecc8d8f610845a4845f19b8e6bcc619d2330eb3a407804170f83cf0657c",
+        ".machines/plan_reviewer_opus/machine.json": "9421b829d05140a6e768965dd9971c1e9b0c2739fa74ae0d578112f3d1e673bc",
+        ".machines/plan_reviewer_opus/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_gemini/AGENTS.md": "46e14ecc8d8f610845a4845f19b8e6bcc619d2330eb3a407804170f83cf0657c",
+        ".machines/plan_reviewer_gemini/machine.json": "249d79ebf40a6d41b2422342fabeaf6c121b8fb872eb19ca73d288a3553705fc",
+        ".machines/plan_reviewer_gemini/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_author/AGENTS.md": "1d22b8ef91d446df628e0da9d15fdd74ec5406e952198ced852eb7ce07427134",
+        ".machines/plan_author/machine.json": "4e53f57d3ccac967df85be022142acae30485560d667d0b9cf15182807e6c285",
+        ".machines/plan_author/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_synthesiser/AGENTS.md": "77191d378ba1b7a120310f7ab7e7d5afc0444d5ebeee4a24dcbfc4eb2ab960bf",
+        ".machines/plan_synthesiser/machine.json": "08e400b1d50e65c3dac379943e5e69372d1276c34c905be18bb40616266e7dc5",
+        ".machines/plan_synthesiser/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_gate/AGENTS.md": "94981d08865442c27f89dbc7833075e526d8f2935ace4458e3c75700f405baec",
+        ".machines/plan_gate/gate.cjs": "1ec7c5c9f00383f4f222f36cc4a658164a0c6408f4e343f17f81724d5435ec0b",
+        ".machines/plan_gate/machine.json": "0f22ab62357e8a17e8cfe4b927ce3440fe21f4eb3a1ac8ec12b25129e56fa19a",
+        ".machines/plan_gate/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/doer/AGENTS.md": "deac834dff8b171ca6f18e11ad01ca11f51e7b9e0b4971b34027c774a218c994",
+        ".machines/doer/machine.json": "5d51aeac4dd7e48649037404de57c7581f826122274e5861807b678bcbb8d03e",
+        ".machines/doer/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_astra/AGENTS.md": "46e14ecc8d8f610845a4845f19b8e6bcc619d2330eb3a407804170f83cf0657c",
+        ".machines/plan_reviewer_astra/machine.json": "d7441a4ae40d22761796a6087a65f5fa3207a78d12be1152ea107b2fb0aefbbb",
+        ".machines/plan_reviewer_astra/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/validator/AGENTS.md": "59aaad2de080c76263539106e30b0cdb63d49a0262cc66ba1cc9713cf0893e5e",
+        ".machines/validator/machine.json": "1a9c4f3a32a1df01c239bf7709b24771ec5397c740aa0c12448058be5a72dfdf",
+        ".machines/validator/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        "implement-reviewed-one-shot.dot": "939f0385ac1599ba77d3c622460431a64e192793d6873a2c0f120bb40e794d0d"
+      },
+      "metrics": {
+        "input": 296427,
+        "output": 41557,
+        "io": 337984,
+        "cache_read": 1170146,
+        "cache_write": 15757,
+        "cache_read_reports": 13,
+        "usage_reports": 14,
+        "model_calls": 11,
+        "doer_calls": 3,
+        "validator_calls": 3,
+        "phases": {
+          "gate": {
+            "input": 0,
+            "output": 0,
+            "calls": 1
+          },
+          "plan_review": {
+            "input": 61329,
+            "output": 13786,
+            "calls": 5
+          },
+          "bookkeeping": {
+            "input": 0,
+            "output": 0,
+            "calls": 2
+          },
+          "implementation": {
+            "input": 84879,
+            "output": 16325,
+            "calls": 3
+          },
+          "validation": {
+            "input": 150219,
+            "output": 11446,
+            "calls": 3
+          }
+        }
+      },
+      "line": "implement-reviewed-one-shot",
+      "started": "2026-10-20T10:30:49.367631+00:00",
+      "elapsed_seconds": 851.9,
+      "tasks_done": 13,
+      "commits": 1,
+      "failure": null,
+      "finished": "2026-10-20T10:45:01.267624+00:00",
+      "wall_elapsed_seconds": 851.9
+    },
+    {
+      "id": "tetris-008-implement-in-batches",
+      "mode": "implement-in-batches",
+      "status": "accepted",
+      "target": "/workspaces/ensembleworks-mobile/tetris/tetris-008-implement-in-batches",
+      "run": "/workspaces/ensembleworks-mobile/factory/runs/tetris-008-implement-in-batches",
+      "initial_plan_hash": "b7908aaecf710cb59e9bdae5f7f4e5c45dbf672020919237ebb41c79f6ced3b3",
+      "config_hashes": {
+        "implement-reviewed-batches.dot": "939f0385ac1599ba77d3c622460431a64e192793d6873a2c0f120bb40e794d0d",
+        "experiment.json": "e11e30a26bca0917357eebf1a807fe7dd436914b9ee44d75e8bb690ecf37e61e",
+        ".machines/planner/AGENTS.md": "e75f24855bfa390bd3b0602bc51d9a80f4e1f3bf4cc25b4de4846d21812800de",
+        ".machines/planner/machine.json": "3135c0b414469ab99af6c6c365cee74dafaf9e757379b18eeaea9d23b5c4c4ba",
+        ".machines/planner/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_opus/AGENTS.md": "37fa32cae3a40a01b92842e9d10886fe03e46d75cc622669ce54ea65eab2f182",
+        ".machines/plan_reviewer_opus/machine.json": "9421b829d05140a6e768965dd9971c1e9b0c2739fa74ae0d578112f3d1e673bc",
+        ".machines/plan_reviewer_opus/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_gemini/AGENTS.md": "37fa32cae3a40a01b92842e9d10886fe03e46d75cc622669ce54ea65eab2f182",
+        ".machines/plan_reviewer_gemini/machine.json": "249d79ebf40a6d41b2422342fabeaf6c121b8fb872eb19ca73d288a3553705fc",
+        ".machines/plan_reviewer_gemini/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_author/AGENTS.md": "128182848a349e8128e1936fe9f9905ec147558349b52de497e707c34ee9c6b2",
+        ".machines/plan_author/machine.json": "4e53f57d3ccac967df85be022142acae30485560d667d0b9cf15182807e6c285",
+        ".machines/plan_author/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_synthesiser/AGENTS.md": "a5a78ab7f0c27a463333643bdf659fe49aa3fd5b3de3c990a7fd556d8e9292a3",
+        ".machines/plan_synthesiser/machine.json": "08e400b1d50e65c3dac379943e5e69372d1276c34c905be18bb40616266e7dc5",
+        ".machines/plan_synthesiser/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_gate/AGENTS.md": "94981d08865442c27f89dbc7833075e526d8f2935ace4458e3c75700f405baec",
+        ".machines/plan_gate/gate.cjs": "1ec7c5c9f00383f4f222f36cc4a658164a0c6408f4e343f17f81724d5435ec0b",
+        ".machines/plan_gate/machine.json": "0f22ab62357e8a17e8cfe4b927ce3440fe21f4eb3a1ac8ec12b25129e56fa19a",
+        ".machines/plan_gate/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/doer/AGENTS.md": "deac834dff8b171ca6f18e11ad01ca11f51e7b9e0b4971b34027c774a218c994",
+        ".machines/doer/machine.json": "5d51aeac4dd7e48649037404de57c7581f826122274e5861807b678bcbb8d03e",
+        ".machines/doer/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/plan_reviewer_astra/AGENTS.md": "37fa32cae3a40a01b92842e9d10886fe03e46d75cc622669ce54ea65eab2f182",
+        ".machines/plan_reviewer_astra/machine.json": "d7441a4ae40d22761796a6087a65f5fa3207a78d12be1152ea107b2fb0aefbbb",
+        ".machines/plan_reviewer_astra/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455",
+        ".machines/validator/AGENTS.md": "59aaad2de080c76263539106e30b0cdb63d49a0262cc66ba1cc9713cf0893e5e",
+        ".machines/validator/machine.json": "1a9c4f3a32a1df01c239bf7709b24771ec5397c740aa0c12448058be5a72dfdf",
+        ".machines/validator/.gitignore": "9a5168f4c37a021b004d84c4bbdf4dc5b854129fcdc84dfcf5a0d772e5b77455"
+      },
+      "metrics": {
+        "input": 448078,
+        "output": 57967,
+        "io": 506045,
+        "cache_read": 1665509,
+        "cache_write": 15945,
+        "cache_read_reports": 21,
+        "usage_reports": 22,
+        "model_calls": 17,
+        "doer_calls": 6,
+        "validator_calls": 6,
+        "phases": {
+          "gate": {
+            "input": 0,
+            "output": 0,
+            "calls": 1
+          },
+          "plan_review": {
+            "input": 49290,
+            "output": 16637,
+            "calls": 5
+          },
+          "bookkeeping": {
+            "input": 0,
+            "output": 0,
+            "calls": 4
+          },
+          "implementation": {
+            "input": 186396,
+            "output": 22508,
+            "calls": 6
+          },
+          "validation": {
+            "input": 212392,
+            "output": 18822,
+            "calls": 6
+          }
+        }
+      },
+      "line": "implement-reviewed-batches",
+      "started": "2026-10-20T10:45:01.296465+00:00",
+      "elapsed_seconds": 1262.2,
+      "tasks_done": 13,
+      "commits": 3,
+      "failure": null,
+      "finished": "2026-10-20T11:06:03.455198+00:00",
+      "wall_elapsed_seconds": 1262.2
+    }
+  ],
+  "updated": "2026-10-20T12:23:54.630304+00:00",
+  "lines": {
+    "ralph": "implement-reviewed-ralph",
+    "one-shot": "implement-reviewed-one-shot",
+    "implement-in-batches": "implement-reviewed-batches"
+  },
+  "name_changes": [
+    {
+      "time": "2026-10-20T10:27:56.172271+00:00",
+      "changes": [
+        {
+          "id": "tetris-008-ralph",
+          "old_line": "implement-reviewed-batches",
+          "new_line": "implement-reviewed-ralph"
+        },
+        {
+          "id": "tetris-008-one-shot",
+          "old_line": "implement-reviewed-batches",
+          "new_line": "implement-reviewed-one-shot"
+        },
+        {
+          "id": "tetris-008-implement-in-batches",
+          "old_line": "implement-reviewed-batches",
+          "new_line": "implement-reviewed-batches"
+        }
+      ],
+      "reason": "User-requested label-only rename; graph contents, agent work and trial deadlines unchanged."
+    }
+  ],
+  "runner_revisions": [
+    {
+      "time": "2026-10-20T10:27:56.172286+00:00",
+      "reason": "Per-experiment line names and attachment to existing live worker without restart",
+      "sha256": "a0a67307effbad63efb55658e5b87c208d816fff13560f357f272c2d2e01bb88"
+    },
+    {
+      "time": "2026-10-20T11:27:26.671989+00:00",
+      "reason": "Explicit user-authorized continuation of interrupted Ralph after batches; preserved invocation segments, cumulative deadline, prior usage, resume snapshots and lower-bound presentation",
+      "runner_sha256": "e82253691ce87e45b137fc2c0950c589833df518167dfc7cc661b28b330f5455"
+    }
+  ],
+  "completed": "2026-10-20T11:27:26.672094+00:00"
+}

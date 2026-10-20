@@ -1,0 +1,6 @@
+{
+  "role": "plan_author",
+  "harness": "/workspaces/ensembleworks-mobile/tools/experiments/pi-once.cjs",
+  "model": "openai-codex/gpt-6.1-sol:medium",
+  "adapter": "pi"
+}

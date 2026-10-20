@@ -1,0 +1,155 @@
+{
+  "scope": "Same actual node src/main.js production launch in an 80x24 PTY; byte input without Enter. This is a new post-run audit, not an edit to the original acceptance observation.",
+  "observations": [
+    {
+      "mode": "ralph",
+      "checks": [
+        {
+          "id": "ordinary_quit",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "71"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ordinary_ctrl_c",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ctrl_c_after_escape",
+          "passed": false,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b",
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": null,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "unknown_osc_q_payload",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b5d303b7107"
+          ],
+          "expected": "remain running",
+          "observed_exit": null,
+          "terminal_restored_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "mode": "one-shot",
+      "checks": [
+        {
+          "id": "ordinary_quit",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "71"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ordinary_ctrl_c",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ctrl_c_after_escape",
+          "passed": false,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b",
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": null,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "unknown_osc_q_payload",
+          "passed": false,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b5d303b7107"
+          ],
+          "expected": "remain running",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "mode": "implement-in-batches",
+      "checks": [
+        {
+          "id": "ordinary_quit",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "71"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ordinary_ctrl_c",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "ctrl_c_after_escape",
+          "passed": true,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b",
+            "03"
+          ],
+          "expected": "exit 0",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        },
+        {
+          "id": "unknown_osc_q_payload",
+          "passed": false,
+          "ready_in_raw_mode": true,
+          "bytes_hex": [
+            "1b5d303b7107"
+          ],
+          "expected": "remain running",
+          "observed_exit": 0,
+          "terminal_restored_after_cleanup": true
+        }
+      ]
+    }
+  ]
+}
