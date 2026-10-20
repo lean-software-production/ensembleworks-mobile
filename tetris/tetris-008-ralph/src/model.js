@@ -121,15 +121,18 @@ export function clearLines(board) {
   return cleared;
 }
 
-// One gameplay descent: move OR settle, compact and spawn.
+// Fixed line-clear points, independent of level or descent distance.
+export const LINE_POINTS = Object.freeze([0, 100, 300, 500, 800]);
+
+// One gameplay descent: move OR settle, compact, score and spawn.
 // A blocked spawn is explicit and leaves no overlapping active geometry.
-// T08 consumes this lock's clear count for scoring before spawn placement.
 export function descend(game) {
   if (game.status !== 'running' || !game.active ||
       !canPlace(game.board, game.active)) return { kind: 'ignored' };
   if (moveDown(game)) return { kind: 'moved' };
   if (!lockPiece(game)) return { kind: 'ignored' };
   const cleared = clearLines(game.board);
+  game.score += LINE_POINTS[cleared];
   const next = spawnPiece(pieceSources.get(game)());
   const spawnBlocked = !canPlace(game.board, next);
   if (!spawnBlocked) game.active = next;

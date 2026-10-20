@@ -20,11 +20,14 @@ export function renderFrame(game, { color = false } = {}) {
     });
     return style('|', 90) + cells.join('') + style('|', 90);
   });
+  // Keep even unusually large scores within the board's 22-column width.
+  const score = String(game?.score ?? 0);
+  const scoreLabel = score.length > 15 ? `${score.slice(0, 14)}…` : score;
   return [
     border,
     ...rows,
     border,
-    style(`Score: ${game?.score ?? 0}`, 97),
+    style(`Score: ${scoreLabel}`, 97),
     'Controls: none (board preview)',
   ].join('\n');
 }

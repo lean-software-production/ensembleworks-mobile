@@ -53,4 +53,12 @@
 - `test/clearing.test.js`: zero through four simultaneous clears, nonadjacent full rows, survivor order/content, empty top rows, independent row arrays, 10×20 dimensions and repeat compaction. Composed descent completes one and two rows; the injected source observes already-compacted state. A top-row completion opens the next spawn before collision checking. Score remains unchanged for T08.
 - `test/locking.test.js` preserves all R06 checks with the extended zero-clear outcome.
 
-R01–R07 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+## R08 — B08 / T08
+
+- Focused `node --test test/scoring.test.js test/clearing.test.js`: 15 passed, 0 failed.
+- Final `npm test`: 36 passed, 0 failed, including actual bounded non-TTY `npm start`, all seven palette codes and existing collision/frame regressions.
+- `src/model.js`: frozen `LINE_POINTS` table `[0,100,300,500,800]`; `descend` applies one award after compaction and before next-piece selection/placement. `SCORING.md` documents the table, pipeline and number/display limits.
+- `test/scoring.test.js`: composed locks clearing 0–4 rows verify exact awards, zero initialization, source-observed score ordering, no repeat award on following descent, live score rendering, accumulation over five locks, and unchanged score for non-locking descent, blocked descent, horizontal movement/rejection and rotation. Fixtures are focused model tests, not production lifecycle evidence.
+- Large numeric and synthetic BigInt display values verify plain/ANSI-stripped frames remain exactly 24 rows without a trailing newline; score labels stay within 22 columns. Long labels are abbreviated without modifying stored totals. `test/clearing.test.js` now expects the earned points while preserving prior compaction assertions.
+
+R01–R08 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.

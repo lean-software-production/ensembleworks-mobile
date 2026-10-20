@@ -46,7 +46,7 @@ for (const lines of [1, 2]) test(`descent locks to complete ${lines} rows before
   assert.deepEqual(descend(game), { kind: 'locked', cleared: lines, spawnBlocked: false });
   assert.equal(game.board, board);
   assert.equal(calls, 2);
-  assert.equal(game.score, 0);
+  assert.equal(game.score, lines === 1 ? 100 : 300);
   assert.deepEqual(game.active, spawnPiece('T'));
   assert.deepEqual(descend(game), { kind: 'moved' });
   assert.equal(calls, 2);

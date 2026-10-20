@@ -1,11 +1,13 @@
 # Handoff
 
-B07 / T07 adds `clearLines(board)` in `src/model.js`: stable compaction, count return, independent empty top rows and preserved board identity. `descend(game)` now locks → clears → consumes/attempts spawn and returns `{kind:'locked', cleared, spawnBlocked}`. Moved/ignored results are unchanged. Insert T08 scoring after compaction and before spawn; no scoring was added here. Blocked spawn still leaves active null, explicitly reported pending T09.
+B08 / T08 adds frozen `LINE_POINTS = [0,100,300,500,800]` in `src/model.js`. `descend` now locks → compacts → scores once → selects/attempts spawn. Ordinary movement and the standalone settling primitive do not score. Blocked spawn still leaves active null and is explicitly reported pending T09. Initial score remains zero.
 
-`test/clearing.test.js` covers counts 0–4, nonadjacent rows, survivor order/content, independent top rows, dimensions, repeat clearing, and composed one-/two-row completions. The injected next-piece source checks that compaction already happened. A focused top-row lock fixture verifies clearing opens spawn space before placement. These are unit fixtures, not final production-lifecycle fixtures. `test/locking.test.js` retains R06 coverage with the extended result shape.
+`src/render.js` displays live totals in the reserved row; strings over 15 characters abbreviate to 14 characters plus ellipsis (22-column label). Stored scores are unchanged. `SCORING.md` documents points, ordering, display abbreviation and JavaScript number precision limits.
 
-Verification: `node --test test/clearing.test.js test/locking.test.js` passed 13 tests; final `npm test` passed 29, including bounded actual non-TTY `npm start`, 24-row rendering and palette checks. `VERIFICATION.md` maps R01–R07 evidence.
+`test/scoring.test.js` uses focused model fixtures for composed 0–4-line awards, source-observed ordering, accumulation, no awards for movement/rejection/rotation/zero clears, and large-score plain/ANSI frame bounds. `test/clearing.test.js` updates prior zero-score expectations to earned awards, retaining all compaction coverage. These are not final production lifecycle fixtures.
 
-Original `createGame` instances retain injectable sources in a WeakMap; snapshots are not independent playable games. Renderer, seven-colour palette and prior movement semantics are unchanged. No interrupted target source work, supplied findings or observed plan defects. Unrelated workspace edits and harness metadata untouched. No commits/downstream validation performed.
+Verification recipes: `node --test test/scoring.test.js test/clearing.test.js` passed 15 tests; final `npm test` passed 36, including actual bounded non-TTY `npm start`, 24-row frames and palette regressions. `VERIFICATION.md` maps R01–R08 evidence.
 
-Remaining T08–T13: scoring, game-over/restart, scheduler/input/session lifecycle, documentation and legal-gameplay production regression. Final delivery still needs actual npm-start PTY quit/termios checks and interactive seven-colour observation. Current entry point emits one bounded frame and exits.
+No interrupted target source work, supplied findings or observed plan defects. Unrelated workspace edits and harness metadata untouched. No commits/downstream validation performed.
+
+Remaining T09–T13: game-over/restart, scheduler/input/session lifetime, complete launch documentation and legal-gameplay production regression. Final delivery still needs actual npm-start PTY quit/termios checks and interactive seven-colour observation. Current entry point emits one bounded frame and exits. Original `createGame` objects retain injected sources in a WeakMap; snapshots are inspection data, not playable copies.
