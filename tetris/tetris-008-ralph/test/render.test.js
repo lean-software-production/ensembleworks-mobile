@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { BOARD_WIDTH, BOARD_HEIGHT, FRAME_ROWS, renderFrame } from '../src/render.js';
 
-function checkFrame(frame) {
+function checkFrame(frame, withPiece = false) {
   // Do not trim: a trailing newline would occupy an extra terminal row.
   const rows = frame.split('\n');
   assert.equal(rows.length, FRAME_ROWS);
@@ -13,7 +13,12 @@ function checkFrame(frame) {
   const border = '+' + '-'.repeat(20) + '+';
   assert.equal(rows[0], border);
   assert.equal(rows[21], border);
-  assert.deepEqual(rows.slice(1, 21), Array(20).fill('|' + ' '.repeat(20) + '|'));
+  if (withPiece) {
+    assert.equal((frame.match(/\[\]/g) ?? []).length, 4);
+    for (const row of rows.slice(1, 21)) assert.equal(row.length, 22);
+  } else {
+    assert.deepEqual(rows.slice(1, 21), Array(20).fill('|' + ' '.repeat(20) + '|'));
+  }
   assert.equal(rows[22], 'Score: 0');
   assert.match(rows[23], /^Controls: /);
   assert.doesNotMatch(frame, /\x1b|\r/);
@@ -31,6 +36,5 @@ test('npm start launches from target without a TTY and exits with one bounded fr
   assert.ifError(result.error);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stderr, '');
-  checkFrame(result.stdout);
-  assert.equal(result.stdout, renderFrame());
+  checkFrame(result.stdout, true);
 });

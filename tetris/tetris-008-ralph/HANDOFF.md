@@ -1,9 +1,11 @@
 # Handoff
 
-B01 / T01 implements the empty-board launch baseline only. Target initially contained only `.assembly-lines` metadata; no previous application or HANDOFF existed. Unrelated workspace changes were left untouched. No plan defects or validator findings were supplied/found.
+B02 / T02 adds initial pieces to the preserved B01 baseline. No interrupted target source edits, validator findings or plan defects were found; unrelated workspace changes remain untouched.
 
-Sources: `src/render.js` exports pure `renderFrame()` and board/frame dimensions; `src/main.js` writes one frame then exits. The frame uses 20 rows of ten two-space cells, two borders, score and controls: exactly 24 rows, no trailing newline. Controls honestly indicate this is a noninteractive preview. `.npmrc` suppresses npm banners so literal `npm start` remains bounded. No dependencies are required (Node >=20).
+Sources: `src/model.js` owns dimensions, frozen seven-shape spawn geometry, independent 10×20 null boards, active coordinates, zero score and running status. `createGame(nextPiece)` consumes one injected type; `createPieceSource(random)` uses uniform independent selection (not a bag). `seededRandom(seed)` provides reproducible Mulberry32 values. Spawn x centers the occupied width, rounding left for odd spare columns; y is zero. Each active piece owns copied geometry.
 
-Tests: `test/render.test.js` checks exact board geometry, borders, status, purity, newline budget and actual `npm start` subprocess output/exit. Run `npm test`; manually capture `npm start > /tmp/tetris-frame.txt` and count split-newline rows without trimming. Evidence is in `VERIFICATION.md`.
+`src/render.js` retains empty `renderFrame()` compatibility and optionally overlays game state without mutation/randomness. Plain cells use `[]`; optional ANSI uses seven distinct retro colours, reset per glyph, with styled borders/status. `src/main.js` creates a random initial game, enables colour only on TTY, emits one frame and exits. No interactive session exists yet. `.npmrc` keeps npm banners out of the 24-row budget.
 
-Remaining: later selected batches add pieces/palette, model actions, locking/clears/scoring, game over/restart, gravity, input and terminal lifetime, then legal-gameplay production lifecycle and actual PTY/termios checks. No interactive terminal behavior is claimed at this baseline. Preserve frame budget and plain piped output while extending rendering.
+Verification: `node --test test/model.test.js` (2 passed); final `npm test` (4 passed), including literal piped `npm start`. Tests cover all shapes, centered valid spawns, independent rows/geometry, deterministic source coverage, renderer purity, palette codes and untrimmed 24-row output. See `VERIFICATION.md`.
+
+Remaining batches supply collision/movement, rotation, descent/locking, clears/score, game over/restart, scheduler, input and lifecycle. Final batch must verify all colours interactively, actual npm-start PTY/termios restoration and legal-gameplay production lifecycle. No commits or downstream validation claimed.

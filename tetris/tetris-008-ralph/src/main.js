@@ -1,4 +1,6 @@
 import { renderFrame } from './render.js';
 
-// This scoped baseline emits one readable frame and exits, including on pipes.
-process.stdout.write(renderFrame());
+import { createGame } from './model.js';
+
+// One bounded preview until the session/input batches supply interaction.
+process.stdout.write(renderFrame(createGame(), { color: Boolean(process.stdout.isTTY) }));
