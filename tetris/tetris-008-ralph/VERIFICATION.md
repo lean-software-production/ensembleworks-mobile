@@ -45,4 +45,12 @@
 - `test/locking.test.js`: all seven types settle exactly four cells without changing unrelated cells, board identity or score; separate locking consumes no piece and cannot repeat. Successful descent does not settle or consume. Floor and settled obstructions trigger one lock and one centered spawn at y=0; the following action moves that piece. Blocked spawn returns `{ kind: 'locked', spawnBlocked: true }`, leaves active null, preserves settled cells, and repeated attempts neither lock nor consume again. Unavailable/invalid states remain unchanged.
 - Blocked-spawn status intentionally remains unresolved until T09; no overlapping active piece is rendered. No clear/score pipeline is claimed before T07/T08.
 
-R01–R06 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+## R07 — B07 / T07
+
+- Focused `node --test test/clearing.test.js test/locking.test.js`: 13 passed, 0 failed after final code changes.
+- Final `npm test`: 29 passed, 0 failed, including literal non-TTY `npm start`, 24-row frame and seven-colour palette regressions.
+- `src/model.js`: `clearLines(board)` returns the clear count, compacts in stable order, preserves board identity and inserts independent empty top rows. `descend` invokes it after locking and before consuming/placing the next piece; locked outcomes now include `cleared` (including zero).
+- `test/clearing.test.js`: zero through four simultaneous clears, nonadjacent full rows, survivor order/content, empty top rows, independent row arrays, 10×20 dimensions and repeat compaction. Composed descent completes one and two rows; the injected source observes already-compacted state. A top-row completion opens the next spawn before collision checking. Score remains unchanged for T08.
+- `test/locking.test.js` preserves all R06 checks with the extended zero-clear outcome.
+
+R01–R07 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.

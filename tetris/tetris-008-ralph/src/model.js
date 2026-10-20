@@ -108,18 +108,32 @@ export function lockPiece(game) {
   return true;
 }
 
-// One gameplay descent: move OR settle and spawn, never advance the new piece.
+// Stable compaction, preserving the board identity and surviving row order.
+// Newly inserted rows are independent; null is the only empty-cell value.
+export function clearLines(board) {
+  const remaining = board.filter(row => row.some(cell => cell === null));
+  const cleared = BOARD_HEIGHT - remaining.length;
+  if (cleared > 0) {
+    board.splice(0, board.length,
+      ...Array.from({ length: cleared }, () => Array(BOARD_WIDTH).fill(null)),
+      ...remaining);
+  }
+  return cleared;
+}
+
+// One gameplay descent: move OR settle, compact and spawn.
 // A blocked spawn is explicit and leaves no overlapping active geometry.
-// T07/T08 will insert clearing/scoring between locking and spawn placement.
+// T08 consumes this lock's clear count for scoring before spawn placement.
 export function descend(game) {
   if (game.status !== 'running' || !game.active ||
       !canPlace(game.board, game.active)) return { kind: 'ignored' };
   if (moveDown(game)) return { kind: 'moved' };
   if (!lockPiece(game)) return { kind: 'ignored' };
+  const cleared = clearLines(game.board);
   const next = spawnPiece(pieceSources.get(game)());
   const spawnBlocked = !canPlace(game.board, next);
   if (!spawnBlocked) game.active = next;
-  return { kind: 'locked', spawnBlocked };
+  return { kind: 'locked', cleared, spawnBlocked };
 }
 
 export function createGame(nextPiece = createPieceSource()) {

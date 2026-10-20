@@ -42,7 +42,7 @@ test('floor and settled obstructions lock once and spawn exactly one centered pi
     if (obstruction) game.board[8][4] = 'Z';
     while (moveDown(game)) {}
     const cells = activeCells(game.active);
-    assert.deepEqual(descend(game), { kind: 'locked', spawnBlocked: false });
+    assert.deepEqual(descend(game), { kind: 'locked', cleared: 0, spawnBlocked: false });
     assert.equal(calls(), 2);
     assert.deepEqual(game.active, spawnPiece('I'));
     assert.equal(canPlace(game.board, game.active), true);
@@ -61,7 +61,7 @@ test('blocked spawn is explicit, nonoverlapping, and cannot repeat the lock', ()
   game.board[0][3] = 'Z';
   const expected = structuredClone(game.board);
   for (const [x, y] of activeCells(game.active)) expected[y][x] = 'O';
-  assert.deepEqual(descend(game), { kind: 'locked', spawnBlocked: true });
+  assert.deepEqual(descend(game), { kind: 'locked', cleared: 0, spawnBlocked: true });
   assert.equal(game.active, null);
   assert.deepEqual(game.board, expected);
   assert.equal(calls(), 2);

@@ -1,13 +1,11 @@
 # Handoff
 
-B06 / T06 adds `lockPiece(game)` and `descend(game)` in `src/model.js`. Separate locking copies four valid active cells into the existing board and sets active null, consuming no randomness. Composed descent returns `{kind:'moved'}`, `{kind:'ignored'}`, or `{kind:'locked',spawnBlocked}`. A blocked step locks once, consumes one next piece and attempts centered spawn without advancing it. Blocked spawn leaves active null and reports explicitly; status resolution remains T09. Clearing/scoring must be inserted between lock and spawn in T07/T08.
+B07 / T07 adds `clearLines(board)` in `src/model.js`: stable compaction, count return, independent empty top rows and preserved board identity. `descend(game)` now locks → clears → consumes/attempts spawn and returns `{kind:'locked', cleared, spawnBlocked}`. Moved/ignored results are unchanged. Insert T08 scoring after compaction and before spawn; no scoring was added here. Blocked spawn still leaves active null, explicitly reported pending T09.
 
-Piece sources live in a WeakMap keyed by original `createGame` instances, keeping state serializable and preserving prior snapshot tests. Cloned snapshots are inspection data, not playable instances. Existing movement, rotation, descent, renderer and seven-colour palette remain unchanged.
+`test/clearing.test.js` covers counts 0–4, nonadjacent rows, survivor order/content, independent top rows, dimensions, repeat clearing, and composed one-/two-row completions. The injected next-piece source checks that compaction already happened. A focused top-row lock fixture verifies clearing opens spawn space before placement. These are unit fixtures, not final production-lifecycle fixtures. `test/locking.test.js` retains R06 coverage with the extended result shape.
 
-`test/locking.test.js` covers exact four-cell writes for all seven types, unrelated-cell preservation, once-only locks/source consumption, move-only actions, floor/settled obstructions, untouched new spawn, blocked spawn, and invalid/unavailable states.
+Verification: `node --test test/clearing.test.js test/locking.test.js` passed 13 tests; final `npm test` passed 29, including bounded actual non-TTY `npm start`, 24-row rendering and palette checks. `VERIFICATION.md` maps R01–R07 evidence.
 
-Verification: focused `node --test test/locking.test.js` passed 5 tests; final `npm test` passed 21, including actual bounded non-TTY `npm start`. `VERIFICATION.md` maps R01–R06 evidence.
+Original `createGame` instances retain injectable sources in a WeakMap; snapshots are not independent playable games. Renderer, seven-colour palette and prior movement semantics are unchanged. No interrupted target source work, supplied findings or observed plan defects. Unrelated workspace edits and harness metadata untouched. No commits/downstream validation performed.
 
-Initial target had no interrupted source changes; unrelated workspace edits and harness metadata were untouched. No supplied findings or observed plan defects. No commits or downstream validation claimed.
-
-Remaining T07–T13: clear/score, game-over/restart, scheduler/input/session lifecycle, documentation and full production legal-gameplay regression. Final delivery still requires actual npm-start PTY quit/termios restoration and interactive seven-colour observation. Current entry point emits one bounded frame and exits.
+Remaining T08–T13: scoring, game-over/restart, scheduler/input/session lifecycle, documentation and legal-gameplay production regression. Final delivery still needs actual npm-start PTY quit/termios checks and interactive seven-colour observation. Current entry point emits one bounded frame and exits.
