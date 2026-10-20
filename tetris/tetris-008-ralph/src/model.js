@@ -46,6 +46,28 @@ export function activeCells(piece) {
   return piece.cells.map(([x, y]) => [x + piece.x, y + piece.y]);
 }
 
+// Shared placement rule: only settled cells obstruct the candidate piece.
+// Active geometry stays separate and may overlap its own previous position.
+export function canPlace(board, piece) {
+  return activeCells(piece).every(([x, y]) =>
+    Number.isInteger(x) && Number.isInteger(y) &&
+    x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT &&
+    board[y][x] === null);
+}
+
+// Mutate only on success; rejected actions preserve the entire game state.
+export function moveHorizontal(game, direction) {
+  if (game.status !== 'running' || !game.active ||
+      (direction !== -1 && direction !== 1)) return false;
+  const candidate = { ...game.active, x: game.active.x + direction };
+  if (!canPlace(game.board, candidate)) return false;
+  game.active = candidate;
+  return true;
+}
+
+export const moveLeft = game => moveHorizontal(game, -1);
+export const moveRight = game => moveHorizontal(game, 1);
+
 export function createGame(nextPiece = createPieceSource()) {
   return {
     board: Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null)),
