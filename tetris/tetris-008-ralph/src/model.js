@@ -84,6 +84,16 @@ export function rotateClockwise(game) {
   return true;
 }
 
+// Non-locking descent primitive: true means moved one row; false means
+// blocked or unavailable. Never merges cells, scores, or consumes a piece.
+export function moveDown(game) {
+  if (game.status !== 'running' || !game.active) return false;
+  const candidate = { ...game.active, y: game.active.y + 1 };
+  if (!canPlace(game.board, candidate)) return false;
+  game.active = candidate;
+  return true;
+}
+
 export function createGame(nextPiece = createPieceSource()) {
   return {
     board: Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null)),

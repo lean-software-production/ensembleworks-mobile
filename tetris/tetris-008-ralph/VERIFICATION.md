@@ -30,4 +30,11 @@
 - Enumerated legal placements in all non-square orientations exercise left/right wall and floor rejection. Settled-cell obstacles test every non-square orientation. Rejections preserve complete state and active reference; paused/game-over and missing-active cases reject safely.
 - No kicks: `src/model.js` documents the transform and delegates placement to the existing shared predicate. Input wiring remains T11 scope.
 
-R01–R04 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+## R05 — B05 / T05
+
+- Focused `node --test test/descent.test.js`: 4 passed, 0 failed.
+- Final `npm test`: 16 passed, 0 failed, including prior collision/rotation, seven-piece palette, 24-row rendering and actual bounded non-TTY `npm start` checks.
+- `src/model.js` exports `moveDown(game)`: true for exactly one row of movement, false for blocked/unavailable play; uses shared `canPlace` and never locks or spawns.
+- `test/descent.test.js` verifies exact one-row geometry for all seven types, unchanged board identity/content and score, and no additional source consumption. All four orientations of every type descend to the floor and stop; settled obstacles stop descent at the first obstruction. Repeated blocked calls preserve full state and active reference. Paused/game-over/missing-active guards are covered.
+
+R01–R05 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.

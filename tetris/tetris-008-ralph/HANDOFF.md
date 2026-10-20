@@ -1,11 +1,11 @@
 # Handoff
 
-B04 / T04 adds `rotateClockwise(game)` in `src/model.js`, reusing `canPlace`. Rule: fixed local square, clockwise `(x,y) → (size−1−y,x)`; I uses size 4, T/S/Z/J/L size 3. Origin stays fixed, no kicks/normalization. O succeeds as a reference-preserving no-op. Invalid placements, paused/game-over states and missing active pieces return false without mutation. Shared shape definitions remain unchanged.
+B05 / T05 adds `moveDown(game)` in `src/model.js`, reusing `canPlace`. Returns true after moving exactly one row, false when blocked or unavailable. Rejected actions preserve state and active reference. It does not settle cells, consume randomness, spawn, score or change status; composed lock/descent remains T06.
 
-Initial target status had no interrupted source edits (only untracked harness metadata); unrelated workspace changes were untouched. No supplied findings or observed plan defects. Previous movement, source, palette and 24-row rendering contracts remain intact.
+`test/descent.test.js` checks exact one-row displacement for all seven types, board identity/content, score and source consumption. Every type in all four orientations falls to the floor or a settled obstruction; repeated blocked attempts preserve complete state. Paused/game-over/missing-active guards are covered. Existing rotation, horizontal movement, palette and frame contracts remain unchanged.
 
-`test/rotation.test.js` checks exact direction/rule, four-turn restoration and four distinct cells for all types; enumerates legal placements across all orientations to exercise both walls/floor; blocks every non-square orientation with settled cells; verifies rejected state/reference preservation and inactive-state guards.
+Initial target status showed no interrupted source edits, only untracked harness metadata. Unrelated workspace changes were left untouched. No supplied findings or observed plan defects.
 
-Verification: `node --test test/rotation.test.js` passes 4 tests. Final `npm test` passes 12 tests, including all prior tests and actual non-TTY `npm start` bounded-frame launch. Evidence mapped in `VERIFICATION.md`.
+Verification recipes: `node --test test/descent.test.js` (4 passing); final `npm test` (16 passing), including previous tests and actual bounded non-TTY `npm start`. `VERIFICATION.md` maps R01–R05 to evidence.
 
-Remaining T05–T13: descent, lock/clear/score, game over/restart, gravity, key dispatch and terminal session. `src/main.js` still emits one initial frame then exits; keyboard rotation belongs to T11. Final batch must cover legal-gameplay production lifecycle, all seven colours interactively and actual npm-start PTY quit/termios restoration. No commits or downstream validation claimed.
+Remaining T06–T13: lock/clear/score, blocked-spawn game over/restart, fixed gravity, input and terminal session lifecycle. `src/main.js` still emits one initial frame then exits. Final batch must exercise the production launch lifecycle through legal input/ticks, observe all seven colours interactively, and verify actual npm-start PTY quit/termios restoration. No commits or downstream validation claimed.
