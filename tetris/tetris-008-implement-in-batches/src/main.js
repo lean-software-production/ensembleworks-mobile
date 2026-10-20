@@ -1,5 +1,4 @@
-import { createState } from './model.js';
-import { render } from './render.js';
+import { startSession } from './session.js';
 
-// B01 snapshot only: no terminal resources or timers are acquired.
-process.stdout.write(render(createState(), { color: Boolean(process.stdout.isTTY) }));
+export function main(options) { return startSession(options); }
+main();

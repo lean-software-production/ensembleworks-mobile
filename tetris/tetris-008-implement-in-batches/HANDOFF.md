@@ -1,11 +1,11 @@
-# B02 handoff
+# B03 handoff
 
-Implemented T06–T09 in `src/model.js`: `lockPiece` consumes active cells once; `advance` moves OR locks→clears→scores→spawns; `clearLines` preserves survivor order. Scores 0/100/300/500/800 for 0–4 lines. Blocked spawn sets `game-over`, active=null, without overwriting settled cells. Gameplay becomes inert. `restart` resets the same state and consumes the next source piece, without rewinding. Sources live in a WeakMap; cloned fixtures must pass an explicit source to progression/restart.
+T10–T13 implementation recovered and verified; prior batches preserved. `src/session.js` owns 500 ms gravity, decoder, redraw, resize and idempotent terminal cleanup. Pause/game over stop gravity; resume/restart start fresh intervals. `src/main.js` composes production; `src/render.js` preserves 24-row frames, retro palette and live controls. Minimum terminal is 40×24; non-TTY prints one plain snapshot.
 
-`src/render.js` preserves seven colours and exact 24 rows; game-over and restart model guidance replace existing status text. Scores longer than 16 characters are abbreviated. Launch remains a noninteractive snapshot with truthful `no keys` guidance. README documents APIs and choices.
+Resolved R11/R12 SS3 finding: ESC O sequences consume their entire final byte without leaking pause/quit/restart bindings. Incomplete sequences persist across chunks; Ctrl-C remains out-of-band. Existing CSI handling is preserved.
 
-Verification: `node --test test/lifecycle.test.js` 8/8; full `npm test` 14/14 after final code changes. Actual `npm start --silent` plain capture: 24 rows, max 40 columns, no ANSI. Requirement/check mapping is in `VERIFICATION.md`; B01 regressions retained. No interrupted target work or plan defects found; unrelated workspace changes untouched.
+`test/session.test.js` checks unsupported SS3 p/q/r/A and parameterized sequences at every split (including same-chunk), unchanged state/redraw/raw mode, subsequent arrow recovery, and incomplete-SS3 Ctrl-C cleanup. `test/pty-smoke.py` reproduces same-chunk and split SS3 through actual npm start and checks pending-SS3 interruption.
 
-B03 recipe in `test/lifecycle.test.js`: inject constant O source; move each of five pieces to x=0,2,4,6,8 and descend/advance to clear two lines (300). Ten subsequent central O locks cause game over; restart resets. All transitions are legal gameplay; carry this into actual production-entry integration, not direct board edits.
+Verification after final code changes: `node --test test/session.test.js` 5/5; `npm test` 19/19; `python3 test/pty-smoke.py` five exit cases passed with exact termios/cursor restoration and seven ANSI palette codes. Production fixture `test/support/production.mjs` reaches fall, lock, two-line clear/300 points, game over, restart and quit through legal gameplay; 304 frames remain bounded. Requirement evidence is in VERIFICATION.md.
 
-Remaining: T10–T13 scheduler/pause, input, terminal ownership/resize/cleanup, production lifecycle regression, actual npm-start PTY quit/termios checks and interactive seven-colour verification. No validation or commit claimed.
+No plan defects found. Unrelated workspace changes untouched. Remaining: downstream validation and commit, neither performed. Colours observed as PTY ANSI codes, not human visual inspection; PTY checks require POSIX/Python.

@@ -29,4 +29,26 @@ Performed after B02 source changes: `node --test test/lifecycle.test.js` passed 
 
 The legal fixture test uses only horizontal moves, nonlocking descent and progression: O pieces at x=0,2,4,6,8 clear two lines for 300 points; ten central O locks then end play; restart returns a fresh game. This is model-level evidence and a B03 recipe, not a production-entry lifecycle claim. Boundary unit fixtures separately construct boards as allowed by the plan.
 
-R10–R13 remain unimplemented: startup is still a one-frame snapshot. PTY quit/termios, interactive seven-colour inspection, live redraw and production legal-gameplay lifecycle checks remain B03 work, where terminal resources will exist. No plan defects found; no validation or commit is claimed.
+The above B01/B02 records describe those intermediate snapshots. B03 supersedes their startup limitations; default pure rendering retains model guidance for API compatibility, while the live session advertises actual keys.
+
+## B03 delivery evidence
+
+Performed after final code changes:
+- `node --test test/session.test.js`: focused 5/5 passed after decoder correction.
+- `npm test`: full 19/19 passed, including all 14 prior regressions, after final source/test changes.
+- `python3 test/pty-smoke.py`: actual `npm start --silent` under a 24×80 PTY passed quit, Ctrl-C, pending-Escape Ctrl-C and pending-CSI Ctrl-C; canonical mode disabled during play, exact termios and cursor restored after all four exits, all seven ANSI palette codes observed during legal soft-drop play. Split private/colon CSI did not quit or pause.
+
+| Completed scope | Actual evidence |
+| --- | --- |
+| R10 | `test/session.test.js`: fake clock at 499/500 ms, one-step ticks, grounded lock and new spawn, pause freezes, resume fresh interval, single timer. Production regression checks game-over stops timer and restart creates one. |
+| R11 | Session test feeds real split/multiple arrow byte sequences, rotation, pause/resume, unknown input, restart/quit. Added regression checks every split of ESC[?1p, ESC[1:2q and intermediate/private CSI: no state change, redraw or exit; subsequent arrows work. Production fixture exercises controls through input events. |
+| R12 | Session test checks home/erase redraw, fitting narrow warning and recovery, signal cleanup for SIGINT/SIGTERM/SIGHUP, idempotence, partial setup write failure, removed listeners and timers. Prior npm capture checks bounded non-TTY exit. Added same-chunk/split Ctrl-C tests with pending Escape/CSI prefixes check timer/listener/raw/cursor cleanup. Actual npm-start PTY checks pending-prefix interrupts and raw-mode/cursor restoration. |
+| R13 | `test/support/production.mjs`, spawned by session regression, imports actual `src/main.js` with externally controlled process streams, time and random source. 304 emitted frames each exactly 24 rows and at most 40 columns. Legal gravity/keys produce fall→lock→two-line clear/300 points→central stacking/game over→restart/zero score→quit. No board edits or forced status. README covers launch, dimensions, bindings, scoring, rotation, gravity and verification. |
+
+### SS3 finding correction (R11/R12)
+
+After final source/test changes, reran `node --test test/session.test.js` (5/5), `npm test` (19/19), and `python3 test/pty-smoke.py` (five actual npm-start exit cases passed). `git diff --check -- .` passed.
+
+`test/session.test.js` now checks ESC O p/q/r/A and parameterized SS3 at every chunk boundary, including same-chunk delivery: no state change, redraw or exit, with subsequent arrows working. Pending SS3 Ctrl-C is tested both within and across chunks. `src/session.js` consumes unsupported SS3 through its final byte while retaining incomplete state and out-of-band interruption. PTY smoke sends same-chunk SS3 pause/restart candidates and split ESC O q, verifies continued running without pause, then confirms ordinary controls/quit still work. Added pending-SS3 Ctrl-C exit verifies exact termios restoration and cursor visibility alongside the prior four exit cases. Full suite retains production legal lifecycle and bounded-frame evidence above.
+
+Limitations: seven colours were verified as distinct emitted ANSI codes in an interactive PTY, not by human visual inspection of a physical emulator/theme. PTY smoke requires Python/POSIX and is run explicitly, not bundled into npm test. No plan defects found. No external validation or commit is claimed.

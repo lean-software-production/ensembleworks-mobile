@@ -1,6 +1,6 @@
 import { WIDTH, HEIGHT, cellsOf } from './model.js';
 export const PALETTE = Object.freeze({ I: 96, O: 93, T: 95, S: 92, Z: 91, J: 94, L: 33 });
-export function render(state, { color = false } = {}) {
+export function render(state, { color = false, live = false } = {}) {
   const paint = (text, code) => color ? `\x1b[${code}m${text}\x1b[0m` : text;
   const grid = state.board.map(row => [...row]);
   if (state.active) for (const [x,y] of cellsOf(state.active)) grid[y][x] = state.active.type;
@@ -13,7 +13,8 @@ export function render(state, { color = false } = {}) {
   const displayScore = score.length > 16 ? score.slice(0, 13) + '...' : score;
   const status = state.status === 'game-over' ? 'GAME OVER' : state.status;
   const controls = state.status === 'game-over' ? 'Model: restart; no keys' : 'Model: left/right, rotate, down; no keys';
-  rows.push(border, paint(`Score: ${displayScore} | ${status}`, 93), paint(controls, 36));
+  const guidance = live ? 'Arrows:move/turn p:pause r:retry q:quit' : controls;
+  rows.push(border, paint(`Score: ${displayScore} | ${status}`, 93), paint(guidance, 36));
   // No trailing newline: exactly 24 visible rows, even on a 24-row terminal.
   return rows.join('\n');
 }
