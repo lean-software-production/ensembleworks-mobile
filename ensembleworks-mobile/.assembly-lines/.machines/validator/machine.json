@@ -1,5 +1,5 @@
 {
-  "role": "validator",
-  "harness": ".assembly-lines/.machines/validator/harness",
-  "lensFile": "lens.md"
+  "role": "plan_validator",
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6.1-sol:high"
 }

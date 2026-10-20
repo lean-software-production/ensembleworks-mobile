@@ -24,11 +24,24 @@ function credentials(machine: MachineConfig): { login: string; key: string } | u
   };
 }
 
+// Pi leaves an empty "{}" auth.json behind when it signs in with an API key,
+// so only a login file with something in it counts as the machine's own login.
+function hasLogin(path: string): boolean {
+  if (!existsSync(path)) return false;
+  const text = readFileSync(path, "utf8").trim();
+  try {
+    const login = JSON.parse(text);
+    return !!login && typeof login === "object" && Object.keys(login).length > 0;
+  } catch {
+    return text.length > 0;
+  }
+}
+
 export function prepareMachines(machines: MachineConfig[], env: NodeJS.ProcessEnv = process.env): void {
   for (const machine of machines) {
     if (adapter(machine) === "agy") throw new Error("Antigravity cannot isolate machine configuration and is unsupported.");
     const auth = credentials(machine);
-    if (auth && !existsSync(auth.login) && !env[auth.key]) {
+    if (auth && !hasLogin(auth.login) && !env[auth.key]) {
       throw new Error(`The ${machine.name} cannot sign in: copy its login into ${machine.folder} or set ${auth.key}.`);
     }
   }
@@ -56,7 +69,7 @@ export function harnessInvocation(machine: MachineConfig, parentEnv: NodeJS.Proc
   // A parent agent's configuration must not leak into its child machines.
   for (const key of ["PI_CODING_AGENT_DIR", "CLAUDE_CONFIG_DIR", "CODEX_HOME"]) delete env[key];
   const auth = credentials(machine);
-  if (auth && existsSync(auth.login)) delete env[auth.key];
+  if (auth && hasLogin(auth.login)) delete env[auth.key];
   const args: string[] = [];
   const command = ({ pi: "pi-rpc-acp", claude: "claude-agent-acp", codex: "codex-acp" } as Record<string, string>)[machine.harness] ?? machine.harness;
   if (machine.model && !["claude", "codex"].includes(kind)) args.push("--model", machine.model);

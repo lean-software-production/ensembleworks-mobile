@@ -1,3 +1,0 @@
-#!/bin/sh
-# The doer builds with gpt-5.6-terra rather than Pi's default.
-exec pi --provider openai-codex --model gpt-5.6-terra "$@"

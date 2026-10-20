@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CloudflareAccessAuthentication, deploymentConfiguration, type AccessSessionStore, type NativeResponse } from '../src/adapters/cloudflareAccess';
+import { CloudflareAccessAuthentication, deploymentConfiguration, NativeCookieTransport, type AccessSessionStore, type NativeResponse } from '../src/adapters/cloudflareAccess';
 import { AdapterError } from '../src/application/ports';
 
 class Store implements AccessSessionStore {
@@ -14,6 +14,27 @@ class Store implements AccessSessionStore {
 const configured = deploymentConfiguration('https://canvas.example.test/a-path')!;
 const response = (status: number, redirected = false): NativeResponse => ({
   status, redirected, headers: { get: () => 'text/html' }, text: async () => '<html>deployment page</html>',
+});
+
+test('native transport delegates opaque cookie handling to fetch for session and token HTTP', async () => {
+  const originalFetch = globalThis.fetch;
+  const calls: Array<{ url: unknown; options: unknown }> = [];
+  const nativeResponse = response(200);
+  globalThis.fetch = (async (url, options) => {
+    calls.push({ url, options });
+    return nativeResponse;
+  }) as typeof fetch;
+  try {
+    const transport = new NativeCookieTransport();
+    for (const url of [configured.baseUrl, `${configured.baseUrl}/api/av/token`]) {
+      assert.equal(await transport.get(url), nativeResponse);
+    }
+    assert.deepEqual(calls, [configured.baseUrl, `${configured.baseUrl}/api/av/token`].map(url => ({
+      url, options: { credentials: 'include', redirect: 'manual' },
+    })));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test('a deployment must be explicitly configured as an HTTPS origin', () => {

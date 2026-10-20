@@ -19,6 +19,8 @@
     "start": "expo start --dev-client",
     "ios": "expo run:ios --device",
     "android": "expo run:android",
+    "build:android": "bash scripts/build-android.sh",
+    "verify:android-emulator-launch": "bash scripts/verify-android-emulator-launch.sh",
     "prebuild": "expo prebuild",
     "verify:ios-27-simulator-launch": "bash scripts/verify-ios-27-simulator-launch.sh",
     "install:ios-device": "bash scripts/install-ios-device.sh",
@@ -34,14 +36,14 @@
     "@livekit/react-native-expo-plugin": "1.0.3",
     "@livekit/react-native-webrtc": "144.2.0",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "expo": "58.0.6",
-    "expo-crypto": "58.0.5",
-    "expo-dev-client": "58.0.11",
-    "expo-system-ui": "58.0.5",
+    "expo": "58.0.14",
+    "expo-crypto": "58.0.7",
+    "expo-dev-client": "58.0.14",
+    "expo-system-ui": "58.0.6",
     "livekit-client": "2.22.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.3",
+    "react-native": "0.88.0",
     "react-native-webview": "14.0.1"
   },
   "devDependencies": {
@@ -50,12 +52,9 @@
     "@types/node": "24.19.1",
     "@types/react": "19.3.0",
     "jest": "30.5.2",
-    "jest-expo": "58.0.8",
+    "jest-expo": "58.0.11",
     "react-test-renderer": "19.3.0",
     "tsx": "^4.23.15",
     "typescript": "6.0.3"
-  },
-  "overrides": {
-    "react-native": "$react-native"
   }
 }

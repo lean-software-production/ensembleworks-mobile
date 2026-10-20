@@ -1,4 +1,5 @@
 {
   "role": "doer",
-  "harness": ".assembly-lines/.machines/doer/harness"
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6.1-sol:low"
 }

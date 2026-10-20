@@ -1,0 +1,5 @@
+{
+  "role": "plan_validator",
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6-sol:high"
+}

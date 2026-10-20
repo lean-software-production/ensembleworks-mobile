@@ -1,0 +1,5 @@
+{
+  "role": "doer",
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6-sol:low"
+}

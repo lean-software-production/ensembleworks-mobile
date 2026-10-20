@@ -1,0 +1,5 @@
+# Terminal Tetris
+
+Requires Node.js with ES modules (Node 18 or newer) and npm. No package installation is needed; from this directory run `npm start`. Run `npm test` for automated checks. Use an interactive terminal of at least **50 columns × 24 rows**; smaller terminals show a warning until resized. Redirected/non-interactive output prints one static frame and exits.
+
+Use left/right arrows to move, up to rotate clockwise, down to advance one gravity action, `p` to pause/resume, `r` to restart after game over, and `q` or Ctrl-C to quit. The screen shows a 10×20 board, score and controls without scrolling. Gravity advances one row every **1000 ms** while running; a grounded piece locks on its next downward action. Pause stops gravity and movement; restart resets the board and score. Rotation uses the piece's current local bounding-box top-left anchor, with no wall or floor kicks; invalid rotations do nothing and the square does not rotate. Clearing 0/1/2/3/4 rows in one lock awards 0/100/300/500/800 points respectively.

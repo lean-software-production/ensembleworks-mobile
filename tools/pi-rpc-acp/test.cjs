@@ -17,7 +17,7 @@ async function stream(t, events, usageTurns = [{ input: 3, output: 4 }]) {
 const { createInterface } = require('node:readline');
 createInterface({ input: process.stdin }).on('line', line => {
   if (JSON.parse(line).type !== 'prompt') return;
-  for (const event of ${JSON.stringify([...events, ...usageTurns.map(usage => ({ type: 'turn_end', message: { role: 'assistant', usage } })), { type: 'agent_end' }])}) {
+  for (const event of ${JSON.stringify([...events, ...usageTurns.map(usage => ({ type: 'turn_end', message: { role: 'assistant', usage } })), { type: 'agent_end' }, { type: 'agent_settled' }])}) {
     process.stdout.write(JSON.stringify(event) + '\\n');
   }
 });
@@ -119,4 +119,40 @@ test('does not present a partial aggregate when one model turn has no usage', { 
   ], [{ input: 3, output: 4, cacheRead: 0, cacheWrite: 0 }]);
   assert.equal(response.usage, undefined);
   assert.deepEqual(response._meta.modelStopReasons, ['error']);
+});
+
+test('reports a turn that pi ended with an error instead of finishing it', { timeout: 10000 }, async t => {
+  await assert.rejects(stream(t, [
+    delta('I’ll verify the floor.'),
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'error', errorMessage: 'Provider returned error 502' } }
+  ]), /pi stopped with an error: Provider returned error 502/);
+});
+
+test('reports a turn that ran out of output tokens', { timeout: 10000 }, async t => {
+  await assert.rejects(stream(t, [
+    delta('{"task":'),
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'length' } }
+  ]), /pi ran out of output tokens/);
+});
+
+test('finishes a turn whose last message stopped normally after an earlier error was retried', { timeout: 10000 }, async t => {
+  const { text } = await stream(t, [
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'error', errorMessage: 'overloaded' } },
+    delta('{"complete":true}'),
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'stop' } }
+  ]);
+  assert.equal(text.trim(), '{"complete":true}');
+});
+
+test('waits for pi to settle when it retries after an attempt ends in an error', { timeout: 10000 }, async t => {
+  const { text } = await stream(t, [
+    delta('I’ll check the plan.'),
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'error', errorMessage: '429 rate limit' } },
+    { type: 'agent_end', willRetry: false },
+    { type: 'auto_retry_start', attempt: 1, maxAttempts: 8, delayMs: 5000, errorMessage: '429 rate limit' },
+    delta('{"complete":false}'),
+    { type: 'message_end', message: { role: 'assistant', stopReason: 'stop' } },
+    { type: 'auto_retry_end', success: true, attempt: 1 }
+  ]);
+  assert.equal(text.trim().split('\n').at(-1), '{"complete":false}');
 });

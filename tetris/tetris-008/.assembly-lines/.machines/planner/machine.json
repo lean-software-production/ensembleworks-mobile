@@ -1,0 +1,5 @@
+{
+  "role": "planner",
+  "harness": "pi",
+  "model": "openrouter/openai/gpt-6-sol"
+}

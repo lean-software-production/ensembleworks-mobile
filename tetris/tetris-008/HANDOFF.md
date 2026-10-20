@@ -1,0 +1,7 @@
+# Handoff
+
+`src/model.js` owns the 10×20 board, seven pieces, seeded/injected source, no-kick rotation, lock/clear/score and restart. `src/render.js` is the pure 24-line renderer. `src/gravity.js` owns the single 1000 ms interval; `src/input.js` buffers escape sequences and recognizes raw Ctrl-C. `src/index.js` is both the `npm start` entry and exported `start({input, output, scheduler, source, seed, signals})` seam. Interactive redraw uses home/clear without a final newline; below 50×24 it shows a bounded warning and recovers on resize. Non-TTY launch prints one frame and exits. Teardown restores raw mode/cursor and releases timers/listeners. `test/launch.test.js` exercises the launch seam with deterministic O/I/I/O pieces and fake ticks through clear, blocked spawn, restart and quit; other tests live in `test/*.test.js`.
+
+Verification: `node --test test/launch.test.js` (1 passed); `npm test` (43 passed). PTY smoke recipe: Python `pty.openpty()`, `TIOCSWINSZ` to 50×24, `subprocess.Popen(['npm','start'], stdin=slave, stdout=slave, stderr=slave)`, wait for `Q: quit`, send `p`, wait for `Paused`, send `q`, assert exit 0 and `\x1b[?25h`. This passed. `node src/index.js` redirected produced 24 lines of width at most 50. Avoid npm banners when measuring captured frames; use the direct entry or silent npm.
+
+No known requirement failures. Actual-command PTY smoke covers running/pause/quit; synthetic launch test covers game over and restart.
