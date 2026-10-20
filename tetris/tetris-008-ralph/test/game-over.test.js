@@ -80,7 +80,7 @@ test('running and finished plain/ANSI frames stay at 24 rows with appropriate co
       if (status === 'game-over') {
         assert.match(plain, /Game over/);
         assert.match(plain, /r restart/);
-      } else assert.match(plain, /arrows move/);
+      } else assert.match(plain, /Up rotate/);
       assert.deepEqual(game, before);
     }
   }

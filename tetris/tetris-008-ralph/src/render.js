@@ -34,6 +34,6 @@ export function renderFrame(game, { color = false } = {}) {
       ? 'Controls: r restart | q quit'
       : game?.status === 'paused'
         ? 'Controls: p resume | q quit'
-        : 'Controls: arrows move | p pause | q quit',
+        : 'Controls: <-/-> move | Up rotate | Down drop | p pause | q quit',
   ].join('\n');
 }

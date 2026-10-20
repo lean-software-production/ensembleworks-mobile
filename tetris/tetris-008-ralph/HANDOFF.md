@@ -1,11 +1,11 @@
 # Handoff
 
-B10 / T10 recovers the interrupted untracked `src/session.js` implementation and verifies it. `createSession` owns one chained 1000 ms timeout driving the existing composed `descend` pipeline. Inject clock/onChange for adapters/tests. Dispatch supports left/right/rotate/down/pause/resume/restart. Pause uses model status guards; game over cancels scheduling. Resume/restart wait a fresh interval; delayed ticks do not catch up. Generation tokens reject stale callbacks. Dispose is permanent and idempotent. Terminal adapters must own disposal, not another gravity loop. See `GRAVITY.md`.
+B11/T11 recovered input/session work retained. `src/input.js` now consumes ESC intermediate bytes (20–2F) through their final byte (30–7E), across chunks, without dispatching embedded q/p/r. Existing CSI/SS3 and OSC/DCS/SOS/PM/APC suppression remains intact with constant-size state.
 
-`src/render.js` shows Paused in the reserved status row and advertises p pause/resume. Seven-piece palette and 24-row budget remain intact. `src/main.js` intentionally still emits one bounded preview; input/session wiring is T11 scope.
+`test/input.test.js` covers packed, every two-chunk split and bytewise ESC intermediate sequences, working ordinary keys afterward, and production-adapter game/timer/raw/listener preservation. Existing legal soft-drop stacking reaches game over and restart without state edits. Arrows, p pause/resume, r restart, q/Ctrl-C quit remain advertised; no hard drop.
 
-`test/session.test.js` exercises timing boundaries, lock/spawn, frozen manual/timed play, stale callbacks, delayed ticks, duplicate prevention, legal O stacking through game over, restart, disposal and plain/ANSI frame bounds. `test/model.test.js` updates the prior exact controls assertion.
+Verification: `node --test test/input.test.js` passed 4/4; final `npm test` passed 48/48 including bounded non-TTY actual launch and palette/frame regressions. Actual `npm start` Python PTY at 24x80 ignored packed/split ESC ( q and ESC # p, then accepted arrows/pause/resume/quit; exit 0, cursor restored, exact termios equality (6155 bytes). `VERIFICATION.md` maps R01–R11 evidence.
 
-Verification: focused `node --test test/session.test.js` passed 4. Final `npm test` passed 44, including literal non-TTY npm start. Initial full run exposed the stale controls assertion, now fixed. `VERIFICATION.md` maps R01–R10 evidence. No supplied findings or observed plan defects; unrelated workspace changes untouched. No commits or downstream validation performed.
+No observed plan defects. Prior target work and unrelated workspace changes preserved. No commits or downstream validation performed.
 
-Remaining T11–T13: keyboard adapter, terminal lifecycle, actual npm-start PTY quit/termios and interactive colour evidence, legal-gameplay production lifecycle regression and final launch documentation.
+Remaining T12: dimension/resize handling and signal/handled-failure cleanup. Remaining T13: legal production clear/score lifecycle, documentation and interactive seven-colour evidence. Current controls require 60 columns; dimension enforcement remains unimplemented.
