@@ -1,5 +1,13 @@
 # Verification
 
+## Final R13 — B13 / T13 (supersedes historical pending notes below)
+
+- `node --test test/lifecycle.test.js`: 2/2 passed. Imports the actual `src/main.js` entry point and invokes production `start` with controlled terminal streams, clock and fresh O source. One timed fall, pause/resume, legal horizontal/soft-drop placement of five O pieces clears two rows (300 points); centered legal stacking reaches blocked-spawn game over; r restarts and q restores raw mode/cursor and removes timers/input listener. No state edits force events. Every emitted game frame is exactly 24 rows, within 80 columns and without trailing newline. Second test checks every palette code through production terminal composition.
+- `python3 tools/pty-smoke.py`: seven actual `npm start` PTY launches at 80×24 passed. Each displays its distinct ANSI piece colour (I 96, O 93, T 95, S 92, Z 91, J 94, L 33), accepts down/pause/resume/quit, exits 0 and restores exact before/after termios plus cursor. O launch additionally legally tiles two rows, observes Score: 300, stacks to Game over, restarts to Score: 0, then quits. Only Math.random is preloaded; no production state/rule changes. PTY verifies ANSI bytes, not human colour perception.
+- Final `npm test` after final code changes: **53/53 passed**, zero failures. Local captured output: `.assembly-lines/b13-tests.log`. Includes actual bounded non-TTY npm launch, all R01–R12 regressions and new production lifecycle checks.
+- Completed requirement evidence map: R01 `render.test.js`; R02 `model.test.js`; R03 `movement.test.js`; R04 `rotation.test.js`; R05 `descent.test.js`; R06 `locking.test.js`; R07 `clearing.test.js`; R08 `scoring.test.js`; R09 `game-over.test.js`; R10 `session.test.js`; R11 `input.test.js`; R12 `terminal.test.js`; R13 `lifecycle.test.js` and `tools/pty-smoke.py` (all test paths under `test/`). README documents launch, size, keys and rules.
+- No observed plan defects or unresolved requirement failures. Linux PTY/Python smoke is separate from portable `npm test`; SIGKILL remains unhandleable. No commits or downstream validation performed. Historical batch entries below retain their original scoped evidence and counts.
+
 ## R01 — B01 / T01
 
 - `npm test`: passed 2 tests, 0 failures after final code changes (Node v24.21.0, npm 11.19.0).
