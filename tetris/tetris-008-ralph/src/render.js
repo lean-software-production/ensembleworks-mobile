@@ -27,7 +27,10 @@ export function renderFrame(game, { color = false } = {}) {
     border,
     ...rows,
     border,
-    style(`Score: ${scoreLabel}`, 97),
-    'Controls: none (board preview)',
+    style(game?.status === 'game-over'
+      ? `Game over | Score: ${scoreLabel}` : `Score: ${scoreLabel}`, 97),
+    game?.status === 'game-over'
+      ? 'Controls: r restart | q quit'
+      : 'Controls: arrows move | q quit',
   ].join('\n');
 }

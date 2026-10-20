@@ -62,3 +62,11 @@
 - Large numeric and synthetic BigInt display values verify plain/ANSI-stripped frames remain exactly 24 rows without a trailing newline; score labels stay within 22 columns. Long labels are abbreviated without modifying stored totals. `test/clearing.test.js` now expects the earned points while preserving prior compaction assertions.
 
 R01–R08 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+
+## R09 — B09 / T09
+
+- `node --test test/game-over.test.js test/locking.test.js`: 9 passed.
+- `test/game-over.test.js` checks blocked/unblocked spawn, clear-before-spawn, immutable post-game movement/rotation/descent/locking, fresh in-place restart with continued injected source, and running/game-over plain/ANSI 24-row frames with relevant controls.
+- Existing `test/clearing.test.js` covers a lock completing the row that opens spawn space; `test/locking.test.js` verifies exact settled-cell preservation on blocked spawn.
+- Final `npm test`: 40 passed, 0 failed, including actual bounded non-TTY `npm start`, seven-piece palette and prior R01–R08 regressions. Initial suite exposed one stale preview-controls assertion; updated it to the new running controls and reran successfully.
+- Keyboard bindings are advertised for the upcoming adapter, not yet connected. PTY/termios and legal-gameplay production lifecycle checks remain T11–T13 work, not evidence claimed here.

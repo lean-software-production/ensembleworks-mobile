@@ -1,13 +1,11 @@
 # Handoff
 
-B08 / T08 adds frozen `LINE_POINTS = [0,100,300,500,800]` in `src/model.js`. `descend` now locks → compacts → scores once → selects/attempts spawn. Ordinary movement and the standalone settling primitive do not score. Blocked spawn still leaves active null and is explicitly reported pending T09. Initial score remains zero.
+B09 / T09: `src/model.js` now sets `status: 'game-over'` when the post-clear/post-score next spawn is blocked; active remains null, preserving settled cells. Existing status guards reject gameplay after game over. `restartGame(game)` only restarts finished games, replaces board/score/active/status in place, and continues the existing injected piece source (no reseeding). Fresh state is built before reset. Original game objects retain their sources through the WeakMap; snapshots are inspection data, not playable copies.
 
-`src/render.js` displays live totals in the reserved row; strings over 15 characters abbreviate to 14 characters plus ellipsis (22-column label). Stored scores are unchanged. `SCORING.md` documents points, ordering, display abbreviation and JavaScript number precision limits.
+`src/render.js` replaces the score row with game-over plus score and exposes r restart / q quit in the controls row; running advertises arrows / q. Both remain 24 rows, without a trailing newline. Bindings are not connected until T11. Seven-piece palette unchanged.
 
-`test/scoring.test.js` uses focused model fixtures for composed 0–4-line awards, source-observed ordering, accumulation, no awards for movement/rejection/rotation/zero clears, and large-score plain/ANSI frame bounds. `test/clearing.test.js` updates prior zero-score expectations to earned awards, retaining all compaction coverage. These are not final production lifecycle fixtures.
+`test/game-over.test.js` covers blocked/unblocked spawn, clear-before-decision, frozen post-game actions, restart and plain/ANSI frame bounds. Existing clearing tests include a lock completing the spawn-opening row. Updated the old preview-controls assertion in `test/model.test.js`.
 
-Verification recipes: `node --test test/scoring.test.js test/clearing.test.js` passed 15 tests; final `npm test` passed 36, including actual bounded non-TTY `npm start`, 24-row frames and palette regressions. `VERIFICATION.md` maps R01–R08 evidence.
+Verification: focused `node --test test/game-over.test.js test/locking.test.js` passed 9; final `npm test` passed 40 including literal non-TTY npm start. `VERIFICATION.md` maps R01–R09 evidence. No interrupted target edits, supplied findings or observed plan defects; unrelated workspace changes untouched. No commits or downstream validation performed.
 
-No interrupted target source work, supplied findings or observed plan defects. Unrelated workspace edits and harness metadata untouched. No commits/downstream validation performed.
-
-Remaining T09–T13: game-over/restart, scheduler/input/session lifetime, complete launch documentation and legal-gameplay production regression. Final delivery still needs actual npm-start PTY quit/termios checks and interactive seven-colour observation. Current entry point emits one bounded frame and exits. Original `createGame` objects retain injected sources in a WeakMap; snapshots are inspection data, not playable copies.
+Remaining T10–T13: scheduler/pause, keyboard/session lifecycle, launch documentation and legal-gameplay production lifecycle regression. Actual npm-start PTY quit/termios checks and interactive seven-colour evidence remain pending. Current entry emits one bounded frame and exits.

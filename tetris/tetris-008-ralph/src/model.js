@@ -136,7 +136,17 @@ export function descend(game) {
   const next = spawnPiece(pieceSources.get(game)());
   const spawnBlocked = !canPlace(game.board, next);
   if (!spawnBlocked) game.active = next;
+  else game.status = 'game-over';
   return { kind: 'locked', cleared, spawnBlocked };
+}
+
+// Restart only a finished game, retaining its injected/production source.
+// Build fresh state first so a failed source cannot partially reset the game.
+export function restartGame(game) {
+  if (game.status !== 'game-over') return false;
+  const fresh = createGame(pieceSources.get(game));
+  Object.assign(game, fresh);
+  return true;
 }
 
 export function createGame(nextPiece = createPieceSource()) {
