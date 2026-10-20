@@ -28,9 +28,12 @@ export function renderFrame(game, { color = false } = {}) {
     ...rows,
     border,
     style(game?.status === 'game-over'
-      ? `Game over | Score: ${scoreLabel}` : `Score: ${scoreLabel}`, 97),
+      ? `Game over | Score: ${scoreLabel}`
+      : game?.status === 'paused' ? `Paused | Score: ${scoreLabel}` : `Score: ${scoreLabel}`, 97),
     game?.status === 'game-over'
       ? 'Controls: r restart | q quit'
-      : 'Controls: arrows move | q quit',
+      : game?.status === 'paused'
+        ? 'Controls: p resume | q quit'
+        : 'Controls: arrows move | p pause | q quit',
   ].join('\n');
 }

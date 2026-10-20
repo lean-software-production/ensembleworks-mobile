@@ -70,3 +70,11 @@ R01–R08 evidence only. Interactive colour observation, playable session, termi
 - Existing `test/clearing.test.js` covers a lock completing the row that opens spawn space; `test/locking.test.js` verifies exact settled-cell preservation on blocked spawn.
 - Final `npm test`: 40 passed, 0 failed, including actual bounded non-TTY `npm start`, seven-piece palette and prior R01–R08 regressions. Initial suite exposed one stale preview-controls assertion; updated it to the new running controls and reran successfully.
 - Keyboard bindings are advertised for the upcoming adapter, not yet connected. PTY/termios and legal-gameplay production lifecycle checks remain T11–T13 work, not evidence claimed here.
+
+## R10 — B10 / T10
+
+- Focused `node --test test/session.test.js`: 4 passed. Final `npm test`: 44 passed, zero failures after final code changes; includes actual bounded non-TTY `npm start` and all prior palette/model regressions.
+- `src/session.js` recovered from interrupted untracked work: sole injectable 1000 ms chained-timeout gravity owner; calls composed descent. `GRAVITY.md` documents timing, dispatch and disposal ownership.
+- `test/session.test.js` verifies no early fall, one move per tick, grounded lock and single next spawn, pause freezing manual/timed play, cancellation/stale callbacks, fresh resume/restart intervals, no duplicate timers, delayed callback without catch-up, permanent idempotent disposal, and legal O stacking to game over with stopped scheduling.
+- Plain and ANSI-stripped running/paused/game-over frames remain exactly 24 rows without trailing newline. Paused status and resume control replace existing rows. Full suite initially caught an obsolete exact control label in `test/model.test.js`; updated expectation and reran successfully.
+- This is session-level evidence, not production interactive lifecycle evidence. Input wiring, PTY quit/termios checks and final legal-gameplay launch regression remain T11–T13.

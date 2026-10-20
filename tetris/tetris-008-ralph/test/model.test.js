@@ -31,7 +31,7 @@ test('all seven shapes spawn centered, valid, separate and visibly bounded', () 
       assert.ok(plain.split('\n').slice(0, 22).every(row => row.length === 22));
       if (color) {
         assert.ok(frame.includes(`\x1b[${PALETTE[type]}m[]\x1b[0m`));
-        assert.ok(frame.endsWith('Controls: arrows move | q quit'));
+        assert.ok(frame.endsWith('Controls: arrows move | p pause | q quit'));
       }
     }
     assert.deepEqual(game, before);
