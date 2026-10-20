@@ -1,11 +1,13 @@
 # Handoff
 
-B05 / T05 adds `moveDown(game)` in `src/model.js`, reusing `canPlace`. Returns true after moving exactly one row, false when blocked or unavailable. Rejected actions preserve state and active reference. It does not settle cells, consume randomness, spawn, score or change status; composed lock/descent remains T06.
+B06 / T06 adds `lockPiece(game)` and `descend(game)` in `src/model.js`. Separate locking copies four valid active cells into the existing board and sets active null, consuming no randomness. Composed descent returns `{kind:'moved'}`, `{kind:'ignored'}`, or `{kind:'locked',spawnBlocked}`. A blocked step locks once, consumes one next piece and attempts centered spawn without advancing it. Blocked spawn leaves active null and reports explicitly; status resolution remains T09. Clearing/scoring must be inserted between lock and spawn in T07/T08.
 
-`test/descent.test.js` checks exact one-row displacement for all seven types, board identity/content, score and source consumption. Every type in all four orientations falls to the floor or a settled obstruction; repeated blocked attempts preserve complete state. Paused/game-over/missing-active guards are covered. Existing rotation, horizontal movement, palette and frame contracts remain unchanged.
+Piece sources live in a WeakMap keyed by original `createGame` instances, keeping state serializable and preserving prior snapshot tests. Cloned snapshots are inspection data, not playable instances. Existing movement, rotation, descent, renderer and seven-colour palette remain unchanged.
 
-Initial target status showed no interrupted source edits, only untracked harness metadata. Unrelated workspace changes were left untouched. No supplied findings or observed plan defects.
+`test/locking.test.js` covers exact four-cell writes for all seven types, unrelated-cell preservation, once-only locks/source consumption, move-only actions, floor/settled obstructions, untouched new spawn, blocked spawn, and invalid/unavailable states.
 
-Verification recipes: `node --test test/descent.test.js` (4 passing); final `npm test` (16 passing), including previous tests and actual bounded non-TTY `npm start`. `VERIFICATION.md` maps R01–R05 to evidence.
+Verification: focused `node --test test/locking.test.js` passed 5 tests; final `npm test` passed 21, including actual bounded non-TTY `npm start`. `VERIFICATION.md` maps R01–R06 evidence.
 
-Remaining T06–T13: lock/clear/score, blocked-spawn game over/restart, fixed gravity, input and terminal session lifecycle. `src/main.js` still emits one initial frame then exits. Final batch must exercise the production launch lifecycle through legal input/ticks, observe all seven colours interactively, and verify actual npm-start PTY quit/termios restoration. No commits or downstream validation claimed.
+Initial target had no interrupted source changes; unrelated workspace edits and harness metadata were untouched. No supplied findings or observed plan defects. No commits or downstream validation claimed.
+
+Remaining T07–T13: clear/score, game-over/restart, scheduler/input/session lifecycle, documentation and full production legal-gameplay regression. Final delivery still requires actual npm-start PTY quit/termios restoration and interactive seven-colour observation. Current entry point emits one bounded frame and exits.

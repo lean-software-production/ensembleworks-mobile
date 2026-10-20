@@ -37,4 +37,12 @@
 - `src/model.js` exports `moveDown(game)`: true for exactly one row of movement, false for blocked/unavailable play; uses shared `canPlace` and never locks or spawns.
 - `test/descent.test.js` verifies exact one-row geometry for all seven types, unchanged board identity/content and score, and no additional source consumption. All four orientations of every type descend to the floor and stop; settled obstacles stop descent at the first obstruction. Repeated blocked calls preserve full state and active reference. Paused/game-over/missing-active guards are covered.
 
-R01–R05 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.
+## R06 — B06 / T06
+
+- Focused `node --test test/locking.test.js`: 5 passed, 0 failed.
+- Final `npm test`: 21 passed, 0 failed, including all prior palette/frame/collision tests and literal bounded non-TTY `npm start`.
+- `src/model.js`: `lockPiece` settles four cells and removes active geometry; `descend` moves OR locks/spawns once. Injected piece sources are retained in a WeakMap so renderer-facing state remains serializable. Use original `createGame` instances for progression (cloned snapshots are inspection data, not independent games).
+- `test/locking.test.js`: all seven types settle exactly four cells without changing unrelated cells, board identity or score; separate locking consumes no piece and cannot repeat. Successful descent does not settle or consume. Floor and settled obstructions trigger one lock and one centered spawn at y=0; the following action moves that piece. Blocked spawn returns `{ kind: 'locked', spawnBlocked: true }`, leaves active null, preserves settled cells, and repeated attempts neither lock nor consume again. Unavailable/invalid states remain unchanged.
+- Blocked-spawn status intentionally remains unresolved until T09; no overlapping active piece is rendered. No clear/score pipeline is claimed before T07/T08.
+
+R01–R06 evidence only. Interactive colour observation, playable session, terminal lifecycle/PTY restoration and legal-gameplay integration remain later scope. No commits or downstream validation performed.

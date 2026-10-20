@@ -94,11 +94,41 @@ export function moveDown(game) {
   return true;
 }
 
+// Keep injected sources outside the serializable, renderer-facing game state.
+const pieceSources = new WeakMap();
+
+// Settle a valid active piece once, without consuming the next piece.
+export function lockPiece(game) {
+  if (game.status !== 'running' || !game.active ||
+      !canPlace(game.board, game.active)) return false;
+  for (const [x, y] of activeCells(game.active)) {
+    game.board[y][x] = game.active.type;
+  }
+  game.active = null;
+  return true;
+}
+
+// One gameplay descent: move OR settle and spawn, never advance the new piece.
+// A blocked spawn is explicit and leaves no overlapping active geometry.
+// T07/T08 will insert clearing/scoring between locking and spawn placement.
+export function descend(game) {
+  if (game.status !== 'running' || !game.active ||
+      !canPlace(game.board, game.active)) return { kind: 'ignored' };
+  if (moveDown(game)) return { kind: 'moved' };
+  if (!lockPiece(game)) return { kind: 'ignored' };
+  const next = spawnPiece(pieceSources.get(game)());
+  const spawnBlocked = !canPlace(game.board, next);
+  if (!spawnBlocked) game.active = next;
+  return { kind: 'locked', spawnBlocked };
+}
+
 export function createGame(nextPiece = createPieceSource()) {
-  return {
+  const game = {
     board: Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null)),
     active: spawnPiece(nextPiece()),
     score: 0,
     status: 'running',
   };
+  pieceSources.set(game, nextPiece);
+  return game;
 }
